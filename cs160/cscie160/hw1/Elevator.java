@@ -117,7 +117,7 @@ public class Elevator
                            "|      Floor_" + (i) + "--> requests: " + 
                            destRequests[i] + ", " +
                            " passengers destined for floor: " +
-                           i + "\n";
+                           passengersToFloor[i] + "\n";
             }
         }
         if(requests.isEmpty())
@@ -180,7 +180,7 @@ public class Elevator
     * processing.
     */
     public void stop()
-    {  System.out.print("\n\n\nI'm stopped at floor " + this.floor + ", ");
+    {  System.out.print("\n\n\nElevator stopped at floor " + this.floor + ", ");
        int unloading= destRequests[floor];
        destRequests[floor]=0;
        passengersToFloor[floor]-= unloading;
@@ -236,7 +236,7 @@ public class Elevator
 
         while(true)
         {   ev1.move();
-            Thread.sleep(2000);  //sleep for 2 seconds
+            Thread.sleep(1000);  //sleep - helps interpret output in real time
         }
     }
 }
