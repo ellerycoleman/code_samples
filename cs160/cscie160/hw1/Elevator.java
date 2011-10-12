@@ -18,10 +18,39 @@ public class Elevator
     //-----------------------
     //     Constants
     //-----------------------
-    public static final int maxFloors   = 7;
+
+
+   /**
+    * defines the base floor in the building
+    */
+    public static final int baseFloor   = 1;
+
+
+
+   /**
+    * defines the top floor in the building
+    */
+    public static final int maxFloor    = 7;
+
+
+   /**
+    * defines the max capacity of an elevator
+    */
     public static final int maxCapacity = 10;
-    public static final int UP   = 1;
-    public static final int DOWN = 0;
+
+
+   /**
+    * The direction of an elevator is set with an
+    * integer variable; 1 for UP.
+    */
+    public static final int UP          = 1;
+
+
+   /**
+    * The direction of an elevator is set with an
+    * integer variable; 0 for DOWN.
+    */
+    public static final int DOWN        = 0;
     
 
 
@@ -29,6 +58,12 @@ public class Elevator
     //-----------------------
     //     Constructor
     //-----------------------
+
+   /**
+    * A constructor that doesn't take any arguments; initializes
+    * the elevator with zero passengers, first floor position, and
+    * a direction of UP.
+    */
     public Elevator()
     {   this.passengers=0;
         this.floor= 1;
@@ -44,8 +79,8 @@ public class Elevator
     private int floor;
     private int passengers;
     private int direction; // 1 is up, 0 is down
-    private int destRequests[]= new int[maxFloors+1];
-    private int passengersToFloor[]= new int[maxFloors+1];
+    private int destRequests[]= new int[maxFloor+1];
+    private int passengersToFloor[]= new int[maxFloor+1];
 
 
 
@@ -62,6 +97,9 @@ public class Elevator
     |    Abstract: Overrides toString() method of java.lang.Object;
     |              returns string with status of elevator.
     +--------------------------------------------------------------------*/
+   /**
+    *  Returns string with status of elevator.
+    */
     public String toString()
     {   String status,requests;
         requests="";
@@ -72,7 +110,7 @@ public class Elevator
                     ((this.direction == UP) ? "up":"down")   + "\n" +
                 "|  destination requests: ";
 
-        for(int i=1; i<=maxFloors; i++)
+        for(int i=1; i<=maxFloor; i++)
         {   if((destRequests[i] != 0)  || (passengersToFloor[i] != 0))
             {   requests+= "\n" +
                            "|      Floor_" + (i) + "--> requests: " + 
@@ -93,6 +131,34 @@ public class Elevator
     }
 
 
+
+
+    /*---------------------------------------------------------------------
+    | method name: move
+    | return type: void
+    |    Abstract: Moves elevator by one floor depending on current
+    |              direction.
+    +--------------------------------------------------------------------*/
+   /**
+    * Moves elevator by one floor depending on current direction.
+    * Changes direction as appropriate.
+    */
+    public void move()
+    {   if((this.direction == UP)  && (this.floor < maxFloor))
+        {   this.floor++;
+        }
+        else if((this.direction == UP)  && (this.floor == maxFloor))
+        {   this.direction=DOWN;
+            this.floor--;
+        }
+        else if ((this.direction == DOWN)  && (this.floor > baseFloor))
+        {   this.floor--;
+        }
+        else if ((this.direction == DOWN)  && (this.floor == baseFloor))
+        {   this.direction=UP;
+            this.floor++;
+        }
+    }
 
 
 
@@ -116,6 +182,12 @@ public class Elevator
     |    Abstract: Adds a passenger to the elevator and handles the
     |              appropriate accounting.
     +--------------------------------------------------------------------*/
+   /** 
+    * Adds a passenger to the elevator and handles the appropriate class
+    * book keeping of increasing the passenger count on the elevator,
+    * registering the destination request, and increasing the count of
+    * passengers headed to the destination floor.
+    */
     public void boardPassenger(int floor)
     {   this.passengers++;
         destRequests[floor]++;
@@ -129,16 +201,16 @@ public class Elevator
     //----------------------------------
     //     Main Method (test harness)
     //----------------------------------
+   /**
+    * A test harness for the Elevator class.  According to HW1 Spec, this
+    * method boards 2 passengers for the 2nd floor and 1 for the 3rd floor.
+    * In accordance with the Spec the elevator continues to sweep the building
+    * after servicing these passengers.
+    */
     public static void main(String args[]) throws InterruptedException
-    {   //Thread.sleep(3000); //showing splash image
+    {   
 
         Elevator ev1= new Elevator();
-        System.out.println("\n\n\n" +
-                           "#-----------------------\n"   +
-                           "#             BEFORE\n" +
-                           "#-----------------------\n"
-                          );
-        System.out.println(ev1);
 
 
         ev1.boardPassenger(5);
