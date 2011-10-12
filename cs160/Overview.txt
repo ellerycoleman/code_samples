@@ -1,0 +1,32 @@
+#----------------------------------------------------------------------------
+# File:		Overview.txt	
+# Date:		Wed Oct 12 18:34:35 EDT 2011
+# Author(s):	Ellery Coleman <ellerycoleman@fas.harvard.edu>
+# Abstract:	Overview of HW1 Solution.
+#----------------------------------------------------------------------------
+# Revision: $Id$
+#----------------------------------------------------------------------------
+
+
+My solution to homework one is contained in a single file; Elevator.java. 
+This file implements the Elevator class according to the HW1 Spec.
+
+My Elevator class uses mnemonic constants for static values.  These include
+baseFloor, maxFloor, maxCapacity, UP, and DOWN.  I keep track of destination
+requests in an array called destRequests, and I also keep track of how many
+passengers are destined to a particular floor with an array called
+passengersToFloor.  Both of these arrays are managed by calls to
+boardPassenger() and stop().
+
+Based on the language of the HW1 Spec, my elevator sweeps the building
+continuously until you hit CTRL+C.
+
+
+The solution is compiled into a jar file; hw1.jar.
+Use the following command to run the solution from the command line:
+
+$ java -jar hw1.jar
+
+
+And, again, to stop the elevator from running enter CTRL+C.
+
