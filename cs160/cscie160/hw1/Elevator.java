@@ -65,7 +65,8 @@ public class Elevator
     * a direction of UP.
     */
     public Elevator()
-    {   this.passengers=0;
+    {   System.out.println("Initializing elevator...\n");
+        this.passengers=0;
         this.floor= 1;
         this.direction= UP;
     }
@@ -116,7 +117,7 @@ public class Elevator
                            "|      Floor_" + (i) + "--> requests: " + 
                            destRequests[i] + ", " +
                            " passengers destined for floor: " +
-                           passengersToFloor[i] + "\n";
+                           i + "\n";
             }
         }
         if(requests.isEmpty())
@@ -126,7 +127,7 @@ public class Elevator
         {   status+= requests;
         }
  
-        status+= "+---------------------------\n";
+        status+= "+---------------------------\n\n\n\n";
         return status;
     }
 
@@ -158,17 +159,34 @@ public class Elevator
         {   this.direction=UP;
             this.floor++;
         }
+
+        if(destRequests[this.floor] > 0)
+        {   stop();
+        }
     }
 
 
 
     /*---------------------------------------------------------------------
-    | method name: toString
-    | return type: String
-    |    Abstract: Overrides 
+    | method name: stop
+    | return type: void
+    |    Abstract: Stops the elevator, does the appropriate book keeping,
+    |              and then displays the state of the elevator after the
+    |              processing.
     +--------------------------------------------------------------------*/
-    public void pickupRequest(int upOrDown, int destFloor)
-    {   
+   /**  
+    * Stops the elevator, does the appropriate book keeping,
+    * and then displays the state of the elevator after the
+    * processing.
+    */
+    public void stop()
+    {  System.out.print("\n\n\nI'm stopped at floor " + this.floor + ", ");
+       int unloading= destRequests[floor];
+       destRequests[floor]=0;
+       passengersToFloor[floor]-= unloading;
+       passengers-= unloading;
+       System.out.println("dropped off " + unloading + " passenger(s).");
+       System.out.println(this.toString());
     }
 
 
@@ -189,7 +207,8 @@ public class Elevator
     * passengers headed to the destination floor.
     */
     public void boardPassenger(int floor)
-    {   this.passengers++;
+    {   System.out.println("Boarding one passenger for floor " + floor + ".");
+        this.passengers++;
         destRequests[floor]++;
         passengersToFloor[floor]++;
     }
@@ -211,21 +230,15 @@ public class Elevator
     {   
 
         Elevator ev1= new Elevator();
+        ev1.boardPassenger(2);
+        ev1.boardPassenger(2);
+        ev1.boardPassenger(3);
 
-
-        ev1.boardPassenger(5);
-        System.out.println("\n\n\n" +
-                           "#-----------------------\n"   +
-                           "#             AFTER\n" +
-                           "#-----------------------\n"
-                          );
-        System.out.println(ev1);
-
-
-
+        while(true)
+        {   ev1.move();
+            Thread.sleep(2000);  //sleep for 2 seconds
+        }
     }
-
-
 }
 
   
