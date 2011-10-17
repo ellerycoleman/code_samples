@@ -1,6 +1,8 @@
 * text=auto !eol
 cs160/hw1/MANIFEST.MF -text
 cs160/hw1/Overview.txt -text
+cs160/hw1/build.xml -text
+cs160/hw1/clean.sh -text
 cs160/hw1/cscie160/hw1/Elevator.java -text
 cs160/hw1/hw1.jpg -text
 cs160/hw1/output.txt -text

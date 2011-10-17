@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<project name="hw1" default="package">
+
+
+
+<!-- clean -->
+<target name="clean">
+  <exec dir="." executable="bash">
+    <arg line="clean.sh"/>
+  </exec>
+</target>
+
+
+<!-- init -->
+<target name="init" depends="clean">
+  <mkdir dir="javadoc"/>
+</target>
+
+
+
+<!-- compile -->
+<target name="compile" depends="init">
+  <javac srcdir="cscie160/hw1"/>
+</target>
+
+
+
+<!-- javadoc -->
+<target name="javadoc" depends="init">
+   <javadoc destdir="javadoc"
+    sourcepath="."
+    packagenames="cscie160.*"
+   />
+</target>
+
+
+<!-- package -->
+<target name="package" depends="compile">
+  <jar destfile="hw1.jar" manifest="MANIFEST.MF">
+    <fileset dir=".">
+       <include name="cscie160/**"/>
+    </fileset>
+    <fileset file="Overview.txt"/>
+    <fileset file="output.txt"/>
+  </jar>
+</target>
+
+
+</project>
