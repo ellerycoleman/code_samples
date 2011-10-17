@@ -1,0 +1,37 @@
+
+[ellery@ssh cs160]$ java -jar hw1.jar 
+Initializing elevator...
+
+Boarding one passenger for floor 2.
+Boarding one passenger for floor 2.
+Boarding one passenger for floor 3.
+
+
+
+Elevator stopped at floor 2, dropped off 2 passenger(s).
++--------Elevator-----------
+|         current Floor: 2
+|    current passengers: 1
+|     current direction: up
+|  destination requests: 
+|      Floor_3--> requests: 1,  passengers destined for floor: 1
++---------------------------
+
+
+
+
+
+
+
+Elevator stopped at floor 3, dropped off 1 passenger(s).
++--------Elevator-----------
+|         current Floor: 3
+|    current passengers: 0
+|     current direction: up
+|  destination requests: none
++---------------------------
+
+
+
+
+^C[ellery@ssh cs160]$
