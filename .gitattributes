@@ -10,3 +10,4 @@ cs160/hw2/MANIFEST.MF -text
 cs160/hw2/build.xml -text
 cs160/hw2/clean.sh -text
 cs160/hw2/cscie160/hw2/Elevator.java -text
+cs160/hw2/cscie160/hw2/Floor.java -text

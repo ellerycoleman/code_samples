@@ -69,6 +69,7 @@ public class Elevator
         this.passengers=0;
         this.floor= 1;
         this.direction= UP;
+        Floors= new Floor[maxFloor];
     }
     
 
@@ -82,6 +83,7 @@ public class Elevator
     private int direction; // 1 is up, 0 is down
     private int destRequests[]= new int[maxFloor+1];
     private int passengersToFloor[]= new int[maxFloor+1];
+    private Floor Floors[];
 
 
 
