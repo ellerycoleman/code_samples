@@ -51,7 +51,7 @@ public class Elevator
     * integer variable; 0 for DOWN.
     */
     public static final int DOWN        = 0;
-    
+
 
 
 
@@ -71,7 +71,7 @@ public class Elevator
         this.direction= UP;
         Floors= new Floor[maxFloor];
     }
-    
+
 
 
 
@@ -93,7 +93,7 @@ public class Elevator
     //-----------------------
     //     Method Members
     //-----------------------
-    
+
     /*---------------------------------------------------------------------
     | method name: toString
     | return type: String
@@ -106,17 +106,17 @@ public class Elevator
     public String toString()
     {   String status,requests;
         requests="";
-        status= "+--------Elevator-----------"               + "\n" + 
-                "|         current Floor: "  + this.floor       + "\n" + 
+        status= "+--------Elevator-----------"               + "\n" +
+                "|         current Floor: "  + this.floor       + "\n" +
                 "|    current passengers: "  + this.passengers  + "\n" +
-                "|     current direction: "  + 
+                "|     current direction: "  +
                     ((this.direction == UP) ? "up":"down")   + "\n" +
                 "|  destination requests: ";
 
         for(int i=1; i<=maxFloor; i++)
         {   if((destRequests[i] != 0)  || (passengersToFloor[i] != 0))
             {   requests+= "\n" +
-                           "|      Floor_" + (i) + "--> requests: " + 
+                           "|      Floor_" + (i) + "--> requests: " +
                            destRequests[i] + ", " +
                            " passengers destined for floor: " +
                            passengersToFloor[i] + "\n";
@@ -128,7 +128,7 @@ public class Elevator
         else
         {   status+= requests;
         }
- 
+
         status+= "+---------------------------\n\n\n\n";
         return status;
     }
@@ -176,7 +176,7 @@ public class Elevator
     |              and then displays the state of the elevator after the
     |              processing.
     +--------------------------------------------------------------------*/
-   /**  
+   /**
     * Stops the elevator, does the appropriate book keeping,
     * and then displays the state of the elevator after the
     * processing.
@@ -202,7 +202,7 @@ public class Elevator
     |    Abstract: Adds a passenger to the elevator and handles the
     |              appropriate accounting.
     +--------------------------------------------------------------------*/
-   /** 
+   /**
     * Adds a passenger to the elevator and handles the appropriate class
     * book keeping of increasing the passenger count on the elevator,
     * registering the destination request, and increasing the count of
@@ -229,7 +229,7 @@ public class Elevator
     * after servicing these passengers.
     */
     public static void main(String args[]) throws InterruptedException
-    {   
+    {
 
         Elevator ev1= new Elevator();
         ev1.boardPassenger(2);
@@ -243,5 +243,5 @@ public class Elevator
     }
 }
 
-  
+
 

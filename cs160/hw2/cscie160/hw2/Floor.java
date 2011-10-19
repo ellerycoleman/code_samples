@@ -30,7 +30,7 @@ public class Floor
     {   System.out.println("Initializing Floor...\n");
         this.passengerQueue=0;
     }
-    
+
 
 
 
@@ -47,7 +47,7 @@ public class Floor
     //-----------------------
     //     Method Members
     //-----------------------
-    
+
     /*---------------------------------------------------------------------
     | method name: toString
     | return type: String
@@ -69,6 +69,26 @@ public class Floor
 
 
 
+    /*---------------------------------------------------------------------
+    | method name: unloadPassengers
+    | return type: void
+    |    Abstract: For hw2, the floor object has the responsibility of
+    |              unloading and loading passengers.  It will accomplish
+    |              this via method members of the Elevator class.
+    +--------------------------------------------------------------------*/
+   /**
+    *  Unloads passengers destined for the floor and loads any waiting
+    *  passengers.
+    */
+    public void unloadPassengers(Elevator ev1)
+    {   String status,requests;
+        System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
+        System.out.println(ev1.toString());
+    }
+
+
+
+
 
 
 
@@ -76,15 +96,15 @@ public class Floor
     //     Main Method (test harness)
     //----------------------------------
    /**
-    * A test harness for the Floor class.  
+    * A test harness for the Floor class.
     */
     public static void main(String args[]) throws InterruptedException
-    {   
+    {
 
         Floor f1= new Floor();
         System.out.println(f1.toString());
     }
 }
 
-  
+
 
