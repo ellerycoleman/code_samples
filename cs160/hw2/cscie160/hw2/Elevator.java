@@ -151,7 +151,7 @@ public class Elevator
     * Moves elevator by one floor depending on current direction.
     * Changes direction as appropriate.
     */
-    public void move()
+    public void move() throws ElevatorFullException
     {   System.out.println("Leaving floor " + floorNum + " with " + passengers + " passengers.");
 
         if((this.direction == UP)  && (this.floorNum < maxFloor))
@@ -187,7 +187,7 @@ public class Elevator
     * and then displays the state of the elevator after the
     * processing.
     */
-    public void stop()
+    public void stop() throws ElevatorFullException
     {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum + ", ");
        System.out.println(Floors.get(floorNum));
        Floors.get(floorNum).unloadPassengers(this);
@@ -277,24 +277,23 @@ public class Elevator
     * registering the destination request, and increasing the count of
     * passengers headed to the destination floor.
     */
-    public void boardPassenger(int floorNum)
+    public void boardPassenger(int floorNum) throws ElevatorFullException
     {   System.out.println("Boarding one passenger for floor " + floorNum + ".");
-	this.passengers++;
-        registerRequest(floorNum);
-        passengersToFloor[floorNum]++;
-    }
-
-
-
-
-    //-----------------------
-    //   Custom Exceptions
-    //-----------------------
-    public class ElevatorFullException extends Exception
-    {   public ElevatorFullException(String msg)
-        {   super("ElevatorFullException: " + msg);
+        try
+	{   if(passengers < maxCapacity)
+	    {   this.passengers++;
+                registerRequest(floorNum);
+                passengersToFloor[floorNum]++;
+            }
+	    else
+	    {   throw new ElevatorFullException("No room for additional passengers at this time");
+	    }
+        }
+	catch (ElevatorFullException e)
+	{   System.out.println("All boarding is over for now.");
 	}
     }
+
 
 
 
@@ -310,7 +309,7 @@ public class Elevator
     * In accordance with the Spec the elevator continues to sweep the building
     * after servicing these passengers.
     */
-    public static void main(String args[]) throws InterruptedException
+    public static void main(String args[]) throws InterruptedException,ElevatorFullException 
     {
 
         Elevator ev1= new Elevator();

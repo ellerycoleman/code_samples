@@ -82,7 +82,7 @@ public class Floor
     *  Unloads passengers destined for the floor and loads any waiting
     *  passengers.
     */
-    public void unloadPassengers(Elevator ev1)
+    public void unloadPassengers(Elevator ev1) throws ElevatorFullException
     {   
         // Unload passengers from elevator
         System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
