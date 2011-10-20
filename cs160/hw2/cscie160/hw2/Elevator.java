@@ -153,7 +153,9 @@ public class Elevator
     * Changes direction as appropriate.
     */
     public void move()
-    {   if((this.direction == UP)  && (this.floorNum < maxFloor))
+    {   System.out.println("Leaving floor " + floorNum);
+
+        if((this.direction == UP)  && (this.floorNum < maxFloor))
         {   this.floorNum++;
         }
         else if((this.direction == UP)  && (this.floorNum == maxFloor))
@@ -190,6 +192,7 @@ public class Elevator
     public void stop()
     {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum + ", ");
        System.out.println(Floors.get(floorNum));
+       Floors.get(floorNum).unloadPassengers(this);
        int unloading= destRequests[floorNum];
        destRequests[floorNum]=0;
        passengersToFloor[floorNum]-= unloading;
@@ -200,6 +203,23 @@ public class Elevator
 
 
 
+    /*---------------------------------------------------------------------
+    | method name: unloadPassenger
+    | return type: void
+    |    Abstract: Removes a passenger from the elevator.
+    +--------------------------------------------------------------------*/
+   /**
+    * Removes a passenger from the elevator.
+    */
+    public void unloadPassenger(int count)
+    {   if(count <= passengers)
+        {   passengers-= count;
+        }
+        else
+        {   System.err.println("Cannot take " + count + "passengers from elevator.");
+            System.err.println("There are only " + passengers + "passengers on the elevator.");
+        }
+    }
 
 
 

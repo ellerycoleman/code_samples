@@ -62,9 +62,9 @@ public class Floor
     public String toString()
     {   String status,requests;
         requests="";
-        status= "+----------Floor------------\n" +
-                "|    current passengers: "  + this.passengerQueue  + "\n" +
-                "+---------------------------\n\n\n\n";
+        status= "\n+----------Floor " + this.floorNum + "------------" +
+                "\n|    current passengers: "  + this.passengerQueue  +
+                "\n+---------------------------\n\n\n\n";
         return status;
     }
 
@@ -82,10 +82,10 @@ public class Floor
     *  Unloads passengers destined for the floor and loads any waiting
     *  passengers.
     */
-    public void unloadPassengers()
+    public void unloadPassengers(Elevator ev1)
     {   String status,requests;
         System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
-        //System.out.println(ev1.toString());
+        System.out.println("Calling elevator from floor:\n" + ev1.toString() + "\n\n\n");
     }
 
 
