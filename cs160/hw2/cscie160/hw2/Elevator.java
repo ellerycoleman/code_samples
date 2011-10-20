@@ -190,10 +190,6 @@ public class Elevator
     {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum + ", ");
        System.out.println(Floors.get(floorNum));
        Floors.get(floorNum).unloadPassengers(this);
-       //int unloading= passengersForFloor(floorNum);
-       //unloadPassenger(unloading);
-       //System.out.println("dropped off " + unloading + " passenger(s).");
-       //System.out.println(this.toString());
     }
 
 
@@ -247,6 +243,7 @@ public class Elevator
     /*---------------------------------------------------------------------
     | method name: boardPassenger
     | return type: void
+    | param  type: int (floor number that passenger is destined for)
     |    Abstract: Adds a passenger to the elevator and handles the
     |              appropriate accounting.
     +--------------------------------------------------------------------*/
@@ -285,12 +282,11 @@ public class Elevator
         ev1.boardPassenger(3);
 
         while(true)
-        {   
+        {
             Thread.sleep(1000);  //sleep - helps interpret output in real time
             ev1.move();
         }
     }
 }
-
 
 

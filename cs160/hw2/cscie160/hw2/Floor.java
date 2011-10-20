@@ -88,8 +88,9 @@ public class Floor
         int unloading= ev1.passengersForFloor(floorNum);
         ev1.unloadPassenger(unloading);
         System.out.println("unloaded " + unloading + " passenger(s).");
+	passengerQueue+= unloading;
         System.out.println(ev1.toString());
-
+        System.out.println(this.toString());
     }
 
 
