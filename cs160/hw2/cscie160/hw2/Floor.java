@@ -22,7 +22,7 @@ public class Floor
     //     Data Members
     //-----------------------
     private int floorNum;
-    private int passengerQueue;
+    private int occupants;
 
 
 
@@ -38,7 +38,7 @@ public class Floor
     public Floor(int floorNum)
     {   System.out.println("Initializing Floor #" + floorNum + "...\n");
         this.floorNum= floorNum;
-        this.passengerQueue=0;
+        this.occupants=0;
     }
 
 
@@ -63,7 +63,7 @@ public class Floor
     {   String status,requests;
         requests="";
         status= "\n+----------Floor " + this.floorNum + "------------" +
-                "\n|    current occupants: "  + this.passengerQueue  +
+                "\n|    current occupants: "  + this.occupants  +
                 "\n+---------------------------\n\n";
         return status;
     }
@@ -83,14 +83,44 @@ public class Floor
     *  passengers.
     */
     public void unloadPassengers(Elevator ev1)
-    {   System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
+    {   
+        // Unload passengers from elevator
+        System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
         System.out.println(ev1.toString());
         int unloading= ev1.passengersForFloor(floorNum);
         ev1.unloadPassenger(unloading);
         System.out.println("unloaded " + unloading + " passenger(s).");
-	passengerQueue+= unloading;
-        System.out.println(ev1.toString());
+
+	// If the passengers are unloading onto floor #1, we will assume
+	// that they're leaving the building.
+	if(floorNum != 1)
+	{   occupants+= unloading;
+	}
+
+
+	// With the exception of passengers that were just unloaded, load
+	// floor occupants onto the elevator.
+	int boarding= occupants - unloading;
+	if(boarding > 0)
+	{   for(int i=1; i<=boarding; i++)
+	    {   ev1.boardPassenger(ev1.baseFloor);
+	        occupants--;
+	    }
+        }
+
+
+	// For this simulation, we assume that the unloaded passengers are
+	// ready to leave the floor on the next elevator run.  We will tell
+	// the elevator to return for them.
+	if(occupants >= 1)
+	{   ev1.registerRequest(floorNum);
+	}
+
+
+        // show status of floor before proceeding.
         System.out.println(this.toString());
+        System.out.println(ev1.toString());
+
     }
 
 

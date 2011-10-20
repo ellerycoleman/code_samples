@@ -115,14 +115,16 @@ public class Elevator
         status= "+--------Elevator-----------"               + "\n" +
                 "|         current Floor: "  + this.floorNum       + "\n" +
                 "|    current passengers: "  + this.passengers  + "\n" +
-                "|     current direction: "  +
-                    ((this.direction == UP) ? "up":"down")   + "\n" +
+                "|     current direction: "  + ((this.direction == UP) ? "up":"down")   + "\n" +
                 "|  destination requests: ";
 
         for(int i=1; i<=maxFloor; i++)
         {   if((destRequests[i] != 0)  || (passengersToFloor[i] != 0))
             {   requests+= "\n" +
-                           "|      Floor_" + (i) + "--> requests: " + destRequests[i];
+                           "|      Floor_" + i + ": " + passengersToFloor[i] + " passengers";
+                if(passengersToFloor[i] == 0)
+		{   requests+= ", pickup Requested";
+		}
             }
         }
         if(requests.isEmpty())
@@ -150,7 +152,7 @@ public class Elevator
     * Changes direction as appropriate.
     */
     public void move()
-    {   System.out.println("Leaving floor " + floorNum);
+    {   System.out.println("Leaving floor " + floorNum + " with " + passengers + " passengers.");
 
         if((this.direction == UP)  && (this.floorNum < maxFloor))
         {   this.floorNum++;
@@ -166,7 +168,6 @@ public class Elevator
         {   this.direction=UP;
             this.floorNum++;
         }
-
         if(destRequests[this.floorNum] > 0)
         {   stop();
         }
@@ -194,6 +195,29 @@ public class Elevator
 
 
 
+
+    /*---------------------------------------------------------------------
+    | method name: registerRequest
+    | return type: void
+    | param  type: int (number of floor requesting a stop)
+    |    Abstract: Modifies the destRequest array, causing the elevator to
+    |              stop on the specified floor on it's next sweep.
+    +--------------------------------------------------------------------*/
+   /**
+    * Signals the elevator to stop on the specified floor during the next
+    * sweep.
+    */
+    public void registerRequest(int floorNum)
+    {   if((floorNum >= baseFloor)  &&  (floorNum <= maxFloor))
+        {   if(destRequests[floorNum] < 1)
+	    {   destRequests[floorNum]++;
+	    }
+	}
+    }
+
+
+
+
     /*---------------------------------------------------------------------
     | method name: unloadPassenger
     | return type: void
@@ -207,7 +231,7 @@ public class Elevator
     {   if(count <= passengers)
         {   passengers-= count;                   // reduce elevator passenger count
 	    passengersToFloor[floorNum]-= count;  // reduce num of passengers destined for this floor
-	    destRequests[floorNum]-= count;       // reduce num of requests for this floor
+	    destRequests[floorNum]= 0;            // zero the requests for this floor
         }
         else
         {   System.err.println("Cannot take " + count + "passengers from elevator.");
@@ -256,7 +280,7 @@ public class Elevator
     public void boardPassenger(int floorNum)
     {   System.out.println("Boarding one passenger for floor " + floorNum + ".");
         this.passengers++;
-        destRequests[floorNum]++;
+        registerRequest(floorNum);
         passengersToFloor[floorNum]++;
     }
 
