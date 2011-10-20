@@ -61,7 +61,7 @@ public class Elevator
     //-----------------------
     //     Data Members
     //-----------------------
-    private int floor;
+    private int floorNum;
     private int passengers;
     private int direction; // 1 is up, 0 is down
     private int destRequests[]= new int[maxFloor+1];
@@ -83,9 +83,9 @@ public class Elevator
     */
     public Elevator()
     {   System.out.println("Initializing elevator...\n");
-        this.passengers=0;
-        this.floor= 1;
-        this.direction= UP;
+        passengers=0;
+        floorNum= 1;
+        direction= UP;
         Floors= new Floor[maxFloor];
     }
 
@@ -110,7 +110,7 @@ public class Elevator
     {   String status,requests;
         requests="";
         status= "+--------Elevator-----------"               + "\n" +
-                "|         current Floor: "  + this.floor       + "\n" +
+                "|         current Floor: "  + this.floorNum       + "\n" +
                 "|    current passengers: "  + this.passengers  + "\n" +
                 "|     current direction: "  +
                     ((this.direction == UP) ? "up":"down")   + "\n" +
@@ -150,22 +150,22 @@ public class Elevator
     * Changes direction as appropriate.
     */
     public void move()
-    {   if((this.direction == UP)  && (this.floor < maxFloor))
-        {   this.floor++;
+    {   if((this.direction == UP)  && (this.floorNum < maxFloor))
+        {   this.floorNum++;
         }
-        else if((this.direction == UP)  && (this.floor == maxFloor))
+        else if((this.direction == UP)  && (this.floorNum == maxFloor))
         {   this.direction=DOWN;
-            this.floor--;
+            this.floorNum--;
         }
-        else if ((this.direction == DOWN)  && (this.floor > baseFloor))
-        {   this.floor--;
+        else if ((this.direction == DOWN)  && (this.floorNum > baseFloor))
+        {   this.floorNum--;
         }
-        else if ((this.direction == DOWN)  && (this.floor == baseFloor))
+        else if ((this.direction == DOWN)  && (this.floorNum == baseFloor))
         {   this.direction=UP;
-            this.floor++;
+            this.floorNum++;
         }
 
-        if(destRequests[this.floor] > 0)
+        if(destRequests[this.floorNum] > 0)
         {   stop();
         }
     }
@@ -185,10 +185,10 @@ public class Elevator
     * processing.
     */
     public void stop()
-    {  System.out.print("\n\n\nElevator stopped at floor " + this.floor + ", ");
-       int unloading= destRequests[floor];
-       destRequests[floor]=0;
-       passengersToFloor[floor]-= unloading;
+    {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum + ", ");
+       int unloading= destRequests[floorNum];
+       destRequests[floorNum]=0;
+       passengersToFloor[floorNum]-= unloading;
        passengers-= unloading;
        System.out.println("dropped off " + unloading + " passenger(s).");
        System.out.println(this.toString());
@@ -211,11 +211,11 @@ public class Elevator
     * registering the destination request, and increasing the count of
     * passengers headed to the destination floor.
     */
-    public void boardPassenger(int floor)
-    {   System.out.println("Boarding one passenger for floor " + floor + ".");
+    public void boardPassenger(int floorNum)
+    {   System.out.println("Boarding one passenger for floor " + floorNum + ".");
         this.passengers++;
-        destRequests[floor]++;
-        passengersToFloor[floor]++;
+        destRequests[floorNum]++;
+        passengersToFloor[floorNum]++;
     }
 
 
