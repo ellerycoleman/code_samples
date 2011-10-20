@@ -132,7 +132,7 @@ public class Elevator
         {   status+= requests;
         }
 
-        status+= "\n+---------------------------\n\n\n\n";
+        status+= "\n+---------------------------\n\n";
         return status;
     }
 
@@ -190,10 +190,10 @@ public class Elevator
     {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum + ", ");
        System.out.println(Floors.get(floorNum));
        Floors.get(floorNum).unloadPassengers(this);
-       int unloading= passengersForFloor(floorNum);
-       unloadPassenger(unloading);
-       System.out.println("dropped off " + unloading + " passenger(s).");
-       System.out.println(this.toString());
+       //int unloading= passengersForFloor(floorNum);
+       //unloadPassenger(unloading);
+       //System.out.println("dropped off " + unloading + " passenger(s).");
+       //System.out.println(this.toString());
     }
 
 

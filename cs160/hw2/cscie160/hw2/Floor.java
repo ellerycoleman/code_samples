@@ -64,7 +64,7 @@ public class Floor
         requests="";
         status= "\n+----------Floor " + this.floorNum + "------------" +
                 "\n|    current occupants: "  + this.passengerQueue  +
-                "\n+---------------------------\n\n\n\n";
+                "\n+---------------------------\n\n";
         return status;
     }
 
@@ -83,9 +83,13 @@ public class Floor
     *  passengers.
     */
     public void unloadPassengers(Elevator ev1)
-    {   String status,requests;
-        System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
-        System.out.println("Calling elevator from floor:\n" + ev1.toString() + "\n\n\n");
+    {   System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
+        System.out.println(ev1.toString());
+        int unloading= ev1.passengersForFloor(floorNum);
+        ev1.unloadPassenger(unloading);
+        System.out.println("unloaded " + unloading + " passenger(s).");
+        System.out.println(ev1.toString());
+
     }
 
 
