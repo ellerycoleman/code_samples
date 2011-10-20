@@ -279,10 +279,23 @@ public class Elevator
     */
     public void boardPassenger(int floorNum)
     {   System.out.println("Boarding one passenger for floor " + floorNum + ".");
-        this.passengers++;
+	this.passengers++;
         registerRequest(floorNum);
         passengersToFloor[floorNum]++;
     }
+
+
+
+
+    //-----------------------
+    //   Custom Exceptions
+    //-----------------------
+    public class ElevatorFullException extends Exception
+    {   public ElevatorFullException(String msg)
+        {   super("ElevatorFullException: " + msg);
+	}
+    }
+
 
 
 
