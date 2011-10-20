@@ -36,7 +36,7 @@ public class Floor
     * the floor with zero passengers.
     */
     public Floor(int floorNum)
-    {   System.out.println("Initializing Floor...\n");
+    {   System.out.println("Initializing Floor #" + floorNum + "...\n");
         this.floorNum= floorNum;
         this.passengerQueue=0;
     }
@@ -63,7 +63,7 @@ public class Floor
     {   String status,requests;
         requests="";
         status= "\n+----------Floor " + this.floorNum + "------------" +
-                "\n|    current passengers: "  + this.passengerQueue  +
+                "\n|    current occupants: "  + this.passengerQueue  +
                 "\n+---------------------------\n\n\n\n";
         return status;
     }
