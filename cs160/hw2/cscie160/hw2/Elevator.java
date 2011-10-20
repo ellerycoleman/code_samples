@@ -122,20 +122,17 @@ public class Elevator
         for(int i=1; i<=maxFloor; i++)
         {   if((destRequests[i] != 0)  || (passengersToFloor[i] != 0))
             {   requests+= "\n" +
-                           "|      Floor_" + (i) + "--> requests: " +
-                           destRequests[i] + ", " +
-                           " passengers destined for floor: " +
-                           passengersToFloor[i] + "\n";
+                           "|      Floor_" + (i) + "--> requests: " + destRequests[i];
             }
         }
         if(requests.isEmpty())
-        {   status+= "none\n";
+        {   status+= "none";
         }
         else
         {   status+= requests;
         }
 
-        status+= "+---------------------------\n\n\n\n";
+        status+= "\n+---------------------------\n\n\n\n";
         return status;
     }
 
@@ -193,10 +190,8 @@ public class Elevator
     {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum + ", ");
        System.out.println(Floors.get(floorNum));
        Floors.get(floorNum).unloadPassengers(this);
-       int unloading= destRequests[floorNum];
-       destRequests[floorNum]=0;
-       passengersToFloor[floorNum]-= unloading;
-       passengers-= unloading;
+       int unloading= passengersForFloor(floorNum);
+       unloadPassenger(unloading);
        System.out.println("dropped off " + unloading + " passenger(s).");
        System.out.println(this.toString());
     }
@@ -206,20 +201,46 @@ public class Elevator
     /*---------------------------------------------------------------------
     | method name: unloadPassenger
     | return type: void
+    | param  type: int (number of passengers to unload)
     |    Abstract: Removes a passenger from the elevator.
     +--------------------------------------------------------------------*/
    /**
-    * Removes a passenger from the elevator.
+    * Removes the specified number of passengers from the elevator.
     */
     public void unloadPassenger(int count)
     {   if(count <= passengers)
-        {   passengers-= count;
+        {   passengers-= count;                   // reduce elevator passenger count
+	    passengersToFloor[floorNum]-= count;  // reduce num of passengers destined for this floor
+	    destRequests[floorNum]-= count;       // reduce num of requests for this floor
         }
         else
         {   System.err.println("Cannot take " + count + "passengers from elevator.");
             System.err.println("There are only " + passengers + "passengers on the elevator.");
         }
     }
+
+
+    /*---------------------------------------------------------------------
+    | method name: passengersForFloor()
+    | return type: int
+    | param  type: int (floor number)
+    |    Abstract: returns the number of passengers destined for the
+    |              specified floor.
+    +--------------------------------------------------------------------*/
+   /**
+    * Returns the number of passengers destined for the specified floor.
+    */
+    public int passengersForFloor(int aFloorNum)
+    {   if((aFloorNum >= baseFloor)  &&  (aFloorNum <= maxFloor))
+        {   return passengersToFloor[aFloorNum];
+	}
+	else
+	{   System.err.println("passengersForFloor(), No such floor: " + aFloorNum);
+	    return 0;
+	}
+    }
+
+
 
 
 
