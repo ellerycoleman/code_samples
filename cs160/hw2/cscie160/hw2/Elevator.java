@@ -55,6 +55,23 @@ public class Elevator
 
 
 
+
+
+
+    //-----------------------
+    //     Data Members
+    //-----------------------
+    private int floor;
+    private int passengers;
+    private int direction; // 1 is up, 0 is down
+    private int destRequests[]= new int[maxFloor+1];
+    private int passengersToFloor[]= new int[maxFloor+1];
+    private Floor Floors[];
+
+
+
+
+
     //-----------------------
     //     Constructor
     //-----------------------
@@ -71,20 +88,6 @@ public class Elevator
         this.direction= UP;
         Floors= new Floor[maxFloor];
     }
-
-
-
-
-    //-----------------------
-    //     Data Members
-    //-----------------------
-    private int floor;
-    private int passengers;
-    private int direction; // 1 is up, 0 is down
-    private int destRequests[]= new int[maxFloor+1];
-    private int passengersToFloor[]= new int[maxFloor+1];
-    private Floor Floors[];
-
 
 
 
