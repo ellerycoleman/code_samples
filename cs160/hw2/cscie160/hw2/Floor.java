@@ -19,6 +19,15 @@ public class Floor
 
 
     //-----------------------
+    //     Data Members
+    //-----------------------
+    private int floorNum;
+    private int passengerQueue;
+
+
+
+
+    //-----------------------
     //     Constructor
     //-----------------------
 
@@ -26,18 +35,11 @@ public class Floor
     * A constructor that doesn't take any arguments; initializes
     * the floor with zero passengers.
     */
-    public Floor()
+    public Floor(int floorNum)
     {   System.out.println("Initializing Floor...\n");
+        this.floorNum= floorNum;
         this.passengerQueue=0;
     }
-
-
-
-
-    //-----------------------
-    //     Data Members
-    //-----------------------
-    private int passengerQueue;
 
 
 
@@ -80,10 +82,10 @@ public class Floor
     *  Unloads passengers destined for the floor and loads any waiting
     *  passengers.
     */
-    public void unloadPassengers(Elevator ev1)
+    public void unloadPassengers()
     {   String status,requests;
         System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
-        System.out.println(ev1.toString());
+        //System.out.println(ev1.toString());
     }
 
 
@@ -101,7 +103,7 @@ public class Floor
     public static void main(String args[]) throws InterruptedException
     {
 
-        Floor f1= new Floor();
+        Floor f1= new Floor(1);
         System.out.println(f1.toString());
     }
 }

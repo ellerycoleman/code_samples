@@ -7,6 +7,7 @@
 # Revision: $Id: Elevator.java 8 2011-10-16 23:57:41Z ellery $
 #---------------------------------------------------------------------------*/
 package cscie160.hw2;
+import java.util.*;
 
 
 
@@ -66,7 +67,7 @@ public class Elevator
     private int direction; // 1 is up, 0 is down
     private int destRequests[]= new int[maxFloor+1];
     private int passengersToFloor[]= new int[maxFloor+1];
-    private Floor Floors[];
+    private ArrayList<Floor> Floors= new ArrayList<Floor>(maxFloor+1);
 
 
 
@@ -86,7 +87,9 @@ public class Elevator
         passengers=0;
         floorNum= 1;
         direction= UP;
-        Floors= new Floor[maxFloor];
+        for(int i=0; i<=maxFloor; i++)
+        {   Floors.add(new Floor(i));
+        }
     }
 
 
@@ -186,6 +189,7 @@ public class Elevator
     */
     public void stop()
     {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum + ", ");
+       System.out.println(Floors.get(floorNum));
        int unloading= destRequests[floorNum];
        destRequests[floorNum]=0;
        passengersToFloor[floorNum]-= unloading;
@@ -240,8 +244,9 @@ public class Elevator
         ev1.boardPassenger(3);
 
         while(true)
-        {   ev1.move();
+        {   
             Thread.sleep(1000);  //sleep - helps interpret output in real time
+            ev1.move();
         }
     }
 }
