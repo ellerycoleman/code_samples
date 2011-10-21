@@ -22,8 +22,9 @@ Leaving floor 2 with 3 passenger(s).
 
 
 
+
 Elevator stopped at floor 3
-+----------Floor 3------------
++----------Floor 3----------
 |    current occupants: 6
 +---------------------------
 
@@ -36,7 +37,7 @@ Boarding one passenger for floor 1.
 Boarding one passenger for floor 1.
 Boarding one passenger for floor 1.
 
-+----------Floor 3------------
++----------Floor 3----------
 |    current occupants: 1
 +---------------------------
 
@@ -53,14 +54,13 @@ Boarding one passenger for floor 1.
 |      Floor_7: 1 passengers
 +---------------------------
 
-
-
 Leaving floor 3 with 8 passenger(s).
 
 
 
+
 Elevator stopped at floor 4
-+----------Floor 4------------
++----------Floor 4----------
 |    current occupants: 6
 +---------------------------
 
@@ -71,7 +71,7 @@ Boarding one passenger for floor 1.
 Boarding one passenger for floor 1.
 ElevatorFullException Caught: leaving 4 occupants on the floor;  will return later.
 
-+----------Floor 4------------
++----------Floor 4----------
 |    current occupants: 4
 +---------------------------
 
@@ -88,22 +88,21 @@ ElevatorFullException Caught: leaving 4 occupants on the floor;  will return lat
 |      Floor_7: 1 passengers
 +---------------------------
 
-
-
 Leaving floor 4 with 10 passenger(s).
 Leaving floor 5 with 10 passenger(s).
 
 
 
+
 Elevator stopped at floor 6
-+----------Floor 6------------
++----------Floor 6----------
 |    current occupants: 0
 +---------------------------
 
 
 unloaded 1 passenger(s).
 
-+----------Floor 6------------
++----------Floor 6----------
 |    current occupants: 1
 +---------------------------
 
@@ -120,21 +119,20 @@ unloaded 1 passenger(s).
 |      Floor_7: 1 passengers
 +---------------------------
 
-
-
 Leaving floor 6 with 9 passenger(s).
 
 
 
+
 Elevator stopped at floor 7
-+----------Floor 7------------
++----------Floor 7----------
 |    current occupants: 0
 +---------------------------
 
 
 unloaded 1 passenger(s).
 
-+----------Floor 7------------
++----------Floor 7----------
 |    current occupants: 1
 +---------------------------
 
@@ -151,14 +149,13 @@ unloaded 1 passenger(s).
 |      Floor_7: 0 passengers, pickup Requested
 +---------------------------
 
-
-
 Leaving floor 7 with 8 passenger(s).
 
 
 
+
 Elevator stopped at floor 6
-+----------Floor 6------------
++----------Floor 6----------
 |    current occupants: 1
 +---------------------------
 
@@ -166,7 +163,7 @@ Elevator stopped at floor 6
 unloaded 0 passenger(s).
 Boarding one passenger for floor 1.
 
-+----------Floor 6------------
++----------Floor 6----------
 |    current occupants: 0
 +---------------------------
 
@@ -182,15 +179,14 @@ Boarding one passenger for floor 1.
 |      Floor_7: 0 passengers, pickup Requested
 +---------------------------
 
-
-
 Leaving floor 6 with 9 passenger(s).
 Leaving floor 5 with 9 passenger(s).
 
 
 
+
 Elevator stopped at floor 4
-+----------Floor 4------------
++----------Floor 4----------
 |    current occupants: 4
 +---------------------------
 
@@ -200,7 +196,7 @@ Boarding one passenger for floor 1.
 Boarding one passenger for floor 1.
 ElevatorFullException Caught: leaving 3 occupants on the floor;  will return later.
 
-+----------Floor 4------------
++----------Floor 4----------
 |    current occupants: 3
 +---------------------------
 
@@ -216,14 +212,13 @@ ElevatorFullException Caught: leaving 3 occupants on the floor;  will return lat
 |      Floor_7: 0 passengers, pickup Requested
 +---------------------------
 
-
-
 Leaving floor 4 with 10 passenger(s).
 
 
 
+
 Elevator stopped at floor 3
-+----------Floor 3------------
++----------Floor 3----------
 |    current occupants: 1
 +---------------------------
 
@@ -232,7 +227,7 @@ unloaded 0 passenger(s).
 Boarding one passenger for floor 1.
 ElevatorFullException Caught: leaving 1 occupants on the floor;  will return later.
 
-+----------Floor 3------------
++----------Floor 3----------
 |    current occupants: 1
 +---------------------------
 
@@ -248,22 +243,21 @@ ElevatorFullException Caught: leaving 1 occupants on the floor;  will return lat
 |      Floor_7: 0 passengers, pickup Requested
 +---------------------------
 
-
-
 Leaving floor 3 with 10 passenger(s).
 Leaving floor 2 with 10 passenger(s).
 
 
 
+
 Elevator stopped at floor 1
-+----------Floor 1------------
++----------Floor 1----------
 |    current occupants: 0
 +---------------------------
 
 
 unloaded 10 passenger(s).
 
-+----------Floor 1------------
++----------Floor 1----------
 |    current occupants: 0
 +---------------------------
 
@@ -278,15 +272,14 @@ unloaded 10 passenger(s).
 |      Floor_7: 0 passengers, pickup Requested
 +---------------------------
 
-
-
 Leaving floor 1 with 0 passenger(s).
 Leaving floor 2 with 0 passenger(s).
 
 
 
+
 Elevator stopped at floor 3
-+----------Floor 3------------
++----------Floor 3----------
 |    current occupants: 1
 +---------------------------
 
@@ -294,7 +287,7 @@ Elevator stopped at floor 3
 unloaded 0 passenger(s).
 Boarding one passenger for floor 1.
 
-+----------Floor 3------------
++----------Floor 3----------
 |    current occupants: 0
 +---------------------------
 
@@ -309,14 +302,13 @@ Boarding one passenger for floor 1.
 |      Floor_7: 0 passengers, pickup Requested
 +---------------------------
 
-
-
 Leaving floor 3 with 1 passenger(s).
 
 
 
+
 Elevator stopped at floor 4
-+----------Floor 4------------
++----------Floor 4----------
 |    current occupants: 3
 +---------------------------
 
@@ -326,7 +318,7 @@ Boarding one passenger for floor 1.
 Boarding one passenger for floor 1.
 Boarding one passenger for floor 1.
 
-+----------Floor 4------------
++----------Floor 4----------
 |    current occupants: 0
 +---------------------------
 
@@ -340,16 +332,15 @@ Boarding one passenger for floor 1.
 |      Floor_7: 0 passengers, pickup Requested
 +---------------------------
 
-
-
 Leaving floor 4 with 4 passenger(s).
 Leaving floor 5 with 4 passenger(s).
 Leaving floor 6 with 4 passenger(s).
 
 
 
+
 Elevator stopped at floor 7
-+----------Floor 7------------
++----------Floor 7----------
 |    current occupants: 1
 +---------------------------
 
@@ -357,7 +348,7 @@ Elevator stopped at floor 7
 unloaded 0 passenger(s).
 Boarding one passenger for floor 1.
 
-+----------Floor 7------------
++----------Floor 7----------
 |    current occupants: 0
 +---------------------------
 
@@ -370,8 +361,6 @@ Boarding one passenger for floor 1.
 |      Floor_1: 5 passengers
 +---------------------------
 
-
-
 Leaving floor 7 with 5 passenger(s).
 Leaving floor 6 with 5 passenger(s).
 Leaving floor 5 with 5 passenger(s).
@@ -381,15 +370,16 @@ Leaving floor 2 with 5 passenger(s).
 
 
 
+
 Elevator stopped at floor 1
-+----------Floor 1------------
++----------Floor 1----------
 |    current occupants: 0
 +---------------------------
 
 
 unloaded 5 passenger(s).
 
-+----------Floor 1------------
++----------Floor 1----------
 |    current occupants: 0
 +---------------------------
 
@@ -400,8 +390,6 @@ unloaded 5 passenger(s).
 |     current direction: down
 |  destination requests: none
 +---------------------------
-
-
 
 Leaving floor 1 with 0 passenger(s).
 Leaving floor 2 with 0 passenger(s).
@@ -416,4 +404,4 @@ Leaving floor 4 with 0 passenger(s).
 Leaving floor 3 with 0 passenger(s).
 Leaving floor 2 with 0 passenger(s).
 Leaving floor 1 with 0 passenger(s).
-^C[ellery@ssh hw2]$ 
+^C[ellery@ssh hw2]$
