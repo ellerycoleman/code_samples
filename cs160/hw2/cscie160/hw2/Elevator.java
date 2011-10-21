@@ -135,7 +135,7 @@ public class Elevator
         {   status+= requests;
         }
 
-        status+= "\n+---------------------------\n";
+        status+= "\n+---------------------------";
         return status;
     }
 
@@ -334,10 +334,10 @@ public class Elevator
     * A test harness for the Elevator class.  
     * According to the HW2 Spec, this method boards an abitrary number
     * of passengers destined for different floors.  It also initializes
-    * some of the floors with occupants, waiting for the elevator.  The
-    * combination of passengers on the elevator and occupants waiting on
-    * the floor causes the elevator to reach it's max and the ElevatorFullException
-    * is thrown.
+    * some of the floors with occupants who are waiting for the elevator.
+    * The combination of passengers on the elevator and occupants waiting
+    * on the floor causes the elevator to reach it's max and the
+    * ElevatorFullException is thrown.
     *
     * Keeping with assumption from the HW1 spec, the elevator uses a simple
     * sweep algorithm; continuously traveling up and down the building.  It
@@ -346,17 +346,24 @@ public class Elevator
     public static void main(String args[]) throws InterruptedException,ElevatorFullException
     {
 
+        // Initialize the Elevator and Floors
         Elevator ev1= new Elevator();
+
+
+	// Initialize the test scenario
 	System.out.print("\n\n");
 	System.out.print("Initializing test scenario...\n");
-        ev1.boardPassenger(3);
-        ev1.boardPassenger(6);
-        ev1.boardPassenger(7);
+        ev1.boardPassenger(3);  //board passenger destined for floor 3
+        ev1.boardPassenger(6);  //board passenger destined for floor 6
+        ev1.boardPassenger(7);  //board passenger destined for floor 7
 	ev1.addOccupants(6,3);  //add 6 occupants to floor 3
 	ev1.addOccupants(6,4);  //add 6 occupants to floor 4;
 
+
+
+        // Run the Elevator
         while(true)
-        {   Thread.sleep(1000);  //sleep - helps interpret output in real time
+        {   Thread.sleep(1000);  //sleeping helps interpret the output in real time
             ev1.move();
         }
     }
