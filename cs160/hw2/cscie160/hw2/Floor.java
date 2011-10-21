@@ -79,8 +79,8 @@ public class Floor
    /**
     *  Adds the specified number of occupants to the Floor.
     */
-    public void addOccupants(int num)
-    {   occupants+= num;
+    public void addOccupants(int numOfOccupants)
+    {   occupants+= numOfOccupants;
     }
 
 

@@ -225,6 +225,9 @@ public class Elevator
     | param  type: int,int (number of occupants, floorNum)
     |    Abstract: Adds the specified number of occupants to the specified
     |              floor and registers a pickup request with the elevator.
+    |              Ideally this method would be located in the Floor class,
+    |              but since the Elevator has the Floors it's cleaner to
+    |              put it here.
     +--------------------------------------------------------------------*/
    /**
     * Adds the specified number of occupants to the specified floor and
