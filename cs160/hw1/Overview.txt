@@ -28,5 +28,15 @@ Use the following command to run the solution from the command line:
 $ java -jar hw1.jar
 
 
-And, again, to stop the elevator from running enter CTRL+C.
+Again, to stop the elevator from running enter CTRL+C.
+All of the source code, documentation, and javadocs for this solution are
+contained in the hw1.jar file.  You can access them as follows:
+
+
+$ jar xf hw1.jar
+$ cat Overview.txt
+$ cd javadoc
+
+
+
 
