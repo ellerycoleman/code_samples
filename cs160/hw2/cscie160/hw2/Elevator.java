@@ -1,10 +1,10 @@
 /*----------------------------------------------------------------------------
 # File:		Elevator.java
-# Date:		Tue Sep 13 17:13:24 EDT 2011
+# Date:		Fri Oct 21 02:40:11 GMT 2011
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Implements an Elevator class for cscie160, hw1.
+# Abstract:	Implements an Elevator class for cscie160, hw2.
 #-----------------------------------------------------------------------------
-# Revision: $Id: Elevator.java 8 2011-10-16 23:57:41Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.hw2;
 import java.util.*;
@@ -103,11 +103,12 @@ public class Elevator
     /*---------------------------------------------------------------------
     | method name: toString
     | return type: String
+    | param  type: none
     |    Abstract: Overrides toString() method of java.lang.Object;
     |              returns string with status of elevator.
     +--------------------------------------------------------------------*/
    /**
-    *  Returns string with status of elevator.
+    *  Returns a string containing the status of the elevator.
     */
     public String toString()
     {   String status,requests;
@@ -144,8 +145,9 @@ public class Elevator
     /*---------------------------------------------------------------------
     | method name: move
     | return type: void
+    | param  type: none
     |    Abstract: Moves elevator by one floor depending on current
-    |              direction.
+    |              direction. Changes direction as appropriate.
     +--------------------------------------------------------------------*/
    /**
     * Moves elevator by one floor depending on current direction.
@@ -178,17 +180,16 @@ public class Elevator
     /*---------------------------------------------------------------------
     | method name: stop
     | return type: void
-    |    Abstract: Stops the elevator, does the appropriate book keeping,
-    |              and then displays the state of the elevator after the
-    |              processing.
+    | param  type: none
+    |    Abstract: Stops the elevator and cooperates with the floor to
+    |              load and unload passengers as appropriate.
     +--------------------------------------------------------------------*/
    /**
-    * Stops the elevator, does the appropriate book keeping,
-    * and then displays the state of the elevator after the
-    * processing.
+    * Stops the elevator and cooperates with the floor to load and
+    * unload passengers as appropriate.
     */
     public void stop() throws ElevatorFullException
-    {  System.out.print("\n\nElevator stopped at floor " + this.floorNum);
+    {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum);
        System.out.println(Floors.get(floorNum));
        Floors.get(floorNum).unloadPassengers(this);
     }
@@ -237,11 +238,13 @@ public class Elevator
 
 
 
+
     /*---------------------------------------------------------------------
     | method name: unloadPassenger
     | return type: void
     | param  type: int (number of passengers to unload)
-    |    Abstract: Removes a passenger from the elevator.
+    |    Abstract: Removes the specified number of passengers from the
+    |              elevator.
     +--------------------------------------------------------------------*/
    /**
     * Removes the specified number of passengers from the elevator.
@@ -257,6 +260,7 @@ public class Elevator
             System.err.println("There are only " + passengers + "passengers on the elevator.");
         }
     }
+
 
 
     /*---------------------------------------------------------------------
@@ -291,7 +295,7 @@ public class Elevator
     |              appropriate accounting.
     +--------------------------------------------------------------------*/
    /**
-    * Adds a passenger to the elevator and handles the appropriate class
+    * Adds a passenger to the elevator and handles the appropriate 
     * book keeping of increasing the passenger count on the elevator,
     * registering the destination request, and increasing the count of
     * passengers headed to the destination floor.
@@ -324,25 +328,32 @@ public class Elevator
     //     Main Method (test harness)
     //----------------------------------
    /**
-    * A test harness for the Elevator class.  According to HW1 Spec, this
-    * method boards 2 passengers for the 2nd floor and 1 for the 3rd floor.
-    * In accordance with the Spec the elevator continues to sweep the building
-    * after servicing these passengers.
+    * A test harness for the Elevator class.  
+    * According to the HW2 Spec, this method boards an abitrary number
+    * of passengers destined for different floors.  It also initializes
+    * some of the floors with occupants, waiting for the elevator.  The
+    * combination of passengers on the elevator and occupants waiting on
+    * the floor causes the elevator to reach it's max and the ElevatorFullException
+    * is thrown.
+    *
+    * Keeping with assumption from the HW1 spec, the elevator uses a simple
+    * sweep algorithm; continuously traveling up and down the building.  It
+    * only stops when it has passengers to drop off or pick up.
     */
-    public static void main(String args[]) throws InterruptedException,ElevatorFullException 
+    public static void main(String args[]) throws InterruptedException,ElevatorFullException
     {
 
         Elevator ev1= new Elevator();
 	System.out.print("\n\n");
-        //ev1.boardPassenger(2);
-        //ev1.boardPassenger(2);
-        //ev1.boardPassenger(3);
+	System.out.print("Initializing test scenario...\n");
+        ev1.boardPassenger(3);
+        ev1.boardPassenger(6);
+        ev1.boardPassenger(7);
 	ev1.addOccupants(6,3);  //add 6 occupants to floor 3
 	ev1.addOccupants(6,4);  //add 6 occupants to floor 4;
 
         while(true)
-        {
-            Thread.sleep(1000);  //sleep - helps interpret output in real time
+        {   Thread.sleep(1000);  //sleep - helps interpret output in real time
             ev1.move();
         }
     }

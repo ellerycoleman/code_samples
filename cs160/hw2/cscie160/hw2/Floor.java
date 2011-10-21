@@ -1,10 +1,10 @@
 /*----------------------------------------------------------------------------
 # File:		Floor.java
-# Date:		Tue Sep 13 17:13:24 EDT 2011
+# Date:		Fri Oct 21 02:32:55 GMT 2011
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Implements a Floor class for cscie160, hw2.
 #-----------------------------------------------------------------------------
-# Revision: $Id: Elevator.java 8 2011-10-16 23:57:41Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.hw2;
 
@@ -14,8 +14,6 @@ package cscie160.hw2;
 
 public class Floor
 {
-
-
 
 
     //-----------------------
@@ -33,7 +31,7 @@ public class Floor
 
    /**
     * A constructor that doesn't take any arguments; initializes
-    * the floor with zero passengers.
+    * the floor with zero occupants.
     */
     public Floor(int floorNum)
     {   System.out.print("Initializing Floor #" + floorNum + "...\n");
@@ -53,17 +51,18 @@ public class Floor
     /*---------------------------------------------------------------------
     | method name: toString
     | return type: String
+    | param  type: none
     |    Abstract: Overrides toString() method of java.lang.Object;
     |              returns string with status of floor.
     +--------------------------------------------------------------------*/
    /**
-    *  Returns string with status of floor.
+    *  Returns a string containing the current status of the Floor.
     */
     public String toString()
     {   String status,requests;
         requests="";
         status= "\n+----------Floor " + this.floorNum + "------------" +
-                "\n|    current occupants: "  + this.occupants  +
+                "\n|    current occupants: "  + occupants  +
                 "\n+---------------------------\n\n";
         return status;
     }
@@ -72,13 +71,13 @@ public class Floor
 
 
     /*---------------------------------------------------------------------
-    | method name: toString
+    | method name: addOccupants
     | return type: void
     | param  type: int (number of occupants)
-    |    Abstract: Adds occupants to a floor.
+    |    Abstract: Adds the specified number of occupants to the Floor.
     +--------------------------------------------------------------------*/
    /**
-    *  Adds occupants to the floor.
+    *  Adds the specified number of occupants to the Floor.
     */
     public void addOccupants(int num)
     {   occupants+= num;
@@ -90,6 +89,7 @@ public class Floor
     /*---------------------------------------------------------------------
     | method name: unloadPassengers
     | return type: void
+    | param  type: Elevator (the elevator that is stopped at this floor)
     |    Abstract: For hw2, the floor object has the responsibility of
     |              unloading and loading passengers.  It will accomplish
     |              this via method members of the Elevator class.
@@ -102,15 +102,13 @@ public class Floor
     {   
         // Unload passengers from elevator
 	//---------------------------------- 
-        //System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
-        //System.out.println(ev1.toString());
         int unloading= ev1.passengersForFloor(floorNum);
         ev1.unloadPassenger(unloading);
         System.out.println("unloaded " + unloading + " passenger(s).");
 
 
-	// If the passengers are unloading onto floor #1, we will assume
-	// that they're leaving the building.
+	// If the passengers are unloading onto floor #1, we assume that
+	// they'll leave the building once they exit the elevator.
 	//--------------------------------------------------------------- 
 	if(floorNum != 1)
 	{   occupants+= unloading;
@@ -118,8 +116,9 @@ public class Floor
 
 
 	// With the exception of passengers that were just unloaded, load
-	// floor occupants onto the elevator.  According to the spec, every
-	// occupant on a floor will be boarded with a destination of baseFloor.
+	// current floor occupants onto the elevator.  According to the spec,
+	// every occupant on a floor will be boarded with a destination of
+	// baseFloor.
 	//---------------------------------------------------------------------- 
 	int boarding= occupants - unloading;
 	if(boarding > 0)
@@ -138,9 +137,9 @@ public class Floor
         }
 
 
-	// For this simulation, we assume that the unloaded passengers are
-	// ready to leave the building on the next elevator run.  We will tell
-	// the elevator to return for them.
+	// For this simulation, we assume that all unloaded passengers will
+	// be ready to leave the building on the next elevator run.  Thus we
+	// will signal the elevator to return for them.
 	//--------------------------------------------------------------------- 
 	if(occupants >= 1)
 	{   ev1.registerRequest(floorNum);
@@ -148,9 +147,8 @@ public class Floor
 
 
         // show status of floor before proceeding.
-        System.out.println(this.toString());
-        System.out.println(ev1.toString());
-
+        System.out.println(this);
+        System.out.println(ev1 + "\n");
     }
 
 
@@ -163,11 +161,10 @@ public class Floor
     //     Main Method (test harness)
     //----------------------------------
    /**
-    * A test harness for the Floor class.
+    * A simple test harness for the Floor class.
     */
     public static void main(String args[]) throws InterruptedException
     {
-
         Floor f1= new Floor(1);
         System.out.println(f1.toString());
     }
