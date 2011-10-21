@@ -36,7 +36,7 @@ public class Floor
     * the floor with zero passengers.
     */
     public Floor(int floorNum)
-    {   System.out.println("Initializing Floor #" + floorNum + "...\n");
+    {   System.out.print("Initializing Floor #" + floorNum + "...\n");
         this.floorNum= floorNum;
         this.occupants=0;
     }
@@ -72,6 +72,22 @@ public class Floor
 
 
     /*---------------------------------------------------------------------
+    | method name: toString
+    | return type: void
+    | param  type: int (number of occupants)
+    |    Abstract: Adds occupants to a floor.
+    +--------------------------------------------------------------------*/
+   /**
+    *  Adds occupants to the floor.
+    */
+    public void addOccupants(int num)
+    {   occupants+= num;
+    }
+
+
+
+
+    /*---------------------------------------------------------------------
     | method name: unloadPassengers
     | return type: void
     |    Abstract: For hw2, the floor object has the responsibility of
@@ -85,33 +101,47 @@ public class Floor
     public void unloadPassengers(Elevator ev1) throws ElevatorFullException
     {   
         // Unload passengers from elevator
-        System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
-        System.out.println(ev1.toString());
+	//---------------------------------- 
+        //System.out.println("Floor.unloadPassengers() was invoked with this elevator:");
+        //System.out.println(ev1.toString());
         int unloading= ev1.passengersForFloor(floorNum);
         ev1.unloadPassenger(unloading);
         System.out.println("unloaded " + unloading + " passenger(s).");
 
+
 	// If the passengers are unloading onto floor #1, we will assume
 	// that they're leaving the building.
+	//--------------------------------------------------------------- 
 	if(floorNum != 1)
 	{   occupants+= unloading;
 	}
 
 
 	// With the exception of passengers that were just unloaded, load
-	// floor occupants onto the elevator.
+	// floor occupants onto the elevator.  According to the spec, every
+	// occupant on a floor will be boarded with a destination of baseFloor.
+	//---------------------------------------------------------------------- 
 	int boarding= occupants - unloading;
 	if(boarding > 0)
 	{   for(int i=1; i<=boarding; i++)
-	    {   ev1.boardPassenger(ev1.baseFloor);
-	        occupants--;
+	    {   try
+	        {   ev1.boardPassenger(ev1.baseFloor);
+	            occupants--;
+                }
+		catch (ElevatorFullException e)
+		{   System.out.print("ElevatorFullException Caught:");
+		    System.out.print(" leaving " + occupants + " occupants on the floor; ");
+		    System.out.print(" will return later.\n");
+		    i=boarding+1;  //break out of boarding loop.  
+		}
 	    }
         }
 
 
 	// For this simulation, we assume that the unloaded passengers are
-	// ready to leave the floor on the next elevator run.  We will tell
+	// ready to leave the building on the next elevator run.  We will tell
 	// the elevator to return for them.
+	//--------------------------------------------------------------------- 
 	if(occupants >= 1)
 	{   ev1.registerRequest(floorNum);
 	}

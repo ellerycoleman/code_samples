@@ -83,7 +83,7 @@ public class Elevator
     * a direction of UP.
     */
     public Elevator()
-    {   System.out.println("Initializing elevator...\n");
+    {   System.out.print("Initializing elevator...\n");
         passengers=0;
         floorNum= 1;
         direction= UP;
@@ -152,7 +152,7 @@ public class Elevator
     * Changes direction as appropriate.
     */
     public void move() throws ElevatorFullException
-    {   System.out.println("Leaving floor " + floorNum + " with " + passengers + " passengers.");
+    {   System.out.println("Leaving floor " + floorNum + " with " + passengers + " passenger(s).");
 
         if((this.direction == UP)  && (this.floorNum < maxFloor))
         {   this.floorNum++;
@@ -188,7 +188,7 @@ public class Elevator
     * processing.
     */
     public void stop() throws ElevatorFullException
-    {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum + ", ");
+    {  System.out.print("\n\nElevator stopped at floor " + this.floorNum);
        System.out.println(Floors.get(floorNum));
        Floors.get(floorNum).unloadPassengers(this);
     }
@@ -215,6 +215,25 @@ public class Elevator
 	}
     }
 
+
+
+
+    /*---------------------------------------------------------------------
+    | method name: addOccupants
+    | return type: void
+    | param  type: int,int (number of occupants, floorNum)
+    |    Abstract: Adds the specified number of occupants to the specified
+    |              floor and registers a pickup request with the elevator.
+    +--------------------------------------------------------------------*/
+   /**
+    * Adds the specified number of occupants to the specified floor and
+    * registers a pickup request with the elevator.
+    */
+    public void addOccupants(int numOfOccupants,int floorNum)
+    {   Floors.get(floorNum).addOccupants(numOfOccupants);
+        registerRequest(floorNum);
+	System.out.println(numOfOccupants + " occupants have been added to floor #" + floorNum);
+    }
 
 
 
@@ -290,7 +309,8 @@ public class Elevator
 	    }
         }
 	catch (ElevatorFullException e)
-	{   System.out.println("All boarding is over for now.");
+	{   throw e;  // pass the exception up the chain so that
+	              // the Floor object can deal with it.
 	}
     }
 
@@ -313,9 +333,12 @@ public class Elevator
     {
 
         Elevator ev1= new Elevator();
-        ev1.boardPassenger(2);
-        ev1.boardPassenger(2);
-        ev1.boardPassenger(3);
+	System.out.print("\n\n");
+        //ev1.boardPassenger(2);
+        //ev1.boardPassenger(2);
+        //ev1.boardPassenger(3);
+	ev1.addOccupants(6,3);  //add 6 occupants to floor 3
+	ev1.addOccupants(6,4);  //add 6 occupants to floor 4;
 
         while(true)
         {
