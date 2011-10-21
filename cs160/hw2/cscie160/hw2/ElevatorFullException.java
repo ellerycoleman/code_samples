@@ -14,7 +14,13 @@ package cscie160.hw2;
 //   Custom Exception
 //-----------------------
 public class ElevatorFullException extends Exception
-{   public ElevatorFullException(String msg)
+{   
+
+   /**
+    * An exception to signal that the elevator has reached
+    * maximum capacity and cannot board any more passengers.
+    */
+    public ElevatorFullException(String msg)
     {   super("ElevatorFullException: " + msg);
     }
 }
