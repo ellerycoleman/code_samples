@@ -61,7 +61,7 @@ public class Floor
     public String toString()
     {   String status,requests;
         requests="";
-        status= "\n+----------Floor " + this.floorNum + "------------" +
+        status= "\n+----------Floor " + floorNum + "----------" +
                 "\n|    current occupants: "  + occupants  +
                 "\n+---------------------------\n\n";
         return status;

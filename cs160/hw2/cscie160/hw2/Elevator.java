@@ -114,9 +114,9 @@ public class Elevator
     {   String status,requests;
         requests="";
         status= "+--------Elevator-----------"               + "\n" +
-                "|         current Floor: "  + this.floorNum       + "\n" +
-                "|    current passengers: "  + this.passengers  + "\n" +
-                "|     current direction: "  + ((this.direction == UP) ? "up":"down")   + "\n" +
+                "|         current Floor: "  + floorNum       + "\n" +
+                "|    current passengers: "  + passengers  + "\n" +
+                "|     current direction: "  + ((direction == UP) ? "up":"down")   + "\n" +
                 "|  destination requests: ";
 
         for(int i=1; i<=maxFloor; i++)
@@ -135,7 +135,7 @@ public class Elevator
         {   status+= requests;
         }
 
-        status+= "\n+---------------------------\n\n";
+        status+= "\n+---------------------------\n";
         return status;
     }
 
@@ -156,21 +156,21 @@ public class Elevator
     public void move() throws ElevatorFullException
     {   System.out.println("Leaving floor " + floorNum + " with " + passengers + " passenger(s).");
 
-        if((this.direction == UP)  && (this.floorNum < maxFloor))
-        {   this.floorNum++;
+        if((direction == UP)  && (floorNum < maxFloor))
+        {   floorNum++;
         }
-        else if((this.direction == UP)  && (this.floorNum == maxFloor))
-        {   this.direction=DOWN;
-            this.floorNum--;
+        else if((direction == UP)  && (floorNum == maxFloor))
+        {   direction=DOWN;
+            floorNum--;
         }
-        else if ((this.direction == DOWN)  && (this.floorNum > baseFloor))
-        {   this.floorNum--;
+        else if ((direction == DOWN)  && (floorNum > baseFloor))
+        {   floorNum--;
         }
-        else if ((this.direction == DOWN)  && (this.floorNum == baseFloor))
-        {   this.direction=UP;
-            this.floorNum++;
+        else if ((direction == DOWN)  && (floorNum == baseFloor))
+        {   direction=UP;
+            floorNum++;
         }
-        if(destRequests[this.floorNum] > 0)
+        if(destRequests[floorNum] > 0)
         {   stop();
         }
     }
@@ -189,7 +189,7 @@ public class Elevator
     * unload passengers as appropriate.
     */
     public void stop() throws ElevatorFullException
-    {  System.out.print("\n\n\nElevator stopped at floor " + this.floorNum);
+    {  System.out.print("\n\n\n\nElevator stopped at floor " + floorNum);
        System.out.println(Floors.get(floorNum));
        Floors.get(floorNum).unloadPassengers(this);
     }
@@ -304,7 +304,7 @@ public class Elevator
     {   System.out.println("Boarding one passenger for floor " + floorNum + ".");
         try
 	{   if(passengers < maxCapacity)
-	    {   this.passengers++;
+	    {   passengers++;
                 registerRequest(floorNum);
                 passengersToFloor[floorNum]++;
             }

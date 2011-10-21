@@ -43,7 +43,14 @@
     </fileset>
     <fileset file="Overview.txt"/>
     <fileset file="output.txt"/>
+    <fileset file="hw2.pdf"/>
   </jar>
+</target>
+
+
+<!-- run -->
+<target name="run" depends="package">
+  <java jar="hw2.jar" fork="true"/>
 </target>
 
 
