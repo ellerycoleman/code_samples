@@ -16,8 +16,8 @@ My code for HW2 is spread across 3 files:
 
 
 Since the hw2 spec requires the Elevator to work together with the Floor
-I've added additional method members to the Elevator class; methods like
-unloadPassenger() and registerRequest().  These additional methods allow
+objects I've added additional method members to the Elevator class; methods
+like unloadPassenger() and registerRequest().  These additional methods allow
 the Floors to operate the elevator as necessary.
 
 
@@ -28,8 +28,9 @@ by the methods Elevator.registerRequest() and Floor.unloadPassengers().
 
 If the Elevator is loading passengers and the ElevatorFullExeption is
 thrown, then the remaining passengers are left on the floor. The Floor
-signals the Elevator to come back again on the next sweep.  As with HW1,
-the elevator sweeps the building continuously until you hit CTRL+C.
+signals the Elevator to come back again on the next sweep to collect
+the remaining passengers.  As with HW1, the elevator sweeps the building
+continuously until you hit CTRL+C.
 
 
 The solution has been compiled into a jar file; hw2.jar.
@@ -40,6 +41,6 @@ $ java -jar hw2.jar
 
 To stop the elevator from running enter CTRL+C.
 All of the source code, documentation, and javadocs for this solution are
-contained in the hw1.jar file.  The jar file also contains an ant build
-file that will build an hw2.jar file from source.  
+contained in the hw2.jar file.  The jar file also contains an ant build
+file that will build an hw2.jar file from source.
 
