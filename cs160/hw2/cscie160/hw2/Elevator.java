@@ -58,7 +58,7 @@ public class Elevator
     private int floorNum;
     private int passengers;
     private Direction direction;
-    private int destRequests[];
+    private boolean destRequests[];
     private int passengersToFloor[];
     private ArrayList<Floor> Floors;
 
@@ -83,7 +83,7 @@ public class Elevator
         floorNum    = 1;
         passengers  = 0;
         direction   = Direction.UP;
-        destRequests       = new int[maxFloor+1];
+        destRequests       = new boolean[maxFloor+1];
         passengersToFloor  = new int[maxFloor+1];
         Floors             = new ArrayList<Floor>(maxFloor+1);
         for(int i=0; i<=maxFloor; i++)
@@ -119,7 +119,7 @@ public class Elevator
                 "|  destination requests: ";
 
         for(int i=1; i<=maxFloor; i++)
-        {   if((destRequests[i] != 0)  || (passengersToFloor[i] != 0))
+        {   if((destRequests[i] != false)  || (passengersToFloor[i] != 0))
             {   requests+= "\n" +
                            "|      Floor_" + i + ": " + passengersToFloor[i] + " passengers";
                 if(passengersToFloor[i] == 0)
@@ -169,7 +169,7 @@ public class Elevator
         {   direction=Direction.UP;
             floorNum++;
         }
-        if(destRequests[floorNum] > 0)
+        if(destRequests[floorNum] == true)
         {   stop();
         }
     }
@@ -209,8 +209,8 @@ public class Elevator
     */
     public void registerRequest(int floorNum)
     {   if((floorNum >= baseFloor)  &&  (floorNum <= maxFloor))
-        {   if(destRequests[floorNum] < 1)
-	    {   destRequests[floorNum]++;
+        {   if(destRequests[floorNum] == false)
+	    {   destRequests[floorNum]= true;
 	    }
 	}
     }
@@ -255,7 +255,7 @@ public class Elevator
     {   if(count <= passengers)
         {   passengers-= count;                   // reduce elevator passenger count
 	    passengersToFloor[floorNum]-= count;  // reduce num of passengers destined for this floor
-	    destRequests[floorNum]= 0;            // zero the requests for this floor
+	    destRequests[floorNum]= false;        // clear the request for this floor
         }
         else
         {   System.err.println("Cannot take " + count + "passengers from elevator.");
