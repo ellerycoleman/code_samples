@@ -42,16 +42,9 @@ public class Elevator
 
    /**
     * The direction of an elevator is set with an
-    * integer variable; 1 for UP.
+    * enum since there are only 2 possible directions.
     */
-    public static final int UP          = 1;
-
-
-   /**
-    * The direction of an elevator is set with an
-    * integer variable; 0 for DOWN.
-    */
-    public static final int DOWN        = 0;
+    enum Direction { UP, DOWN };
 
 
 
@@ -64,7 +57,7 @@ public class Elevator
     //-----------------------
     private int floorNum;
     private int passengers;
-    private int direction; // 1 is up, 0 is down
+    private Direction direction;
     private int destRequests[]= new int[maxFloor+1];
     private int passengersToFloor[]= new int[maxFloor+1];
     private ArrayList<Floor> Floors= new ArrayList<Floor>(maxFloor+1);
@@ -86,7 +79,7 @@ public class Elevator
     {   System.out.print("Initializing elevator...\n");
         passengers=0;
         floorNum= 1;
-        direction= UP;
+        direction= Direction.UP;
         for(int i=0; i<=maxFloor; i++)
         {   Floors.add(new Floor(i));
         }
@@ -116,7 +109,7 @@ public class Elevator
         status= "+--------Elevator-----------"               + "\n" +
                 "|         current Floor: "  + floorNum       + "\n" +
                 "|    current passengers: "  + passengers  + "\n" +
-                "|     current direction: "  + ((direction == UP) ? "up":"down")   + "\n" +
+                "|     current direction: "  + ((direction == Direction.UP) ? "up":"down")   + "\n" +
                 "|  destination requests: ";
 
         for(int i=1; i<=maxFloor; i++)
@@ -156,18 +149,18 @@ public class Elevator
     public void move() throws ElevatorFullException
     {   System.out.println("Leaving floor " + floorNum + " with " + passengers + " passenger(s).");
 
-        if((direction == UP)  && (floorNum < maxFloor))
+        if((direction == Direction.UP)  && (floorNum < maxFloor))
         {   floorNum++;
         }
-        else if((direction == UP)  && (floorNum == maxFloor))
-        {   direction=DOWN;
+        else if((direction == Direction.UP)  && (floorNum == maxFloor))
+        {   direction=Direction.DOWN;
             floorNum--;
         }
-        else if ((direction == DOWN)  && (floorNum > baseFloor))
+        else if ((direction == Direction.DOWN)  && (floorNum > baseFloor))
         {   floorNum--;
         }
-        else if ((direction == DOWN)  && (floorNum == baseFloor))
-        {   direction=UP;
+        else if ((direction == Direction.DOWN)  && (floorNum == baseFloor))
+        {   direction=Direction.UP;
             floorNum++;
         }
         if(destRequests[floorNum] > 0)
@@ -362,8 +355,8 @@ public class Elevator
 
 
         // Run the Elevator
-        while(true)
-        {   Thread.sleep(1000);  //sleeping helps interpret the output in real time
+        for(int i=0; i<=100; i++)
+        {   Thread.sleep(1);  //sleeping helps interpret the output in real time
             ev1.move();
         }
     }
