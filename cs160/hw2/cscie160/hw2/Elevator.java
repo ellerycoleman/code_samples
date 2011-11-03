@@ -53,14 +53,14 @@ public class Elevator
 
 
     //-----------------------
-    //     Data Members
+    //    6 Data Members
     //-----------------------
     private int floorNum;
     private int passengers;
     private Direction direction;
-    private int destRequests[]= new int[maxFloor+1];
-    private int passengersToFloor[]= new int[maxFloor+1];
-    private ArrayList<Floor> Floors= new ArrayList<Floor>(maxFloor+1);
+    private int destRequests[];
+    private int passengersToFloor[];
+    private ArrayList<Floor> Floors;
 
 
 
@@ -77,9 +77,15 @@ public class Elevator
     */
     public Elevator()
     {   System.out.print("Initializing elevator...\n");
-        passengers=0;
-        floorNum= 1;
-        direction= Direction.UP;
+
+        // Initializing the 6 data members
+	//--------------------------------
+        floorNum    = 1;
+        passengers  = 0;
+        direction   = Direction.UP;
+        destRequests       = new int[maxFloor+1];
+        passengersToFloor  = new int[maxFloor+1];
+        Floors             = new ArrayList<Floor>(maxFloor+1);
         for(int i=0; i<=maxFloor; i++)
         {   Floors.add(new Floor(i));
         }
@@ -355,7 +361,7 @@ public class Elevator
 
 
         // Run the Elevator
-        for(int i=0; i<=100; i++)
+        for(int i=0; i<=50; i++)
         {   Thread.sleep(1);  //sleeping helps interpret the output in real time
             ev1.move();
         }
