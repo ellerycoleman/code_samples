@@ -1,0 +1,46 @@
+#----------------------------------------------------------------------------
+# File:		Overview.txt	
+# Date:		Fri Oct 21 02:59:38 GMT 2011
+# Author(s):	Ellery Coleman <ellerycoleman@fas.harvard.edu>
+# Abstract:	Overview of HW2 Solution.
+#----------------------------------------------------------------------------
+# Revision: $Id$
+#----------------------------------------------------------------------------
+
+
+My code for HW2 is spread across 3 files:
+
+1. cscie160/hw2/Elevator.java
+2. cscie160/hw2/Floor.java
+3. cscie160/hw2/ElevatorFullException.java
+
+
+Since the hw2 spec requires the Elevator to work together with the Floor
+objects I've added additional method members to the Elevator class; methods
+like unloadPassenger() and registerRequest().  These additional methods allow
+the Floors to operate the elevator as necessary.
+
+
+In the previous assignment I used the destRequests[] array to keep track
+of which floors the elevator needed to stop at.  This array continues to
+track destination requests for the Elevator, but now the array is managed
+by the methods Elevator.registerRequest() and Floor.unloadPassengers().
+
+If the Elevator is loading passengers and the ElevatorFullExeption is
+thrown, then the remaining passengers are left on the floor. The Floor
+signals the Elevator to come back again on the next sweep to collect
+the remaining passengers.  As with HW1, the elevator sweeps the building
+continuously until you hit CTRL+C.
+
+
+The solution has been compiled into a jar file; hw2.jar.
+Use the following command to run the solution from the command line:
+
+$ java -jar hw2.jar
+
+
+To stop the elevator from running enter CTRL+C.
+All of the source code, documentation, and javadocs for this solution are
+contained in the hw2.jar file.  The jar file also contains an ant build
+file that will build an hw2.jar file from source.
+

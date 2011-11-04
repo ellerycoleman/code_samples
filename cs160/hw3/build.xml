@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<project name="hw3" default="package">
+
+
+
+<!-- clean -->
+<target name="clean">
+  <exec dir="." executable="bash">
+    <arg line="clean.sh"/>
+  </exec>
+</target>
+
+
+<!-- init -->
+<target name="init" depends="clean">
+  <mkdir dir="javadoc"/>
+</target>
+
+
+
+<!-- compile -->
+<target name="compile" depends="init">
+  <javac srcdir="cscie160/hw3"/>
+</target>
+
+
+
+<!-- javadoc -->
+<target name="javadoc" depends="init">
+   <javadoc destdir="javadoc"
+    sourcepath="."
+    packagenames="cscie160.*"
+   />
+</target>
+
+
+<!-- package -->
+<target name="package" depends="compile,javadoc">
+  <jar destfile="hw3.jar" manifest="MANIFEST.MF">
+    <fileset dir=".">
+       <include name="cscie160/**"/>
+       <include name="javadoc/**"/>
+    </fileset>
+    <fileset file="Overview.txt"/>
+    <fileset file="output.txt"/>
+    <fileset file="build.xml"/>
+  </jar>
+</target>
+
+
+<!-- run -->
+<target name="run" depends="package">
+  <java jar="hw3.jar" fork="true"/>
+</target>
+
+
+</project>
