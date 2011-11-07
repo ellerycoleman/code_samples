@@ -23,4 +23,5 @@ cs160/hw3/clean.sh -text
 cs160/hw3/cscie160/hw3/Elevator.java -text
 cs160/hw3/cscie160/hw3/ElevatorFullException.java -text
 cs160/hw3/cscie160/hw3/Floor.java -text
+cs160/hw3/cscie160/hw3/Passenger.java -text
 cs160/hw3/cscie160/hw3/go -text
