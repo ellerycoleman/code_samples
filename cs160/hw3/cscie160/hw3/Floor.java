@@ -40,7 +40,7 @@ public class Floor
 
         // Initializing 5 data members
         this.floorNum= floorNum;
-        this.occupants=0;
+        occupants=0;
 	resident  = new ArrayList<Passenger>();
 	upQueue   = new ArrayList<Passenger>();
 	downQueue = new ArrayList<Passenger>();
@@ -69,7 +69,9 @@ public class Floor
     {   String status,requests;
         requests="";
         status= "\n+----------Floor " + floorNum + "----------" +
-                "\n|    current occupants: "  + occupants  +
+                "\n|    resident: "   + resident.size()   +
+                "\n|   downQueue: "   + downQueue.size()  +
+                "\n|     upQueue: "   + upQueue.size()    +
                 "\n+---------------------------\n\n";
         return status;
     }
@@ -78,16 +80,40 @@ public class Floor
 
 
     /*---------------------------------------------------------------------
-    | method name: addOccupants
+    | method name: addOccupant
     | return type: void
-    | param  type: int (number of occupants)
-    |    Abstract: Adds the specified number of occupants to the Floor.
+    | param  type: Passenger
+    |    Abstract: Adds the Passenger to the appropriate Floor queue
+    |              based on the values of its data members.
     +--------------------------------------------------------------------*/
    /**
-    *  Adds the specified number of occupants to the Floor.
+    *  Adds the Passenger to the appropriate Queue (resident, downQueue,
+    *  upQueue) based on the values of its data members.
     */
-    public void addOccupants(int numOfOccupants)
-    {   occupants+= numOfOccupants;
+    public void addOccupant(Passenger p)
+    {   // if Passenger's destFloor is below the current Floor,
+        // then place passenger in downQueue.
+	//------------------------------------------------------
+	if(p.getDestFloor() < floorNum)
+	{   downQueue.add(p);
+	}
+
+
+        // if Passenger's destFloor is above the current Floor,
+        // then place passenger in upQueue.
+	//------------------------------------------------------
+	if(p.getDestFloor() > floorNum)
+	{   upQueue.add(p);
+	}
+
+
+        // if Passenger's destFloor is equal to the current Floor,
+        // then place passenger in upQueue.
+	//---------------------------------------------------------
+	if(p.getDestFloor() > floorNum)
+	{   upQueue.add(p);
+	}
+
     }
 
 
@@ -106,19 +132,25 @@ public class Floor
     *  passengers.
     */
     public void unloadPassengers(Elevator ev1) throws ElevatorFullException
-    {   
+    {
         // Unload passengers from elevator
-	//---------------------------------- 
-        int unloading= ev1.passengersForFloor(floorNum);
-        ev1.unloadPassenger(unloading);
-        System.out.println("unloaded " + unloading + " passenger(s).");
+	//----------------------------------
+        int unloadCount= ev1.passengersForFloor(floorNum);
+	for(int i=0; i<unloadCount; i++)
+	{   resident.add(ev1.unloadPassenger(floorNum));
+	}
+        
+        System.out.println("unloaded " + unloadCount + " passenger(s).");
+	for(int i=0; i<resident.size(); i++)
+	{   System.out.print(resident.get(i) + "\n\n");
+	}
 
 
 	// If the passengers are unloading onto floor #1, we assume that
 	// they'll leave the building once they exit the elevator.
-	//--------------------------------------------------------------- 
+	//---------------------------------------------------------------
 	if(floorNum != 1)
-	{   occupants+= unloading;
+	{   occupants+= unloadCount;
 	}
 
 
@@ -126,28 +158,29 @@ public class Floor
 	// current floor occupants onto the elevator.  According to the spec,
 	// every occupant on a floor will be boarded with a destination of
 	// baseFloor.
-	//---------------------------------------------------------------------- 
-	int boarding= occupants - unloading;
+	//----------------------------------------------------------------------
+	int boarding= occupants - unloadCount;
 	if(boarding > 0)
 	{   for(int i=1; i<=boarding; i++)
 	    {   try
-	        {   ev1.boardPassenger(ev1.baseFloor);
+	        {   ev1.boardPassenger("hack1",floorNum,ev1.baseFloor);
 	            occupants--;
                 }
 		catch (ElevatorFullException e)
 		{   System.out.print("ElevatorFullException Caught:");
 		    System.out.print(" leaving " + occupants + " occupants on the floor; ");
 		    System.out.print(" will return later.\n");
-		    i=boarding+1;  //break out of boarding loop.  
+		    i=boarding+1;  //break out of boarding loop.
 		}
 	    }
         }
 
 
+
 	// For this simulation, we assume that all unloaded passengers will
 	// be ready to leave the building on the next elevator run.  Thus we
 	// will signal the elevator to return for them.
-	//--------------------------------------------------------------------- 
+	//---------------------------------------------------------------------
 	if(occupants >= 1)
 	{   ev1.registerRequest(floorNum);
 	}
@@ -176,6 +209,5 @@ public class Floor
         System.out.println(f1.toString());
     }
 }
-
 
 

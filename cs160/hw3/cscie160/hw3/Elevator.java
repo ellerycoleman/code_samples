@@ -88,6 +88,11 @@ public class Elevator
         for(int i=0; i<=maxFloor; i++)
         {   Floors.add(new Floor(i));
         }
+
+
+
+	//debug
+	System.out.print("The initial size of passengers ArrayList: " + passengers.size() + "\n\n");
     }
 
 
@@ -187,9 +192,18 @@ public class Elevator
     * unload passengers as appropriate.
     */
     public void stop() throws ElevatorFullException
-    {  System.out.print("\n\n\n\nElevator stopped at floor " + floorNum);
+    {  System.out.print("\n\n\n\n" + 
+                        "Elevator stopped at floor " + floorNum + " with " +
+			 passengers.size() + " passengers\n");
        System.out.println(Floors.get(floorNum));
        Floors.get(floorNum).unloadPassengers(this);
+
+
+       // display all passengers
+       System.out.println("These passengers are on the elevator: \n");
+       for (Passenger p : passengers)
+       {   System.out.print(p.toString() + "\n\n");
+       }
     }
 
 
@@ -218,23 +232,30 @@ public class Elevator
 
 
     /*---------------------------------------------------------------------
-    | method name: addOccupants
+    | method name: addOccupant
     | return type: void
-    | param  type: int,int (number of occupants, floorNum)
-    |    Abstract: Adds the specified number of occupants to the specified
-    |              floor and registers a pickup request with the elevator.
+    | param  type: Passenger 
+    |    Abstract: Adds the specified Passenger to the specified Floor and
+    |              registers a pickup request with the elevator.
+    |              The Passenger is placed into the appropriate ArrayList
+    |              for the appropriate Floor based on the values of its
+    |              data members.
+    |
     |              Ideally this method would be located in the Floor class,
     |              but since the Elevator has the Floors it's cleaner to
     |              put it here.
     +--------------------------------------------------------------------*/
    /**
-    * Adds the specified number of occupants to the specified floor and
-    * registers a pickup request with the elevator.
+    * Adds the specified Passenger to the specified Floor and registers a
+    * pickup request with the elevator.  The Passenger is placed into the
+    * appropriate queue (resident, downQueue, upQueue) based on the values
+    * of its data members.
     */
-    public void addOccupants(int numOfOccupants,int floorNum)
-    {   Floors.get(floorNum).addOccupants(numOfOccupants);
+    public void addOccupant(Passenger p)
+    {   int floorNum= p.getCurrFloor();
+        Floors.get(floorNum).addOccupant(p);
         registerRequest(floorNum);
-	System.out.println(numOfOccupants + " occupants have been added to floor #" + floorNum);
+	System.out.println("Occupant '" + p.getName() + "' has been added to floor #" + floorNum);
     }
 
 
@@ -242,27 +263,39 @@ public class Elevator
 
     /*---------------------------------------------------------------------
     | method name: unloadPassenger
-    | return type: void
-    | param  type: int (number of passengers to unload)
-    |    Abstract: Removes the specified number of passengers from the
-    |              elevator.
+    | return type: Passenger
+    | param  type: int (destination floor number)
+    |    Abstract: Removes a passenger destined for the specified floor.
+    |              Returns the Passenger object to the Floor object.
     +--------------------------------------------------------------------*/
    /**
-    * Removes the specified number of passengers from the elevator.
+    * Removes a passenger destined for a specified floor.  Returns the
+    * Passenger object that was removed from the elevator.
     */
-    public void unloadPassenger(int count)
-    {   if(count <= passengers.size())
-        {   for(int i=0; i<=count; i++)
-	    {   passengers.remove(i);
-	    }
-	    passengers.trimToSize();
-	    passengersToFloor[floorNum]-= count;  // reduce num of passengers destined for this floor
-	    destRequests[floorNum]= false;        // clear the request for this floor
+    public Passenger unloadPassenger(int destFloor)
+    {   Passenger p= new Passenger();
+    
+        if(passengers.size() > 0)
+        {   for(int i=0; i<passengers.size(); i++)
+	    {   if(passengers.get(i).getDestFloor() == destFloor)
+	        {   System.out.println("removing " + passengers.get(i).getName() + "\n");
+		    p.setName(passengers.get(i).getName());
+		    p.setCurrFloor(passengers.get(i).getCurrFloor());
+		    p.setDestFloor(passengers.get(i).getDestFloor());
+        	    passengers.remove(i);
+        	    passengers.trimToSize();
+	            passengersToFloor[floorNum]-= 1; // reduce num of passengers destined for this floor
+	            destRequests[floorNum]= false;   // clear the request for this floor
+		    i=maxCapacity + 1;               // break out of for-loop
+                }
+            }
         }
         else
-        {   System.err.println("Cannot take " + count + "passengers from elevator.");
-            System.err.println("There are only " + passengers.size() + "passengers on the elevator.");
+        {   System.err.println("There are no passengers on this Elevator.\n");
         }
+
+
+	return p;
     }
 
 
@@ -294,9 +327,10 @@ public class Elevator
     /*---------------------------------------------------------------------
     | method name: boardPassenger
     | return type: void
-    | param  type: int (floor number that passenger is destined for)
-    |    Abstract: Adds a passenger to the elevator and handles the
-    |              appropriate accounting.
+    | param  type: String, int, int  (name of passenger, currFloor, destFloor)
+    |    Abstract: Initializes a Passenger object according to the supplied
+    |              parameters.  Adds the initialized Passenger object to
+    |              the passengers ArrayList.
     +--------------------------------------------------------------------*/
    /**
     * Adds a passenger to the elevator and handles the appropriate
@@ -304,13 +338,13 @@ public class Elevator
     * registering the destination request, and increasing the count of
     * passengers headed to the destination floor.
     */
-    public void boardPassenger(int floorNum) throws ElevatorFullException
-    {   System.out.println("Boarding one passenger for floor " + floorNum + ".");
+    public void boardPassenger(String name, int currFloor, int destFloor) throws ElevatorFullException
+    {   System.out.println("Boarding one passenger for floor " + destFloor + ".");
         try
 	{   if(passengers.size() < maxCapacity)
-	    {   passengers.add(new Passenger("test",5,1));
-                registerRequest(floorNum);
-                passengersToFloor[floorNum]++;
+	    {   passengers.add(new Passenger(name,currFloor,destFloor));
+                registerRequest(destFloor);
+                passengersToFloor[destFloor]++;
             }
 	    else
 	    {   throw new ElevatorFullException("No room for additional passengers at this time");
@@ -354,12 +388,35 @@ public class Elevator
 	// Initialize the test scenario
 	System.out.print("\n\n");
 	System.out.print("Initializing test scenario...\n");
-        ev1.boardPassenger(3);  //board passenger destined for floor 3
-        ev1.boardPassenger(6);  //board passenger destined for floor 6
-        ev1.boardPassenger(7);  //board passenger destined for floor 7
-	ev1.addOccupants(6,3);  //add 6 occupants to floor 3
-	ev1.addOccupants(6,4);  //add 6 occupants to floor 4;
+        ev1.boardPassenger("ellery",1,3);  //board passenger destined for floor 3
+        ev1.boardPassenger("keyan",1,6);   //board passenger destined for floor 6
+        ev1.boardPassenger("torre",1,7);   //board passenger destined for floor 7
 
+	// Adding 6 passengers to floor 3
+	for(int i=1; i<=6; i++)
+	{   int currFloor= 3;
+	    int destFloor= 1;
+	    String name= "p" + i + "_start" + currFloor + "_dest" + destFloor;
+	    Passenger p= new Passenger(name,currFloor,destFloor);
+	    ev1.Floors.get(currFloor).addOccupant(p);
+	}
+
+
+	// Adding 6 passengers to floor 4
+	for(int i=7; i<=12; i++)
+	{   int currFloor= 4;
+	    int destFloor= 1;
+	    String name= "p" + i + "_start" + currFloor + "_dest" + destFloor;
+	    Passenger p= new Passenger(name,currFloor,destFloor);
+	    ev1.Floors.get(currFloor).addOccupant(p);
+	}
+
+
+
+        //display all passengers
+	for ( Passenger p : ev1.passengers)
+	{   System.out.println(p.toString() + "\n\n");
+	}
 
 
         // Run the Elevator

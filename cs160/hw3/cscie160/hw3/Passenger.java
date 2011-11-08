@@ -19,7 +19,7 @@ public class Passenger
     //    3 Data Members
     //-----------------------
     private String  name;  //helpful for debugging
-    private int     currentFloor;
+    private int     currFloor;
     private int     destFloor;
 
 
@@ -30,14 +30,28 @@ public class Passenger
     //     Constructor
     //-----------------------
 
+
+
+   /**
+    * Default constructor
+    */
+    public Passenger()
+    {   this.name      = null;
+        this.currFloor = 0;
+        this.destFloor = 0;
+    }
+
+
+
+
    /**
     * A constructor that instantiates passengers according
     * to input parameters.
     */
-    public Passenger(String name, int currentFloor, int destFloor)
-    {   this.name         = name;
-        this.currentFloor = currentFloor;
-        this.destFloor    = destFloor;
+    public Passenger(String name, int currFloor, int destFloor)
+    {   this.name      = name;
+        this.currFloor = currFloor;
+        this.destFloor = destFloor;
     }
 
 
@@ -50,30 +64,30 @@ public class Passenger
 
 
     /*---------------------------------------------------------------------
-    | method name: getCurrentFloor
+    | method name: getCurrFloor
     | return type: int
     | param  type: none
-    |    Abstract: getter for currentFloor.
+    |    Abstract: getter for currFloor.
     +--------------------------------------------------------------------*/
    /**
-    *  Returns the value of currentFloor.
+    *  Returns the value of currFloor.
     */
-    public int getCurrentFloor()
-    {   return currentFloor;
+    public int getCurrFloor()
+    {   return currFloor;
     }
 
 
     /*---------------------------------------------------------------------
-    | method name: setCurrentFloor
+    | method name: setCurrFloor
     | return type: void
     | param  type: int (current floor number)
-    |    Abstract: setter for currentFloor.
+    |    Abstract: setter for currFloor.
     +--------------------------------------------------------------------*/
    /**
-    *  Sets the value of currentFloor.
+    *  Sets the currFloor according to the value of the parameter.
     */
-    public void setCurrentFloor(int currentFloor)
-    {   this.currentFloor= currentFloor;
+    public void setCurrFloor(int currFloor)
+    {   this.currFloor= currFloor;
     }
 
 
@@ -99,11 +113,43 @@ public class Passenger
     |    Abstract: getter for destFloor.
     +--------------------------------------------------------------------*/
    /**
-    *  Returns the value of destFloor.
+    *  Sets destFloor according to the parameter.
     */
     public void setDestFloor(int destFloor)
     {   this.destFloor= destFloor;
     }
+
+
+
+    /*---------------------------------------------------------------------
+    | method name: getName
+    | return type: String
+    | param  type: none
+    |    Abstract: getter for name.
+    +--------------------------------------------------------------------*/
+   /**
+    *  Returns the value of name.
+    */
+    public String getName()
+    {   return name;
+    }
+
+
+
+
+    /*---------------------------------------------------------------------
+    | method name: setName
+    | return type: void
+    | param  type: String (name)
+    |    Abstract: setter for name.
+    +--------------------------------------------------------------------*/
+   /**
+    *  Sets the name according to the parameter.
+    */
+    public void setName(String name)
+    {   this.name= name;
+    }
+
 
 
 
@@ -134,7 +180,7 @@ public class Passenger
     */
     public String toString()
     {   String status= "+--- " + name + " ---\n";
-        status+= "| currFloor: " + currentFloor + "\n";
+        status+= "| currFloor: " + currFloor + "\n";
         status+= "| destFloor: " + destFloor + "\n";
 	status+= "+----------------";
 	return status;
