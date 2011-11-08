@@ -7,7 +7,7 @@
 # Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.hw3;
-
+import java.util.*;
 
 
 
@@ -17,11 +17,13 @@ public class Floor
 
 
     //-----------------------
-    //     Data Members
+    //     5 Data Members
     //-----------------------
     private int floorNum;
     private int occupants;
-
+    private ArrayList<Passenger> resident;
+    private ArrayList<Passenger> upQueue;
+    private ArrayList<Passenger> downQueue;
 
 
 
@@ -35,8 +37,13 @@ public class Floor
     */
     public Floor(int floorNum)
     {   System.out.print("Initializing Floor #" + floorNum + "...\n");
+
+        // Initializing 5 data members
         this.floorNum= floorNum;
         this.occupants=0;
+	resident  = new ArrayList<Passenger>();
+	upQueue   = new ArrayList<Passenger>();
+	downQueue = new ArrayList<Passenger>();
     }
 
 
