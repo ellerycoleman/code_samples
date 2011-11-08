@@ -20,7 +20,6 @@ public class Elevator
     //     Constants
     //-----------------------
 
-
    /**
     * defines the base floor in the building
     */
@@ -56,8 +55,8 @@ public class Elevator
     //    6 Data Members
     //-----------------------
     private int floorNum;
-    private int passengers;
     private Direction direction;
+    private ArrayList<Passenger> passengers;
     private boolean destRequests[];
     private int passengersToFloor[];
     private ArrayList<Floor> Floors;
@@ -81,8 +80,8 @@ public class Elevator
         // Initializing the 6 data members
 	//--------------------------------
         floorNum    = 1;
-        passengers  = 0;
         direction   = Direction.UP;
+        passengers  = new ArrayList<Passenger>();
         destRequests       = new boolean[maxFloor+1];
         passengersToFloor  = new int[maxFloor+1];
         Floors             = new ArrayList<Floor>(maxFloor+1);
@@ -114,7 +113,7 @@ public class Elevator
         requests="";
         status= "+--------Elevator-----------"               + "\n" +
                 "|         current Floor: "  + floorNum       + "\n" +
-                "|    current passengers: "  + passengers  + "\n" +
+                "|    current passengers: "  + passengers.size()  + "\n" +
                 "|     current direction: "  + ((direction == Direction.UP) ? "up":"down")   + "\n" +
                 "|  destination requests: ";
 
@@ -153,7 +152,7 @@ public class Elevator
     * Changes direction as appropriate.
     */
     public void move() throws ElevatorFullException
-    {   System.out.println("Leaving floor " + floorNum + " with " + passengers + " passenger(s).");
+    {   System.out.println("Leaving floor " + floorNum + " with " + passengers.size() + " passenger(s).");
 
         if((direction == Direction.UP)  && (floorNum < maxFloor))
         {   floorNum++;
@@ -252,14 +251,17 @@ public class Elevator
     * Removes the specified number of passengers from the elevator.
     */
     public void unloadPassenger(int count)
-    {   if(count <= passengers)
-        {   passengers-= count;                   // reduce elevator passenger count
+    {   if(count <= passengers.size())
+        {   for(int i=0; i<=count; i++)
+	    {   passengers.remove(i);
+	    }
+	    passengers.trimToSize();
 	    passengersToFloor[floorNum]-= count;  // reduce num of passengers destined for this floor
 	    destRequests[floorNum]= false;        // clear the request for this floor
         }
         else
         {   System.err.println("Cannot take " + count + "passengers from elevator.");
-            System.err.println("There are only " + passengers + "passengers on the elevator.");
+            System.err.println("There are only " + passengers.size() + "passengers on the elevator.");
         }
     }
 
@@ -297,7 +299,7 @@ public class Elevator
     |              appropriate accounting.
     +--------------------------------------------------------------------*/
    /**
-    * Adds a passenger to the elevator and handles the appropriate 
+    * Adds a passenger to the elevator and handles the appropriate
     * book keeping of increasing the passenger count on the elevator,
     * registering the destination request, and increasing the count of
     * passengers headed to the destination floor.
@@ -305,8 +307,8 @@ public class Elevator
     public void boardPassenger(int floorNum) throws ElevatorFullException
     {   System.out.println("Boarding one passenger for floor " + floorNum + ".");
         try
-	{   if(passengers < maxCapacity)
-	    {   passengers++;
+	{   if(passengers.size() < maxCapacity)
+	    {   passengers.add(new Passenger("test",5,1));
                 registerRequest(floorNum);
                 passengersToFloor[floorNum]++;
             }
@@ -330,7 +332,7 @@ public class Elevator
     //     Main Method (test harness)
     //----------------------------------
    /**
-    * A test harness for the Elevator class.  
+    * A test harness for the Elevator class.
     * According to the HW2 Spec, this method boards an abitrary number
     * of passengers destined for different floors.  It also initializes
     * some of the floors with occupants who are waiting for the elevator.
