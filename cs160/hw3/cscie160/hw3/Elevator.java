@@ -43,7 +43,7 @@ public class Elevator
     * The direction of an elevator is set with an
     * enum since there are only 2 possible directions.
     */
-    enum Direction { UP, DOWN };
+    public enum Direction { UP, DOWN };
 
 
 
@@ -75,7 +75,7 @@ public class Elevator
     * a direction of UP.
     */
     public Elevator()
-    {   System.out.print("Initializing elevator...\n");
+    {   System.out.print("Initializing Elevator...\n");
 
         // Initializing the 6 data members
 	//--------------------------------
@@ -88,11 +88,6 @@ public class Elevator
         for(int i=0; i<=maxFloor; i++)
         {   Floors.add(new Floor(i));
         }
-
-
-
-	//debug
-	System.out.print("The initial size of passengers ArrayList: " + passengers.size() + "\n\n");
     }
 
 
@@ -150,15 +145,18 @@ public class Elevator
     | return type: void
     | param  type: none
     |    Abstract: Moves elevator by one floor depending on current
-    |              direction. Changes direction as appropriate.
+    |              direction. Changes direction and stops as appropriate.
     +--------------------------------------------------------------------*/
    /**
     * Moves elevator by one floor depending on current direction.
-    * Changes direction as appropriate.
+    * Changes direction and stops as appropriate.
     */
     public void move() throws ElevatorFullException
     {   System.out.println("Leaving floor " + floorNum + " with " + passengers.size() + " passenger(s).");
 
+
+        // Determine which direction to move in
+	//--------------------------------------
         if((direction == Direction.UP)  && (floorNum < maxFloor))
         {   floorNum++;
         }
@@ -173,7 +171,27 @@ public class Elevator
         {   direction=Direction.UP;
             floorNum++;
         }
-        if(destRequests[floorNum] == true)
+
+
+
+
+        // Determine whether to stop
+	//--------------------------
+
+        // if you have passengers bound for this floor
+	if(destRequests[floorNum] == true)
+	{   stop();
+	}
+	
+
+	// if direction is down and the current floor has passengers in the downQueue
+        else if((direction == Direction.DOWN)  &&  (Floors.get(floorNum).getDownQueueSize() > 0))
+        {   stop();
+        }
+	
+
+	// if direction is up and the current floor has passengers in the upQueue
+        else if((direction == Direction.UP)  &&  (Floors.get(floorNum).getUpQueueSize() > 0))
         {   stop();
         }
     }
@@ -197,13 +215,6 @@ public class Elevator
 			 passengers.size() + " passengers\n");
        System.out.println(Floors.get(floorNum));
        Floors.get(floorNum).unloadPassengers(this);
-
-
-       // display all passengers
-       System.out.println("These passengers are on the elevator: \n");
-       for (Passenger p : passengers)
-       {   System.out.print(p.toString() + "\n\n");
-       }
     }
 
 
@@ -278,12 +289,20 @@ public class Elevator
         if(passengers.size() > 0)
         {   for(int i=0; i<passengers.size(); i++)
 	    {   if(passengers.get(i).getDestFloor() == destFloor)
-	        {   System.out.println("removing " + passengers.get(i).getName() + "\n");
+	        {   System.out.print("removing '" + passengers.get(i).getName() + 
+		                       "' who was destined for Floor #" +
+				       passengers.get(i).getDestFloor() + "\n");
+
+		    // Make a copy of the Passenger to use as a return value
 		    p.setName(passengers.get(i).getName());
 		    p.setCurrFloor(passengers.get(i).getCurrFloor());
 		    p.setDestFloor(passengers.get(i).getDestFloor());
+
+                    // remove Passenger from elevator
         	    passengers.remove(i);
         	    passengers.trimToSize();
+
+		    // handle elevator accounting
 	            passengersToFloor[floorNum]-= 1; // reduce num of passengers destined for this floor
 	            destRequests[floorNum]= false;   // clear the request for this floor
 		    i=maxCapacity + 1;               // break out of for-loop
@@ -339,7 +358,7 @@ public class Elevator
     * passengers headed to the destination floor.
     */
     public void boardPassenger(String name, int currFloor, int destFloor) throws ElevatorFullException
-    {   System.out.println("Boarding one passenger for floor " + destFloor + ".");
+    {   System.out.println("  * Boarding passenger '" + name + "' for floor " + destFloor + ".");
         try
 	{   if(passengers.size() < maxCapacity)
 	    {   passengers.add(new Passenger(name,currFloor,destFloor));
@@ -358,6 +377,18 @@ public class Elevator
 
 
 
+    /*---------------------------------------------------------------------
+    | method name: getDirection
+    | return type: int
+    | param  type: void
+    |    Abstract: Returns the direction of the Elevator.
+    +--------------------------------------------------------------------*/
+   /**
+    * Returns the direction of the Elevator.
+    */
+    public Direction getDirection()
+    {   return direction;   
+    }
 
 
 
@@ -381,18 +412,18 @@ public class Elevator
     public static void main(String args[]) throws InterruptedException,ElevatorFullException
     {
 
-        // Initialize the Elevator and Floors
-        Elevator ev1= new Elevator();
-
-
+	//------------------------------------
 	// Initialize the test scenario
+	//------------------------------------
+        Elevator ev1= new Elevator();        //initialize Elevator and Floors
 	System.out.print("\n\n");
 	System.out.print("Initializing test scenario...\n");
-        ev1.boardPassenger("ellery",1,3);  //board passenger destined for floor 3
-        ev1.boardPassenger("keyan",1,6);   //board passenger destined for floor 6
-        ev1.boardPassenger("torre",1,7);   //board passenger destined for floor 7
+        ev1.boardPassenger("rider1",1,3);   //board passenger destined for floor 3
+        ev1.boardPassenger("rider2",1,6);   //board passenger destined for floor 6
+        ev1.boardPassenger("rider3",1,7);   //board passenger destined for floor 7
 
-	// Adding 6 passengers to floor 3
+	// Adding 6 downward-bound passengers to floor 3
+	System.out.print("  * Adding 6 downward-bound passengers to floor 3\n");
 	for(int i=1; i<=6; i++)
 	{   int currFloor= 3;
 	    int destFloor= 1;
@@ -402,7 +433,8 @@ public class Elevator
 	}
 
 
-	// Adding 6 passengers to floor 4
+	// Adding 6 downward-bound passengers to floor 4
+	System.out.print("  * Adding 6 downward-bound passengers to floor 4\n");
 	for(int i=7; i<=12; i++)
 	{   int currFloor= 4;
 	    int destFloor= 1;
@@ -413,13 +445,21 @@ public class Elevator
 
 
 
-        //display all passengers
-	for ( Passenger p : ev1.passengers)
-	{   System.out.println(p.toString() + "\n\n");
+	// Adding 10 upward-bound passengers to floor 5
+	System.out.print("  * Adding 10 upward-bound passengers to floor 5\n");
+	for(int i=13; i<=22; i++)
+	{   int currFloor= 5;
+	    int destFloor= 7;
+	    String name= "p" + i + "_start" + currFloor + "_dest" + destFloor;
+	    Passenger p= new Passenger(name,currFloor,destFloor);
+	    ev1.Floors.get(currFloor).addOccupant(p);
 	}
 
 
+
+
         // Run the Elevator
+	System.out.print("\n\n\n\n\nStarting up Elevator.\n");
         for(int i=0; i<=50; i++)
         {   Thread.sleep(1);  //sleeping helps interpret the output in real time
             ev1.move();
