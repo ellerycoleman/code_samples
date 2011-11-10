@@ -1,0 +1,451 @@
+
+[ellery@ssh hw3]$ java -jar hw3.jar
+Initializing Elevator...
+  * Initializing Floor #0...
+  * Initializing Floor #1...
+  * Initializing Floor #2...
+  * Initializing Floor #3...
+  * Initializing Floor #4...
+  * Initializing Floor #5...
+  * Initializing Floor #6...
+  * Initializing Floor #7...
+
+
+Initializing test scenario...
+  * Boarding passenger 'rider1' for floor 3.
+  * Boarding passenger 'rider2' for floor 6.
+  * Boarding passenger 'rider3' for floor 7.
+  * Adding 6 downward-bound passengers to floor 3
+  * Adding 6 downward-bound passengers to floor 4
+  * Adding 10 upward-bound passengers to floor 5
+
+
+
+
+
+Starting up Elevator.
+Leaving floor 1 with 3 passenger(s).
+Leaving floor 2 with 3 passenger(s).
+
+
+
+
+Elevator stopped at floor 3 with 3 passengers
+
++----------Floor 3----------
+|    resident: 0
+|   downQueue: 6
+|     upQueue: 0
++---------------------------
+
+
+removing 'rider1' who was destined for Floor #3
+
++----------Floor 3----------
+|    resident: 1
+|   downQueue: 6
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 3
+|    current passengers: 2
+|     current direction: up
+|  destination requests: 
+|      Floor_6: 1 passengers
+|      Floor_7: 1 passengers
++---------------------------
+
+Leaving floor 3 with 2 passenger(s).
+Leaving floor 4 with 2 passenger(s).
+
+
+
+
+Elevator stopped at floor 5 with 2 passengers
+
++----------Floor 5----------
+|    resident: 0
+|   downQueue: 0
+|     upQueue: 10
++---------------------------
+
+
+Boarding 10 passengers from upQueue.
+  * Boarding passenger 'p13_start5_dest7' for floor 7.
+  * Boarding passenger 'p14_start5_dest7' for floor 7.
+  * Boarding passenger 'p15_start5_dest7' for floor 7.
+  * Boarding passenger 'p16_start5_dest7' for floor 7.
+  * Boarding passenger 'p17_start5_dest7' for floor 7.
+  * Boarding passenger 'p18_start5_dest7' for floor 7.
+  * Boarding passenger 'p19_start5_dest7' for floor 7.
+  * Boarding passenger 'p20_start5_dest7' for floor 7.
+  * Boarding passenger 'p21_start5_dest7' for floor 7.
+ElevatorFullException Caught: leaving 2 occupants on the floor;  will return later.
+
++----------Floor 5----------
+|    resident: 0
+|   downQueue: 0
+|     upQueue: 2
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 5
+|    current passengers: 10
+|     current direction: up
+|  destination requests: 
+|      Floor_6: 1 passengers
+|      Floor_7: 9 passengers
++---------------------------
+
+Leaving floor 5 with 10 passenger(s).
+
+
+
+
+Elevator stopped at floor 6 with 10 passengers
+
++----------Floor 6----------
+|    resident: 0
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
+removing 'rider2' who was destined for Floor #6
+
++----------Floor 6----------
+|    resident: 1
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 6
+|    current passengers: 9
+|     current direction: up
+|  destination requests: 
+|      Floor_7: 9 passengers
++---------------------------
+
+Leaving floor 6 with 9 passenger(s).
+
+
+
+
+Elevator stopped at floor 7 with 9 passengers
+
++----------Floor 7----------
+|    resident: 0
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
+removing 'rider3' who was destined for Floor #7
+removing 'p13_start5_dest7' who was destined for Floor #7
+removing 'p14_start5_dest7' who was destined for Floor #7
+removing 'p15_start5_dest7' who was destined for Floor #7
+removing 'p16_start5_dest7' who was destined for Floor #7
+removing 'p17_start5_dest7' who was destined for Floor #7
+removing 'p18_start5_dest7' who was destined for Floor #7
+removing 'p19_start5_dest7' who was destined for Floor #7
+removing 'p20_start5_dest7' who was destined for Floor #7
+
++----------Floor 7----------
+|    resident: 9
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 7
+|    current passengers: 0
+|     current direction: up
+|  destination requests: none
++---------------------------
+
+Leaving floor 7 with 0 passenger(s).
+Leaving floor 6 with 0 passenger(s).
+Leaving floor 5 with 0 passenger(s).
+
+
+
+
+Elevator stopped at floor 4 with 0 passengers
+
++----------Floor 4----------
+|    resident: 0
+|   downQueue: 6
+|     upQueue: 0
++---------------------------
+
+
+Boarding 6 passengers from downQueue.
+  * Boarding passenger 'p7_start4_dest1' for floor 1.
+  * Boarding passenger 'p8_start4_dest1' for floor 1.
+  * Boarding passenger 'p9_start4_dest1' for floor 1.
+  * Boarding passenger 'p10_start4_dest1' for floor 1.
+  * Boarding passenger 'p11_start4_dest1' for floor 1.
+  * Boarding passenger 'p12_start4_dest1' for floor 1.
+
++----------Floor 4----------
+|    resident: 0
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 4
+|    current passengers: 6
+|     current direction: down
+|  destination requests: 
+|      Floor_1: 6 passengers
++---------------------------
+
+Leaving floor 4 with 6 passenger(s).
+
+
+
+
+Elevator stopped at floor 3 with 6 passengers
+
++----------Floor 3----------
+|    resident: 1
+|   downQueue: 6
+|     upQueue: 0
++---------------------------
+
+
+Boarding 6 passengers from downQueue.
+  * Boarding passenger 'p1_start3_dest1' for floor 1.
+  * Boarding passenger 'p2_start3_dest1' for floor 1.
+  * Boarding passenger 'p3_start3_dest1' for floor 1.
+  * Boarding passenger 'p4_start3_dest1' for floor 1.
+  * Boarding passenger 'p5_start3_dest1' for floor 1.
+ElevatorFullException Caught: leaving 2 occupants on the floor;  will return later.
+
++----------Floor 3----------
+|    resident: 1
+|   downQueue: 2
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 3
+|    current passengers: 10
+|     current direction: down
+|  destination requests: 
+|      Floor_1: 10 passengers
++---------------------------
+
+Leaving floor 3 with 10 passenger(s).
+Leaving floor 2 with 10 passenger(s).
+
+
+
+
+Elevator stopped at floor 1 with 10 passengers
+
++----------Floor 1----------
+|    resident: 0
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
+removing 'p7_start4_dest1' who was destined for Floor #1
+removing 'p8_start4_dest1' who was destined for Floor #1
+removing 'p9_start4_dest1' who was destined for Floor #1
+removing 'p10_start4_dest1' who was destined for Floor #1
+removing 'p11_start4_dest1' who was destined for Floor #1
+removing 'p12_start4_dest1' who was destined for Floor #1
+removing 'p1_start3_dest1' who was destined for Floor #1
+removing 'p2_start3_dest1' who was destined for Floor #1
+removing 'p3_start3_dest1' who was destined for Floor #1
+removing 'p4_start3_dest1' who was destined for Floor #1
+
++----------Floor 1----------
+|    resident: 10
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 1
+|    current passengers: 0
+|     current direction: down
+|  destination requests: none
++---------------------------
+
+Leaving floor 1 with 0 passenger(s).
+Leaving floor 2 with 0 passenger(s).
+Leaving floor 3 with 0 passenger(s).
+Leaving floor 4 with 0 passenger(s).
+
+
+
+
+Elevator stopped at floor 5 with 0 passengers
+
++----------Floor 5----------
+|    resident: 0
+|   downQueue: 0
+|     upQueue: 2
++---------------------------
+
+
+Boarding 2 passengers from upQueue.
+  * Boarding passenger 'p21_start5_dest7' for floor 7.
+  * Boarding passenger 'p22_start5_dest7' for floor 7.
+
++----------Floor 5----------
+|    resident: 0
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 5
+|    current passengers: 2
+|     current direction: up
+|  destination requests: 
+|      Floor_7: 2 passengers
++---------------------------
+
+Leaving floor 5 with 2 passenger(s).
+Leaving floor 6 with 2 passenger(s).
+
+
+
+
+Elevator stopped at floor 7 with 2 passengers
+
++----------Floor 7----------
+|    resident: 9
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
+removing 'p21_start5_dest7' who was destined for Floor #7
+removing 'p22_start5_dest7' who was destined for Floor #7
+
++----------Floor 7----------
+|    resident: 11
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 7
+|    current passengers: 0
+|     current direction: up
+|  destination requests: none
++---------------------------
+
+Leaving floor 7 with 0 passenger(s).
+Leaving floor 6 with 0 passenger(s).
+Leaving floor 5 with 0 passenger(s).
+Leaving floor 4 with 0 passenger(s).
+
+
+
+
+Elevator stopped at floor 3 with 0 passengers
+
++----------Floor 3----------
+|    resident: 1
+|   downQueue: 2
+|     upQueue: 0
++---------------------------
+
+
+Boarding 2 passengers from downQueue.
+  * Boarding passenger 'p5_start3_dest1' for floor 1.
+  * Boarding passenger 'p6_start3_dest1' for floor 1.
+
++----------Floor 3----------
+|    resident: 1
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 3
+|    current passengers: 2
+|     current direction: down
+|  destination requests: 
+|      Floor_1: 2 passengers
++---------------------------
+
+Leaving floor 3 with 2 passenger(s).
+Leaving floor 2 with 2 passenger(s).
+
+
+
+
+Elevator stopped at floor 1 with 2 passengers
+
++----------Floor 1----------
+|    resident: 10
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
+removing 'p5_start3_dest1' who was destined for Floor #1
+removing 'p6_start3_dest1' who was destined for Floor #1
+
++----------Floor 1----------
+|    resident: 12
+|   downQueue: 0
+|     upQueue: 0
++---------------------------
+
+
++--------Elevator-----------
+|         current Floor: 1
+|    current passengers: 0
+|     current direction: down
+|  destination requests: none
++---------------------------
+
+Leaving floor 1 with 0 passenger(s).
+Leaving floor 2 with 0 passenger(s).
+Leaving floor 3 with 0 passenger(s).
+Leaving floor 4 with 0 passenger(s).
+Leaving floor 5 with 0 passenger(s).
+Leaving floor 6 with 0 passenger(s).
+Leaving floor 7 with 0 passenger(s).
+Leaving floor 6 with 0 passenger(s).
+Leaving floor 5 with 0 passenger(s).
+Leaving floor 4 with 0 passenger(s).
+Leaving floor 3 with 0 passenger(s).
+Leaving floor 2 with 0 passenger(s).
+Leaving floor 1 with 0 passenger(s).
+Leaving floor 2 with 0 passenger(s).
+Leaving floor 3 with 0 passenger(s).
+Leaving floor 4 with 0 passenger(s).
+Leaving floor 5 with 0 passenger(s).
+Leaving floor 6 with 0 passenger(s).
+Leaving floor 7 with 0 passenger(s).
+Leaving floor 6 with 0 passenger(s).
+Leaving floor 5 with 0 passenger(s).
+Leaving floor 4 with 0 passenger(s).
+Leaving floor 3 with 0 passenger(s).
+Leaving floor 2 with 0 passenger(s).
+Leaving floor 1 with 0 passenger(s).
+Leaving floor 2 with 0 passenger(s).
+Leaving floor 3 with 0 passenger(s).
+[ellery@ssh hw3]$ 
