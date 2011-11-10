@@ -2,7 +2,7 @@
 # File:		Elevator.java
 # Date:		Fri Oct 21 02:40:11 GMT 2011
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Implements an Elevator class for cscie160, hw2.
+# Abstract:	Implements an Elevator class for cscie160, hw3.
 #-----------------------------------------------------------------------------
 # Revision: $Id$
 #---------------------------------------------------------------------------*/
@@ -41,7 +41,7 @@ public class Elevator
 
    /**
     * The direction of an elevator is set with an
-    * enum since there are only 2 possible directions.
+    * enum.
     */
     public enum Direction { UP, DOWN };
 
@@ -54,12 +54,12 @@ public class Elevator
     //-----------------------
     //    6 Data Members
     //-----------------------
-    private int floorNum;
-    private Direction direction;
-    private ArrayList<Passenger> passengers;
-    private boolean destRequests[];
-    private int passengersToFloor[];
-    private ArrayList<Floor> Floors;
+    private int floorNum;                            // current floor number
+    private Direction direction;                     // current direction
+    private ArrayList<Passenger> passengers;         // elevator passengers
+    private boolean destRequests[];                  // explicit stop requests
+    private int passengersToFloor[];                 // count of passengers destined for a floor
+    private ArrayList<Floor> Floors;                 // building floors
 
 
 
@@ -471,18 +471,6 @@ public class Elevator
         {   Thread.sleep(1);  //sleeping helps interpret the output in real time
             ev1.move();
         }
-
-
-        // Show all members on Passengers in resident queues.
-	//----------------------------------------------------
-	//for(int i=0; i<maxFloor; i++)
-	//{   System.out.println(ev1.Floors.get(i));
-	//    ev1.Floors.get(i).showResidentQueue();
-        //    System.out.print("\n\n\n");
-        //}
-
-
-
     }
 }
 

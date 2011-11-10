@@ -2,7 +2,7 @@
 # File:		Passenger.java
 # Date:		Sun Nov  6 19:05:16 GMT 2011
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Implements an Passenger class for cscie160, hw3.
+# Abstract:	Implements a Passenger class for cscie160, hw3.
 #-----------------------------------------------------------------------------
 # Revision: $Id$
 #---------------------------------------------------------------------------*/

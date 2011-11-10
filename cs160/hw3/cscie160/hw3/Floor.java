@@ -2,7 +2,7 @@
 # File:		Floor.java
 # Date:		Fri Oct 21 02:32:55 GMT 2011
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Implements a Floor class for cscie160, hw2.
+# Abstract:	Implements a Floor class for cscie160, hw3.
 #-----------------------------------------------------------------------------
 # Revision: $Id$
 #---------------------------------------------------------------------------*/
