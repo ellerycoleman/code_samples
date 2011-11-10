@@ -27,7 +27,7 @@ public class Passenger
 
 
     //-----------------------
-    //     Constructor
+    //     Constructors
     //-----------------------
 
 
@@ -40,7 +40,6 @@ public class Passenger
         this.currFloor = 0;
         this.destFloor = 0;
     }
-
 
 
 
@@ -155,15 +154,16 @@ public class Passenger
 
     /*---------------------------------------------------------------------
     | method name: arrive
-    | return type: void
-    | param  type: void
-    |    Abstract: Updates the passenger's state upon arrival.
+    | return type: void 
+    | param  type: int (current floor number)
+    |    Abstract: Updates the passenger's state upon arrival; sets
+    |              currFloor.
     +--------------------------------------------------------------------*/
    /**
-    *  Returns the value of destFloor.
+    *  Updates the passenger's state upon arrival; sets currFloor.
     */
-    public void arrive()
-    {   System.out.println("You have arrived\n");
+    public void arrive(int floorNum)
+    {   currFloor= floorNum;
     }
 
 

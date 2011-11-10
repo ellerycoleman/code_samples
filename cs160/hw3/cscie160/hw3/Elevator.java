@@ -293,14 +293,21 @@ public class Elevator
 		                       "' who was destined for Floor #" +
 				       passengers.get(i).getDestFloor() + "\n");
 
+
+                    // call the arrive method to update passenger status
+		    passengers.get(i).arrive(floorNum);
+
+
 		    // Make a copy of the Passenger to use as a return value
 		    p.setName(passengers.get(i).getName());
 		    p.setCurrFloor(passengers.get(i).getCurrFloor());
 		    p.setDestFloor(passengers.get(i).getDestFloor());
 
+
                     // remove Passenger from elevator
         	    passengers.remove(i);
         	    passengers.trimToSize();
+
 
 		    // handle elevator accounting
 	            passengersToFloor[floorNum]-= 1; // reduce num of passengers destined for this floor
@@ -464,6 +471,18 @@ public class Elevator
         {   Thread.sleep(1);  //sleeping helps interpret the output in real time
             ev1.move();
         }
+
+
+        // Show all members on Passengers in resident queues.
+	//----------------------------------------------------
+	//for(int i=0; i<maxFloor; i++)
+	//{   System.out.println(ev1.Floors.get(i));
+	//    ev1.Floors.get(i).showResidentQueue();
+        //    System.out.print("\n\n\n");
+        //}
+
+
+
     }
 }
 

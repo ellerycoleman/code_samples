@@ -94,6 +94,38 @@ public class Floor
 
 
 
+
+
+    /*---------------------------------------------------------------------
+    | method name: showResidentQueue
+    | return type: void
+    | param  type: none
+    |    Abstract: Displays Resident Queue.
+    +--------------------------------------------------------------------*/
+   /**
+    *  Displays the resident queue.
+    */
+    public void showResidentQueue()
+    {   int queueSize= resident.size();
+        System.out.print("#------------------------------\n" +
+	                 "#     Resident Queue \n" +
+			 "#-------------------------------\n");
+        if(queueSize == 0)
+	{   System.out.print("Queue is empty.\n");
+	}
+	else
+	{   for(int i=0; i<queueSize; i++)
+	    {   System.out.println(resident.get(i));
+	    }
+        }
+    }
+
+
+
+
+
+
+
     /*---------------------------------------------------------------------
     | method name: getDownQueueSize
     | return type: int
