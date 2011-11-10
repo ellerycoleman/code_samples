@@ -2,45 +2,60 @@
 # File:		Overview.txt	
 # Date:		Fri Oct 21 02:59:38 GMT 2011
 # Author(s):	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Overview of HW2 Solution.
+# Abstract:	Overview of HW3 Solution.
 #----------------------------------------------------------------------------
 # Revision: $Id$
 #----------------------------------------------------------------------------
 
 
-My code for HW2 is spread across 3 files:
+My code for HW3 is spread across 4 files:
 
-1. cscie160/hw2/Elevator.java
-2. cscie160/hw2/Floor.java
-3. cscie160/hw2/ElevatorFullException.java
-
-
-Since the hw2 spec requires the Elevator to work together with the Floor
-objects I've added additional method members to the Elevator class; methods
-like unloadPassenger() and registerRequest().  These additional methods allow
-the Floors to operate the elevator as necessary.
+1. cscie160/hw3/Elevator.java
+2. cscie160/hw3/Floor.java
+3. cscie160/hw3/Passenger.java
+4. cscie160/hw3/ElevatorFullException.java
 
 
-In the previous assignment I used the destRequests[] array to keep track
-of which floors the elevator needed to stop at.  This array continues to
-track destination requests for the Elevator, but now the array is managed
-by the methods Elevator.registerRequest() and Floor.unloadPassengers().
-
-If the Elevator is loading passengers and the ElevatorFullExeption is
-thrown, then the remaining passengers are left on the floor. The Floor
-signals the Elevator to come back again on the next sweep to collect
-the remaining passengers.  As with HW1, the elevator sweeps the building
-continuously until you hit CTRL+C.
+In previous assignments passengers were represented by an integer array.
+In HW3 I have replaced the integer array with an ArrayList<Passenger>.
+In addition to having 'currFloor' and 'destFloor' attributes, Passengers also
+have a 'name' attribute.  This proves helpful for debugging; it allows the
+developer to distinguish between passenger objects with a simple glance.
 
 
-The solution has been compiled into a jar file; hw2.jar.
+The Elevator.boardPassenger() and Floor.unloadPassenger() methods had to be
+overhauled to support the boarding and unloading of actual Passenger objects.
+The Floor.addOccupants method was also modified to support Passenger objects.
+The Floor definition was expanded to support 3 distinct occupant queues:
+
+1. resident queue:  All passengers unloaded from the elevator are placed in
+                    this queue.
+2. up queue: All passengers with destination floors above the current floor
+             are placed in the up queue.
+
+3. down queue: All passengers with destination floors below the current floor
+               are placed in the down queue.
+
+
+These "queues" are actually of type ArrayList<Passenger>.  Using this structure
+provides the benefit of maintaining order.  In cases where the elevator cannot
+board all of the passengers, the ArrayList helps to provide a "first come, first
+served" policy.  Passengers that were added to the queue first are boarded
+first.  Passengers boarded later may have to wait for the next elevator.
+
+I have kept the destRequest[] array to keep track of passenger requests to stop.
+I also kept the passengersToFloor[] array to keep track of how many passengers are
+bound for a particular floor.  This info is reported as part of Elevator.toString().
+
+
+The solution has been compiled into a jar file; hw3.jar.
 Use the following command to run the solution from the command line:
 
-$ java -jar hw2.jar
+$ java -jar hw3.jar
 
 
-To stop the elevator from running enter CTRL+C.
+The elevator will stop after 50 move() operations.
 All of the source code, documentation, and javadocs for this solution are
-contained in the hw2.jar file.  The jar file also contains an ant build
-file that will build an hw2.jar file from source.
+contained in the hw3.jar file.  The jar file also contains an ant build
+file that will build an hw3.jar file from source.
 
