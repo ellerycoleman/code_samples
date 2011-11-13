@@ -3,18 +3,23 @@ package cscie160.hw4;
 import java.net.*;
 import java.io.*;
 
-/** Client-side proxy class which manages the connection to the
- *  server and forwards the client's requests to the server by writing
- *  the text of requests to the stream on top of the sockect established
- *  at creation time when the constructor is called.
+/** Client-side proxy class which manages the connection to the server.
+ *  The proxy forwards the client's requests to the server by writing
+ *  the text of requests to the server's socket.
  */
 
 public class ATMProxy implements ATM
 {
+    // Data Members
+    //---------------
     private Socket socket;
     private PrintStream  printStream;
     BufferedReader inputReader;
 	
+
+
+    // Constructor
+    //--------------
     public ATMProxy(String host, int port) throws UnknownHostException, java.io.IOException
     {
 	socket = new Socket(host, port);
@@ -25,6 +30,10 @@ public class ATMProxy implements ATM
 	inputReader = new BufferedReader(inputStreamReader);
     }
 	
+
+
+    // Method Members
+    //----------------
     public void deposit(float amount) throws ATMException
     {
 	// Commands is an enum in this package
@@ -32,12 +41,16 @@ public class ATMProxy implements ATM
 	printStream.println(Commands.DEPOSIT + " " + amount);
     }
 	
+
+
     public void withdraw(float amount) throws ATMException
     {
 	System.out.println("ATMProxy writing command to server: " + Commands.WITHDRAW);
 	printStream.println(Commands.WITHDRAW +  " " +  amount);
     }
 	
+
+
     public Float getBalance() throws ATMException
     {
 	System.out.println("ATMProxy writing command to server: " + Commands.BALANCE);

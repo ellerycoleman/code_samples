@@ -96,30 +96,36 @@ public class Server
 
 
 		String command = commandAndParam[0];
+		//System.out.println("Ellery DEBUG: command is '" + command + "'\n");
+		//System.out.println("Ellery TEST: '" + Commands.BALANCE.ordinal() + "'\n");
+
+
 		// Dispatch BALANCE request without further ado.
 		if (command.equalsIgnoreCase(Commands.BALANCE.toString()))
 		{
 			return atmImplementation.getBalance();
 		}
+
+
 		// Must have 2nd arg for amount when processing DEPOSIT/WITHDRAW commands
 		if (commandAndParam.length < 2)
-		{
-			throw new ATMException("Missing amount for command \"" + command + "\"");
+		{   throw new ATMException("Missing amount for command \"" + command + "\"");
 		}
 		try
 		{
-			float amount = Float.parseFloat(commandAndParam[1]);
-			if (command.equalsIgnoreCase(Commands.DEPOSIT.toString()))
-			{
-				atmImplementation.deposit(amount);
-			}
-			else if (command.equalsIgnoreCase(Commands.WITHDRAW.toString()))
-			{
-				atmImplementation.withdraw(amount);
-			} else
-			{
-				throw new ATMException("Unrecognized command: " + command);
-			}
+		    float amount = Float.parseFloat(commandAndParam[1]);
+		    if (command.equalsIgnoreCase(Commands.DEPOSIT.toString()))
+		    {
+			atmImplementation.deposit(amount);
+		    }
+		    else if (command.equalsIgnoreCase(Commands.WITHDRAW.toString()))
+		    {
+			atmImplementation.withdraw(amount);
+		    }
+		    else
+		    {
+			throw new ATMException("Unrecognized command: " + command);
+		    }
 		}
 		catch (NumberFormatException nfe)
 		{
