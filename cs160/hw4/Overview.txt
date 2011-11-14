@@ -50,3 +50,6 @@ $ java -cp hw4.jar cscie160.hw4.Server
 
 
 
+The jar file contains the overview for this assignment, along with the javadocs,
+sample output, and the ant build file.  There is no source in the jar file.
+
