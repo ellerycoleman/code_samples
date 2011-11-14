@@ -25,7 +25,7 @@ Of these 9 files, 6 were provided by Prof. Sawyer.
 I provided the Account.java, ATMImplementation.java, and build.xml files.
 
 The Account class provides a single data member (balance) with a getter
-and setter to manipulate that balance.  The ATMImplementation class creates
+and setter to manipulate the balance.  The ATMImplementation class creates
 an Account object and then listens for client requests on the specified port.
 The getBalance(), withdraw(), and deposit() methods for ATMImplementation
 make use of the getter/setter for the Account class in order to accomplish
@@ -36,7 +36,7 @@ submitted as part of previous homework assignments.  The difference is
 that this version of build.xml stores the *.class files in a separate
 directory from the source, and it doesn't include the source as part of
 the jar file.  The default target will 'clean' the directory, compile
-that java source, create the javadocs, and generate the jar file.
+the java source, create the javadocs, and generate the jar file.
 
 The resulting jar file contains both the Client and Server binaries.
 To run the client:
