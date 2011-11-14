@@ -36,3 +36,6 @@ cs160/hw4/cscie160/hw4/Commands.java -text
 cs160/hw4/cscie160/hw4/Server.java -text
 cs160/hw4/cscie160/hw4/cli -text
 cs160/hw4/cscie160/hw4/serv -text
+cs160/hw4/test/EchoClient.java -text
+cs160/hw4/test/EchoServer.java -text
+cs160/hw4/test/SocketTest.java -text
