@@ -4,7 +4,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Implements ATM interface for cscie160, hw4.
 #-----------------------------------------------------------------------------
-# Revision: $Id: Elevator.java 50 2011-11-10 21:18:24Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.hw4;
 
