@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<!--
+#============================================================================
+# File:		Build.xml
+# Date:		Mon Nov 14 19:31:26 GMT 2011
+# Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
+# Abstract:	An ant build file for cscie160, hw4.
+#============================================================================
+# Revision: $Id: Elevator.java 50 2011-11-10 21:18:24Z ellery $
+#============================================================================
+-->
+
+
+
+
+<project name="hw4" default="package">
+
+
+<!-- ========= -->
+<!--   clean   -->
+<!-- ========= -->
+<target name="clean">
+   <delete dir="build"/>
+   <delete file="hw4.jar"/>
+</target>
+
+
+<!-- ========= -->
+<!--   init    -->
+<!-- ========= -->
+<target name="init" depends="clean">
+  <mkdir dir="javadoc"/>
+  <mkdir dir="build/classes/cscie160/hw4"/>
+</target>
+
+
+
+<!-- ========= -->
+<!--  compile  -->
+<!-- ========= -->
+<target name="compile" depends="init">
+  <javac  srcdir="cscie160/hw4"
+         destdir="build/classes"
+  />
+</target>
+
+
+
+<!-- ========= -->
+<!--  javadoc  -->
+<!-- ========= -->
+<target name="javadoc" depends="init">
+   <javadoc destdir="javadoc"
+    sourcepath="."
+    packagenames="cscie160.*"
+   />
+</target>
+
+
+<!-- ========= -->
+<!--  package  -->
+<!-- ========= -->
+<target name="package" depends="compile,javadoc">
+  <jar destfile="hw4.jar">
+    <fileset dir=".">
+       <include name="javadoc/**"/>
+    </fileset>
+    <fileset dir="build/classes">
+       <include name="cscie160/**"/>
+    </fileset>
+    <fileset file="Overview.txt"/>
+    <fileset file="output.txt"/>
+    <fileset file="build.xml"/>
+  </jar>
+</target>
+
+
+<!-- ========= -->
+<!--    run    -->
+<!-- ========= -->
+<target name="run" depends="package">
+  <java jar="hw4.jar" fork="true"/>
+</target>
+
+
+</project>

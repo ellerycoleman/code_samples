@@ -4,6 +4,10 @@ import java.net.*;
 import java.io.*;
 import java.util.StringTokenizer;
 
+
+/**
+ * ATM Server.
+ */
 public class Server
 {
 

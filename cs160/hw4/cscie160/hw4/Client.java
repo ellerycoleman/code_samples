@@ -1,5 +1,9 @@
 package cscie160.hw4;
 
+
+/**
+ * Client for ATM server.
+ */
 public class Client 
 {
     public static void main(String[] args) 

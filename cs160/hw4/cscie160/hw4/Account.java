@@ -9,6 +9,9 @@
 package cscie160.hw4;
 
 
+/**
+ * Implements a bank account.
+ */
 
 public class Account
 {

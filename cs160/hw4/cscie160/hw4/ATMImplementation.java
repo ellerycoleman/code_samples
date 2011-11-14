@@ -10,6 +10,10 @@ package cscie160.hw4;
 
 
 
+/**
+ * Implements the ATM interface and provides a single bank account.
+ */
+
 public class ATMImplementation implements ATM
 {
 
