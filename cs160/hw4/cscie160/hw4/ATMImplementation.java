@@ -27,10 +27,14 @@ public class ATMImplementation implements ATM
     //-----------------
     public void deposit(float amount) throws ATMException
     {   System.out.print("ATMImplementation.deposit() has been invoked.\n");
+        Float balance= account.getBalance() + amount;
+	account.setBalance(balance);
     }
 
     public void withdraw(float amount) throws ATMException
     {   System.out.print("ATMImplementation.withdraw() has been invoked.\n");
+        Float balance= account.getBalance() - amount;
+	account.setBalance(balance);
     }
 
     public Float getBalance() throws ATMException

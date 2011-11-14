@@ -37,7 +37,7 @@ public class ATMProxy implements ATM
     public void deposit(float amount) throws ATMException
     {
 	// Commands is an enum in this package
-	System.out.println("ATMProxy writing command to server: " + Commands.DEPOSIT);
+	//System.out.println("ATMProxy writing command to server: " + Commands.DEPOSIT);
 	printStream.println(Commands.DEPOSIT + " " + amount);
     }
 	
@@ -45,7 +45,7 @@ public class ATMProxy implements ATM
 
     public void withdraw(float amount) throws ATMException
     {
-	System.out.println("ATMProxy writing command to server: " + Commands.WITHDRAW);
+	//System.out.println("ATMProxy writing command to server: " + Commands.WITHDRAW);
 	printStream.println(Commands.WITHDRAW +  " " +  amount);
     }
 	
@@ -53,14 +53,14 @@ public class ATMProxy implements ATM
 
     public Float getBalance() throws ATMException
     {
-	System.out.println("ATMProxy writing command to server: " + Commands.BALANCE);
+	//System.out.println("ATMProxy writing command to server: " + Commands.BALANCE);
 	printStream.println(Commands.BALANCE);
 	try
 	{
 	    String response = inputReader.readLine();
 	    if (response != null)
 	    {
-		System.out.println("Server returned: " + response);
+		//System.out.println("Server returned: " + response);
 		return Float.parseFloat(response.trim());
 	    }
 	    else

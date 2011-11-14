@@ -94,10 +94,9 @@ public class Server
 			commandAndParam[index++] = tokenizer.nextToken();
 		}
 
-
+                
+		// store the command
 		String command = commandAndParam[0];
-		//System.out.println("Ellery DEBUG: command is '" + command + "'\n");
-		//System.out.println("Ellery TEST: '" + Commands.BALANCE.ordinal() + "'\n");
 
 
 		// Dispatch BALANCE request without further ado.
@@ -111,6 +110,10 @@ public class Server
 		if (commandAndParam.length < 2)
 		{   throw new ATMException("Missing amount for command \"" + command + "\"");
 		}
+
+
+
+                // execute deposit or withdraw command
 		try
 		{
 		    float amount = Float.parseFloat(commandAndParam[1]);
@@ -133,35 +136,34 @@ public class Server
 		}
 		// BALANCE command returned result above.  Other commands return null;
 		return null;
-	}
+    }
 
 
 
 
 	
-	public static void main(String argv[])
+    public static void main(String argv[])
+    {   int port = 1099;
+	if(argv.length > 0)
 	{
-		int port = 1099;
-		if(argv.length > 0)
-		{
-			try
-			{
-				port = Integer.parseInt(argv[0]);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		try
-		{
-			Server server = new Server(port);
-			server.serviceClient();
-			System.out.println("Client serviced");
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
+	    try
+	    {
+	        port = Integer.parseInt(argv[0]);
+	    }	
+	    catch (Exception e)
+	    {
+	        e.printStackTrace();
+   	    }
+        }
+	try
+	{
+            Server server = new Server(port);
+	    server.serviceClient();
+	    System.out.println("Client serviced");
 	}
+	catch (Exception ex)
+	{
+	    ex.printStackTrace();
+	}
+    }
 }
