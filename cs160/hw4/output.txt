@@ -1,0 +1,35 @@
+
+
+
+# Server Output
+#---------------
+
+[ellery@ssh hw4]$ java -cp hw4.jar cscie160.hw4.Server
+Accepting clients now
+Client acquired on port #1099, reading from socket
+ATMImplementation.getBalance() has been invoked.
+ATMImplementation.deposit() has been invoked.
+ATMImplementation.getBalance() has been invoked.
+ATMImplementation.withdraw() has been invoked.
+ATMImplementation.getBalance() has been invoked.
+ATMImplementation.withdraw() has been invoked.
+ATMImplementation.getBalance() has been invoked.
+Client serviced
+[ellery@ssh hw4]$
+
+
+
+
+# Client Output
+#---------------
+
+[ellery@ssh hw4]$ java -cp hw4.jar cscie160.hw4.Client localhost 1099
+Balance: 0.0
+ Depositing: 1000
+Balance: 1000.0
+ Withdrawing: 250
+Balance: 750.0
+ Withdrawing: 750
+Balance: 0.0
+[ellery@ssh hw4]$ 
+

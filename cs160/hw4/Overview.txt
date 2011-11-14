@@ -1,0 +1,52 @@
+#----------------------------------------------------------------------------
+# File:		Overview.txt	
+# Date:		Mon Nov 14 21:07:23 GMT 2011
+# Author(s):	Ellery Coleman <ellerycoleman@fas.harvard.edu>
+# Abstract:	Overview of HW4 Solution.
+#----------------------------------------------------------------------------
+# Revision: $Id$
+#----------------------------------------------------------------------------
+
+
+My solution for HW4 is spread across 9 files:
+
+1. cscie160/hw4/Account.java
+2. cscie160/hw4/ATMException.java
+3. cscie160/hw4/ATMImplementation.java
+4. cscie160/hw4/ATM.java
+5. cscie160/hw4/ATMProxy.java
+6. cscie160/hw4/Client.java
+7. cscie160/hw4/Commands.java
+8. cscie160/hw4/Server.java
+9. build.xml
+
+
+Of these 9 files, 6 were provided by Prof. Sawyer.
+I provided the Account.java, ATMImplementation.java, and build.xml files.
+
+The Account class provides a single data member (balance) with a getter
+and setter to manipulate that balance.  The ATMImplementation class creates
+an Account object and then listens for client requests on the specified port.
+The getBalance(), withdraw(), and deposit() methods for ATMImplementation
+make use of the getter/setter for the Account class in order to accomplish
+their work.
+
+The build.xml file for HW4 is similar to the build.xml files that I've
+submitted as part of previous homework assignments.  The difference is
+that this version of build.xml stores the *.class files in a separate
+directory from the source, and it doesn't include the source as part of
+the jar file.  The default target will 'clean' the directory, compile
+that java source, create the javadocs, and generate the jar file.
+
+The resulting jar file contains both the Client and Server binaries.
+To run the client:
+
+$ java -cp hw4.jar cscie160.hw4.Client localhost 1099
+
+
+
+To run the server:
+$ java -cp hw4.jar cscie160.hw4.Server
+
+
+
