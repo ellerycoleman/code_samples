@@ -47,6 +47,6 @@ cs160/hw5/cscie160/hw5/ATMException.java -text
 cs160/hw5/cscie160/hw5/ATMFactory.java -text
 cs160/hw5/cscie160/hw5/ATMFactoryImpl.java -text
 cs160/hw5/cscie160/hw5/ATMImpl.java -text
-cs160/hw5/cscie160/hw5/ATMServer.java -text
 cs160/hw5/cscie160/hw5/Account.java -text
 cs160/hw5/cscie160/hw5/Client.java -text
+cs160/hw5/cscie160/hw5/Server.java -text
