@@ -1,8 +1,3 @@
-  /* This is the client provided by Prof. Sawyer.
-   * The only thing I had to add was javax.naming import
-   * and the "throws *Exception" declarations.
-   */
-  
   package cscie160.hw5;
   import java.net.MalformedURLException;
   import java.rmi.Naming;
@@ -10,6 +5,11 @@
   import java.rmi.RemoteException;
   import java.rmi.UnknownHostException;
   import javax.naming.*;
+  
+  /** 
+   * This is the client provided by Prof Sawyer. I had to add the "import javax.naming.*;" statement
+   * and the "throws *Exception" declarations.  Everything else was copied verbatim.
+   */
   
   public class Client {
      public static void main(String[] args) throws RemoteException, NamingException, ATMException {

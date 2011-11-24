@@ -11,11 +11,12 @@ import java.rmi.*;
 import javax.naming.*;
 
 
+/**
+ * This server program instantiates a remote ATMFactory object and
+ * registers it with the naming service.
+ */
 public class Server
-{   /**
-     * This server program instantiates a remote ATMFactory object and
-     * registers it with the naming service.
-     */
+{   
      public static void main(String args[]) throws RemoteException, NamingException
      {   
          System.out.println("Initializing ATMFactory...");
