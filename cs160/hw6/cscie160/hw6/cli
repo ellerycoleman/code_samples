@@ -1,0 +1,1 @@
+(cd ../../; java cscie160/hw6/Client localhost 1299)
