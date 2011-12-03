@@ -1,1 +1,1 @@
-(cd ../../; java cscie160/hw6/Server 1299)
+(cd ../../; java -cp hw6.jar cscie160.hw6.Server )
