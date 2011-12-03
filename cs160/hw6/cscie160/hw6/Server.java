@@ -2,7 +2,7 @@ package cscie160.hw6;
 
 import java.net.*;
 import java.io.*;
-import java.util.StringTokenizer;
+import java.util.*;
 
 
 /**
@@ -16,7 +16,7 @@ public class Server
     private ServerSocket serverSocket;
     private ATM atmImplementation;
     private BufferedReader bufferedReader;
-
+    private ArrayList<ATMRunnable> workOrders = new ArrayList<ATMRunnable>();
 
 
 
@@ -61,14 +61,22 @@ public class Server
 	    {
 		try
 		{
-		    Float result = executeCommand(commandLine);
-		    // Only BALANCE command returns non-null
-		    if (result != null)
-		    {   printStream.println(result);  // Write it back to the client
-		    }
+		    /*
+		  |  Float result = executeCommand(commandLine);
+		  | // Only BALANCE command returns non-null
+		  |  if (result != null)
+		  |  {   printStream.println(result);  // Write it back to the client
+		  |  }
+		    */
+
+		    System.out.println("Attempting to add ATMRunnable to list...");
+                    workOrders.add(new ATMRunnable(commandLine,atmImplementation,printStream));
+		    executeCommand(getWorkOrder());
+
+
 		}
 		catch (ATMException atmex)
-		{
+		{   System.out.println("el: something here...");
 		    System.out.println("ERROR: " + atmex);
 		}
 
@@ -80,6 +88,13 @@ public class Server
 	    System.out.println("done");
 	}
     }
+
+
+    public synchronized ATMRunnable getWorkOrder()
+    {   ATMRunnable a= workOrders.get(0);
+        workOrders.remove(0);
+	return a;
+    }
 	
 
 
@@ -87,8 +102,17 @@ public class Server
 	/** The logic here is specific to our protocol.  We parse the string
 	 *  according to that protocol.
 	 */
-	private Float executeCommand(String commandLine) throws ATMException
+	private void executeCommand(ATMRunnable workOrder) throws ATMException
 	{
+	        System.out.println("executeCommand() has been invoked!");
+	        String commandLine= workOrder.getCommand();
+		PrintStream clientOut= workOrder.getPrintStream();
+		ATM atm= workOrder.getATM();
+
+
+		System.out.println("Server received command: " + commandLine);
+
+
 		// Break out the command line into String[]
 		StringTokenizer tokenizer = new StringTokenizer(commandLine);
 		String commandAndParam[] = new String[tokenizer.countTokens()];
@@ -105,8 +129,9 @@ public class Server
 
 		// Dispatch BALANCE request without further ado.
 		if (command.equalsIgnoreCase(Commands.BALANCE.toString()))
-		{
-			return atmImplementation.getBalance();
+		{       System.out.println("el: Client wants to check balance...");
+			clientOut.println(atm.getBalance());
+			return;
 		}
 
 
@@ -123,11 +148,13 @@ public class Server
 		    float amount = Float.parseFloat(commandAndParam[1]);
 		    if (command.equalsIgnoreCase(Commands.DEPOSIT.toString()))
 		    {
-			atmImplementation.deposit(amount);
+			atm.deposit(amount);
+			return;
 		    }
 		    else if (command.equalsIgnoreCase(Commands.WITHDRAW.toString()))
 		    {
-			atmImplementation.withdraw(amount);
+			atm.withdraw(amount);
+			return;
 		    }
 		    else
 		    {
@@ -139,8 +166,7 @@ public class Server
 			throw new ATMException("Unable to make float from input: " + commandAndParam[1]);
 		}
 		// BALANCE command returned result above.  Other commands return null;
-		return null;
-    }
+      }
 
 
 
@@ -160,10 +186,11 @@ public class Server
    	    }
         }
 	try
-	{
-            Server server = new Server(port);
-	    server.serviceClient();
-	    System.out.println("Client serviced");
+	{   Server server = new Server(port);
+            while(true)
+	    {   server.serviceClient();
+	        System.out.println("Client serviced");
+            }
 	}
 	catch (Exception ex)
 	{

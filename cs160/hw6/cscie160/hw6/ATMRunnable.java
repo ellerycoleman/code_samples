@@ -23,9 +23,9 @@ public class ATMRunnable implements Runnable
     //----------------
     // 3 Data Members
     //----------------
-    private String command;           // transaction string that server read from client
-    private ATM atm;                  // reference to ATM object
-    private PrintStream printstream;  // object to write results back to client
+    public String command;           // transaction string that server read from client
+    public ATM atm;                  // reference to ATM object
+    public PrintStream printstream;  // object to write results back to client
 
 
 
@@ -62,6 +62,38 @@ public class ATMRunnable implements Runnable
         printstream.println("=======================");
 
     }
+
+
+
+
+   /**
+    * Returns the client command for this ATMRunnable.
+    */
+    public String getCommand()
+    {   return command;
+    }
+
+
+
+
+   /**
+    * Returns the ATM reference for this ATMRunnable.
+    */
+    public ATM getATM()
+    {   return atm;
+    }
+
+
+
+
+   /**
+    * Returns the PrintStream reference for this ATMRunnable.
+    */
+    public PrintStream getPrintStream()
+    {   return printstream;
+    }
+
+
 
 
 }
