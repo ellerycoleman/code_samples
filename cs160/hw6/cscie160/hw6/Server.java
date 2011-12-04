@@ -17,7 +17,8 @@ public class Server
     private ServerSocket serverSocket;
     private ATM atmImplementation;
     private BufferedReader bufferedReader;
-    private ArrayList<ATMRunnable> workOrders = new ArrayList<ATMRunnable>();
+    private ArrayList<ATMRunnable> workOrders;
+    
 
 
 
@@ -25,9 +26,9 @@ public class Server
     // Constructor
     //--------------
     public Server(int port) throws java.io.IOException
-    {
-        serverSocket = new ServerSocket(port);
+    {   serverSocket      = new ServerSocket(port);
 	atmImplementation = new ATMImplementation();
+        workOrders        = new ArrayList<ATMRunnable>();
     }
 	
 

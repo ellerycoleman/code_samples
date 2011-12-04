@@ -49,15 +49,23 @@ public class Account
    /**
     * Returns the account balance.
     */
-    public Float getBalance()
+    public synchronized Float getBalance()
     {   return balance;
     }
 
 
    /**
-    * Sets the account balance according to the parameter.
+    * Deposits the specified amount into the account.
     */
-    public void setBalance(Float b)
-    {   balance= b;
+    public synchronized void deposit(Float amt)
+    {   balance+= amt;
+    }
+
+
+   /**
+    * Withdraws the specified amount from the account.
+    */
+    public synchronized void withdraw(Float amt)
+    {   balance-= amt;
     }
 }
