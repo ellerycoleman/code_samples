@@ -58,7 +58,7 @@ public class ATMThread implements Runnable
     * the client.
     */
     public void run()
-    {   
+    {   boolean firstPass= true;
         while(true)
 	{   
 	    // If queue is empty, call wait() until another thread
@@ -66,8 +66,11 @@ public class ATMThread implements Runnable
 	    //-----------------------------------------------------
 	    synchronized (workOrders)
 	    {   while(workOrders.size() == 0)
-	        {   System.out.println("Thread-" + id + ": " +
-		                       "No work orders to process; waiting...");
+	        {   if(firstPass)
+		    {   System.out.println("Thread-" + id + ": " +
+		                           "No work orders to process; waiting...");
+                        firstPass= false;
+                    }
 		    try
 		    {   workOrders.wait();
 		    }

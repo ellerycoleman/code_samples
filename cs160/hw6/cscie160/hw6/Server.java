@@ -61,7 +61,7 @@ public class Server
 	{   String commandLine;
 	    while ((commandLine = bufferedReader.readLine()) != null)
 	    {   addWorkOrder(new ATMRunnable(commandLine,atmImplementation,printStream));
-	        System.out.println("workOrder added to queue...");
+	        System.out.println("++ workOrder \"" + commandLine + "\" added to queue");
 	    }
 	}
 	catch (SocketException sException)

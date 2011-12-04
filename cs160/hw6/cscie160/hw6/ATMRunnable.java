@@ -69,9 +69,6 @@ public class ATMRunnable
 		PrintStream clientOut= printstream;
 
 
-		System.out.println("Server received command: " + commandLine);
-
-
 		// Break out the command line into String[]
 		StringTokenizer tokenizer = new StringTokenizer(commandLine);
 		String commandAndParam[] = new String[tokenizer.countTokens()];
