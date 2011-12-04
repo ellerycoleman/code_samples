@@ -4,7 +4,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Implements an Account class for cscie160, hw6.
 #-----------------------------------------------------------------------------
-# Revision: $Id: Account.java 61 2011-11-14 21:02:43Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.hw6;
 

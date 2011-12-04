@@ -4,7 +4,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Implements an ATMThread class for cscie160, hw6.
 #-----------------------------------------------------------------------------
-# Revision: $Id: ATMRunnable.java 74 2011-12-03 04:31:13Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.hw6;
 

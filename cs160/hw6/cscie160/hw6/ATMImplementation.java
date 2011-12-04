@@ -4,7 +4,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Implements ATM interface for cscie160, hw6.
 #-----------------------------------------------------------------------------
-# Revision: $Id: ATMImplementation.java 61 2011-11-14 21:02:43Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.hw6;
 
