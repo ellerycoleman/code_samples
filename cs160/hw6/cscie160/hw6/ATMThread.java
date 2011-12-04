@@ -53,9 +53,8 @@ public class ATMThread implements Runnable
     //-----------------
 
    /**
-    * Parses the request string, invokes the appropriate method
-    * through the ATM interface, and writes a status message to
-    * the client.
+    * Waits for a client work order to show up on the workOrder queue,
+    * and then processes the work order.
     */
     public void run()
     {   boolean firstPass= true;

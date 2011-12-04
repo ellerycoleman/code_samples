@@ -31,9 +31,9 @@ I added the classes ATMRunnable and ATMThread for this assignment.
 ATMRunnable represents a client work order, and it provides everything
 that a thread would need in order to process the work order.  Specifically,
 it provides access to the client's command, an ATM, the client PrintStream,
-and a run() method to process the work order.  The ATMRunnable.run() method
-is actually the Server.executeCommand() from HW4. It has been slightly
-modified to work properly in its new location.
+and a run() method to process the work order.  The method ATMRunnable.run()
+is actually a copy of the method Server.executeCommand() from HW4. It has
+been slightly modified to work properly in its new location.
 
 The ATMThread class is used to generate the threads that process client
 requests.  It has 2 data members: an ID and a reference to the Server's
