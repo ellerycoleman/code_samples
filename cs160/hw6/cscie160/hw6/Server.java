@@ -11,6 +11,7 @@ import java.util.*;
 public class Server
 {
 
+    //---------------
     // Data Members
     //---------------
     private ServerSocket serverSocket;
@@ -20,6 +21,7 @@ public class Server
 
 
 
+    //--------------
     // Constructor
     //--------------
     public Server(int port) throws java.io.IOException
@@ -32,6 +34,7 @@ public class Server
 
 
 
+    //-----------------
     // Method Members
     //-----------------
 
@@ -40,7 +43,7 @@ public class Server
      */
     public void serviceClient() throws java.io.IOException
     {
-	System.out.println("Accepting clients now");
+	System.out.println("Server: Accepting clients now");
 	Socket clientConnection = serverSocket.accept();
 	
 	// Arrange to read input from the Socket	
@@ -55,31 +58,10 @@ public class Server
 	                   serverSocket.getLocalPort() + ", reading from socket");
 		
 	try
-	{
-	    String commandLine;
+	{   String commandLine;
 	    while ((commandLine = bufferedReader.readLine()) != null)
-	    {
-		try
-		{
-		    /*
-		  |  Float result = executeCommand(commandLine);
-		  | // Only BALANCE command returns non-null
-		  |  if (result != null)
-		  |  {   printStream.println(result);  // Write it back to the client
-		  |  }
-		    */
-
-		    System.out.println("Attempting to add ATMRunnable to list...");
-                    workOrders.add(new ATMRunnable(commandLine,atmImplementation,printStream));
-		    executeCommand(getWorkOrder());
-
-
-		}
-		catch (ATMException atmex)
-		{   System.out.println("el: something here...");
-		    System.out.println("ERROR: " + atmex);
-		}
-
+	    {   addWorkOrder(new ATMRunnable(commandLine,atmImplementation,printStream));
+	        System.out.println("workOrder added to queue...");
 	    }
 	}
 	catch (SocketException sException)
@@ -90,90 +72,62 @@ public class Server
     }
 
 
-    public synchronized ATMRunnable getWorkOrder()
-    {   ATMRunnable a= workOrders.get(0);
-        workOrders.remove(0);
-	return a;
+
+
+   /**
+    * Returns a reference to the workOrder queue.
+    */
+    public ArrayList<ATMRunnable> getWorkOrders()
+    {   return workOrders;   
     }
+
+
+
 	
 
-
-
-	/** The logic here is specific to our protocol.  We parse the string
-	 *  according to that protocol.
-	 */
-	private void executeCommand(ATMRunnable workOrder) throws ATMException
-	{
-	        System.out.println("executeCommand() has been invoked!");
-	        String commandLine= workOrder.getCommand();
-		PrintStream clientOut= workOrder.getPrintStream();
-		ATM atm= workOrder.getATM();
-
-
-		System.out.println("Server received command: " + commandLine);
-
-
-		// Break out the command line into String[]
-		StringTokenizer tokenizer = new StringTokenizer(commandLine);
-		String commandAndParam[] = new String[tokenizer.countTokens()];
-		int index = 0;
-		while (tokenizer.hasMoreTokens())
-		{
-			commandAndParam[index++] = tokenizer.nextToken();
-		}
-
-                
-		// store the command
-		String command = commandAndParam[0];
-
-
-		// Dispatch BALANCE request without further ado.
-		if (command.equalsIgnoreCase(Commands.BALANCE.toString()))
-		{       System.out.println("el: Client wants to check balance...");
-			clientOut.println(atm.getBalance());
-			return;
-		}
-
-
-		// Must have 2nd arg for amount when processing DEPOSIT/WITHDRAW commands
-		if (commandAndParam.length < 2)
-		{   throw new ATMException("Missing amount for command \"" + command + "\"");
-		}
+   /**
+    * Returns a work order from the workOrder queue.
+    * It returns the work order that has been in the queue the longest.
+    */
+    public ATMRunnable getWorkOrder()
+    {   if(workOrders.size() == 0)
+        {   return null;
+	}
+	else
+        {   synchronized (workOrders) 
+	    {   ATMRunnable a= workOrders.get(0);
+                workOrders.remove(0);
+		workOrders.notifyAll();
+	        return a;
+            }
+        }
+    }
 
 
 
-                // execute deposit or withdraw command
-		try
-		{
-		    float amount = Float.parseFloat(commandAndParam[1]);
-		    if (command.equalsIgnoreCase(Commands.DEPOSIT.toString()))
-		    {
-			atm.deposit(amount);
-			return;
-		    }
-		    else if (command.equalsIgnoreCase(Commands.WITHDRAW.toString()))
-		    {
-			atm.withdraw(amount);
-			return;
-		    }
-		    else
-		    {
-			throw new ATMException("Unrecognized command: " + command);
-		    }
-		}
-		catch (NumberFormatException nfe)
-		{
-			throw new ATMException("Unable to make float from input: " + commandAndParam[1]);
-		}
-		// BALANCE command returned result above.  Other commands return null;
-      }
-
+   /**
+    * Adds a work order to the workOrder queue.
+    * Work orders are added to the end of the queue and retrieved
+    * from the beginning of the queue. This provides the
+    * first-come-first-served behavior for the program.
+    */
+    public void addWorkOrder(ATMRunnable a)
+    {   synchronized (workOrders)
+        {   workOrders.add(a);
+            workOrders.notifyAll();
+        }
+    }
+	
 
 
 
 	
     public static void main(String argv[])
     {   int port = 1099;
+
+
+        // Retrieve port number from command line
+	//----------------------------------------
 	if(argv.length > 0)
 	{
 	    try
@@ -185,11 +139,33 @@ public class Server
 	        e.printStackTrace();
    	    }
         }
+
+
+
+
+
 	try
-	{   Server server = new Server(port);
+	{   
+	    // Bind to specified port 
+	    //------------------------
+	    Server server = new Server(port);
+
+
+
+            // Create a pool of 5 threads to handle client requests
+	    //------------------------------------------------------
+    	    Thread thread0= new Thread(new ATMThread(0,server.getWorkOrders())); thread0.start();
+	    Thread thread1= new Thread(new ATMThread(1,server.getWorkOrders())); thread1.start();
+	    Thread thread2= new Thread(new ATMThread(2,server.getWorkOrders())); thread2.start();
+	    Thread thread3= new Thread(new ATMThread(3,server.getWorkOrders())); thread3.start();
+	    Thread thread4= new Thread(new ATMThread(4,server.getWorkOrders())); thread4.start();
+
+
+
+            // Listen for client requests and place them into workOrder queue
+	    //----------------------------------------------------------------
             while(true)
 	    {   server.serviceClient();
-	        System.out.println("Client serviced");
             }
 	}
 	catch (Exception ex)

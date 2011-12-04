@@ -88,8 +88,7 @@ public class ATMRunnable
 
 		// Dispatch BALANCE request without further ado.
 		if (command.equalsIgnoreCase(Commands.BALANCE.toString()))
-		{       System.out.println("el: Client wants to check balance...");
-			clientOut.println(atm.getBalance());
+		{       clientOut.println(atm.getBalance());
 			return;
 		}
 
