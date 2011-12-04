@@ -27,7 +27,7 @@ have only had one line modifed - the 'package' line so that they belong
 to 'cscie160.hw6'.
 
 
-I added the classes ATMRunnable and ATMThread.
+I added the classes ATMRunnable and ATMThread for this assignment.
 ATMRunnable represents a client work order, and it provides everything
 that a thread would need in order to process the work order.  Specifically,
 it provides access to the client's command, an ATM, the client PrintStream,
@@ -45,12 +45,12 @@ deposit(), withdraw(), and getBalance().  This ensures the consistency
 of the account by preventing multiple threads from operating on the
 account balance at the same time.
 
-The Server class has been updated to create a pool of threads based on
-the ATMThread class, and to place all client requests into the workOrder
+The Server class has been updated to create a pool of ATMThreads on
+startup, and to place all client requests into the workOrder
 queue.  The workOrder queue is actually an ArrayList<ATMRunnable>.
 Client requests are placed at the end of the ArrayList using
-ArrayList.add().  And they are processed from the front of the array
-using ArrayList.get(0).
+ArrayList.add().  When the threads process a request, they pull it
+from the front of the array using ArrayList.get(0).
 
 The source code, javadocs, and ANT build file for this assignment are
 all included as part of the hw6.jar file.  You can use the following
