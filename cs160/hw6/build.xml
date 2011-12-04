@@ -6,7 +6,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	An ant build file for cscie160, hw6.
 #============================================================================
-# Revision: $Id: build.xml 61 2011-11-14 21:02:43Z ellery $
+# Revision: $Id$
 #============================================================================
 -->
 
@@ -65,6 +65,7 @@
   <jar destfile="hw6.jar">
     <fileset dir=".">
        <include name="javadoc/**"/>
+       <include name="cscie160/**"/>
     </fileset>
     <fileset dir="build/classes">
        <include name="cscie160/**"/>

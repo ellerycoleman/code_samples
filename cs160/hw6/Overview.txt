@@ -1,55 +1,69 @@
 #----------------------------------------------------------------------------
 # File:		Overview.txt	
-# Date:		Mon Nov 14 21:07:23 GMT 2011
+# Date:		Sun Dec  4 03:12:04 GMT 2011
 # Author(s):	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Overview of HW4 Solution.
+# Abstract:	Overview of HW6 Solution.
 #----------------------------------------------------------------------------
-# Revision: $Id: Overview.txt 64 2011-11-14 21:40:22Z ellery $
+# Revision: $Id$
 #----------------------------------------------------------------------------
 
 
-My solution for HW4 is spread across 9 files:
+My solution for HW6 is spread across 10 files:
 
-1. cscie160/hw4/Account.java
-2. cscie160/hw4/ATMException.java
-3. cscie160/hw4/ATMImplementation.java
-4. cscie160/hw4/ATM.java
-5. cscie160/hw4/ATMProxy.java
-6. cscie160/hw4/Client.java
-7. cscie160/hw4/Commands.java
-8. cscie160/hw4/Server.java
-9. build.xml
+ 1. cscie160/hw6/Account.java
+ 2. cscie160/hw6/ATMException.java
+ 3. cscie160/hw6/ATMImplementation.java
+ 4. cscie160/hw6/ATM.java
+ 5. cscie160/hw6/ATMProxy.java
+ 6. cscie160/hw6/ATMRunnable.java
+ 7. cscie160/hw6/ATMThread.java
+ 8. cscie160/hw6/Client.java
+ 9. cscie160/hw6/Commands.java
+10. cscie160/hw6/Server.java
 
 
-Of these 9 files, 6 were provided by Prof. Sawyer.
-I provided the Account.java, ATMImplementation.java, and build.xml files.
+Per the HW6 spec, many of these files were copied directly from HW4 and
+have only had one line modifed - the 'package' line so that they belong
+to 'cscie160.hw6'.
 
-The Account class provides a single data member (balance) with a getter
-and setter to manipulate the balance.  The ATMImplementation class creates
-an Account object and then listens for client requests on the specified port.
-The getBalance(), withdraw(), and deposit() methods for ATMImplementation
-make use of the getter/setter for the Account class in order to accomplish
-their work.
 
-The build.xml file for HW4 is similar to the build.xml files that I've
-submitted as part of previous homework assignments.  The difference is
-that this version of build.xml stores the *.class files in a separate
-directory from the source, and it doesn't include the source as part of
-the jar file.  The default target will 'clean' the directory, compile
-the java source, create the javadocs, and generate the jar file.
+I added the classes ATMRunnable and ATMThread.
+ATMRunnable represents a client work order, and it provides everything
+that a thread would need in order to process the work order.  Specifically,
+it provides access to the client's command, an ATM, the client PrintStream,
+and a run() method to process the work order.  The ATMRunnable.run() method
+is actually the Server.executeCommand() from HW4. It has been slightly
+modified to work properly in its new location.
 
-The resulting jar file contains both the Client and Server binaries.
-To run the client:
+The ATMThread class is used to generate the threads that process client
+requests.  It has 2 data members: an ID and a reference to the Server's
+workOrder queue.  Threads created with this class cooperate to process
+all client requests on a first-come-first-served basis.
 
-$ java -cp hw4.jar cscie160.hw4.Client localhost 1099
+The Account class has been updated to provide synchronized methods for
+deposit(), withdraw(), and getBalance().  This ensures the consistency
+of the account by preventing multiple threads from operating on the
+account balance at the same time.
 
+The Server class has been updated to create a pool of threads based on
+the ATMThread class, and to place all client requests into the workOrder
+queue.  The workOrder queue is actually an ArrayList<ATMRunnable>.
+Client requests are placed at the end of the ArrayList using
+ArrayList.add().  And they are processed from the front of the array
+using ArrayList.get(0).
+
+The source code, javadocs, and ANT build file for this assignment are
+all included as part of the hw6.jar file.  You can use the following
+commands to run the code for this assignment.
 
 
 To run the server:
-$ java -cp hw4.jar cscie160.hw4.Server
+$ java -cp hw6.jar cscie160.hw6.Server
+(you must enter CTRL+C to stop the server)
 
 
+To run the client:
+$ java -cp hw6.jar cscie160.hw6.Client localhost 1099
 
-The jar file contains the overview for this assignment, along with the javadocs,
-sample output, and the ant build file.  There is no source in the jar file.
+
 
