@@ -1,0 +1,52 @@
+#----------------------
+#  Server Output
+#----------------------
+
+$ java -cp hw6.jar cscie160.hw6.Server
+Thread-0: No work orders to process; waiting...
+Thread-1: No work orders to process; waiting...
+Thread-2: No work orders to process; waiting...
+Thread-3: No work orders to process; waiting...
+Server: Accepting clients now
+Thread-4: No work orders to process; waiting...
+Client acquired on port #1099, reading from socket
+++ workOrder "BALANCE" added to queue
+Running request in Thread-4
+ATMImplementation.getBalance() has been invoked.
+++ workOrder "DEPOSIT 1000.0" added to queue
+Running request in Thread-0
+ATMImplementation.deposit() has been invoked.
+++ workOrder "BALANCE" added to queue
+Running request in Thread-4
+ATMImplementation.getBalance() has been invoked.
+++ workOrder "WITHDRAW 250.0" added to queue
+Running request in Thread-0
+ATMImplementation.withdraw() has been invoked.
+++ workOrder "BALANCE" added to queue
+Running request in Thread-4
+ATMImplementation.getBalance() has been invoked.
+++ workOrder "WITHDRAW 750.0" added to queue
+Running request in Thread-0
+ATMImplementation.withdraw() has been invoked.
+++ workOrder "BALANCE" added to queue
+Running request in Thread-4
+ATMImplementation.getBalance() has been invoked.
+Server: Accepting clients now
+
+
+
+
+#----------------------
+#  Client Output
+#----------------------
+
+$ java -cp hw6.jar cscie160.hw6.Client localhost 1099
+Balance: 0.0
+ Depositing: 1000
+Balance: 1000.0
+ Withdrawing: 250
+Balance: 750.0
+ Withdrawing: 750
+Balance: 0.0
+
+
