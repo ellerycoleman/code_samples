@@ -1,0 +1,88 @@
+<?xml version="1.0" ?>
+<!--
+#============================================================================
+# File:		Build.xml
+# Date:		Mon Nov 14 19:31:26 GMT 2011
+# Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
+# Abstract:	An ant build file for cscie160, final project.
+#============================================================================
+# Revision: $Id: build.xml 68 2011-11-24 10:02:57Z ellery $
+#============================================================================
+-->
+
+
+
+
+<project name="final_project" default="package">
+
+
+<!-- ========= -->
+<!--   clean   -->
+<!-- ========= -->
+<target name="clean">
+   <delete dir="build"/>
+   <delete dir="javadoc"/>
+   <delete file="project.jar"/>
+</target>
+
+
+<!-- ========= -->
+<!--   init    -->
+<!-- ========= -->
+<target name="init" depends="clean">
+  <mkdir dir="javadoc"/>
+  <mkdir dir="build/classes/cscie160/hw5"/>
+</target>
+
+
+
+<!-- ========= -->
+<!--  compile  -->
+<!-- ========= -->
+<target name="compile" depends="init">
+  <javac  srcdir="cscie160/project"
+         destdir="build/classes"
+  />
+</target>
+
+
+
+<!-- ========= -->
+<!--  javadoc  -->
+<!-- ========= -->
+<target name="javadoc" depends="init">
+   <javadoc destdir="javadoc"
+    sourcepath="."
+    packagenames="cscie160.*"
+   />
+</target>
+
+
+<!-- ========= -->
+<!--  package  -->
+<!-- ========= -->
+<target name="package" depends="compile,javadoc">
+  <jar destfile="project.jar">
+    <fileset dir=".">
+       <include name="javadoc/**"/>
+       <include name="cscie160/**"/>
+    </fileset>
+    <fileset dir="build/classes">
+       <include name="cscie160/**"/>
+    </fileset>
+    <fileset file="Overview.txt"/>
+    <fileset file="output.txt"/>
+    <fileset file="build.xml"/>
+  </jar>
+</target>
+
+
+<!-- ========= -->
+<!--    run    -->
+<!-- ========= -->
+<target name="run" depends="package">
+  <java jar="project.jar" fork="true"/>
+</target>
+
+
+</project>

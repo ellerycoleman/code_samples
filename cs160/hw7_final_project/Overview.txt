@@ -1,0 +1,58 @@
+#----------------------------------------------------------------------------
+# File:		Overview.txt	
+# Date:		Mon Nov 14 21:07:23 GMT 2011
+# Author(s):	Ellery Coleman <ellerycoleman@fas.harvard.edu>
+# Abstract:	Overview of HW5 Solution.
+#----------------------------------------------------------------------------
+# Revision: $Id: Overview.txt 70 2011-11-24 11:07:12Z ellery $
+#----------------------------------------------------------------------------
+
+
+My solution for HW5 is spread across 8 files:
+
+
+1. cscie160/hw5/ATM.java
+2. cscie160/hw5/ATMException.java
+3. cscie160/hw5/ATMFactory.java
+4. cscie160/hw5/ATMFactoryImpl.java
+5. cscie160/hw5/ATMImpl.java
+6. cscie160/hw5/Account.java
+7. cscie160/hw5/Client.java
+8. cscie160/hw5/Server.java
+
+
+The Account class now has 3 data members:
+1. balance
+2. accountNumber
+3. numberGenerator
+
+The "numberGenerator" is a static integer that is used to provide a unique bank
+account number whenever a new Account is created.  The Account class now provides
+methods to support deposits, withdrawals, and balance inquiries based on the
+supplied account number.
+
+The ATMImpl class provides a static collection of bank accounts.  These accounts
+are stored in a hashmap which uses the bank account number as the key.  The
+constructor for this class initializes 3 accounts as required by the spec.
+
+ATMFactoryImpl provides a static collection of atm machines.  You can request a
+reference to an ATM by calling getATM() with the atm number as a parameter.
+If you don't specify an ATM number then getATM() will return a reference to the
+first ATM.  For this assignment I've only created a single atm, but the support
+for multiple atms is present.
+
+The build.xml file for HW5 is similar to the build.xml files that I've
+submitted as part of previous homework assignments.  It builds a jar file
+containg the hw5 implementation.  You can use the following commands to run
+the code:
+
+
+$ registry -J-cp -Jhw5.jar
+$ java -cp hw5.jar cscie160.hw5.Client
+$ java -cp hw5.jar cscie160.hw5.Server
+
+
+The jar file contains the overview for this assignment, along with the javadocs,
+sample output, and the ant build file.  There is no source in the jar file; it is
+provided in a separate zip file.
+

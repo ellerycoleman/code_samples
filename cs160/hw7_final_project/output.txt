@@ -1,0 +1,56 @@
+
+#-----------------------------
+#  Client Output
+#-----------------------------
+
+[ellery@ssh hw5]$ java -cp hw5.jar cscie160.hw5.Client
+Initial Balances
+Balance(0000001): 0.0
+Balance(0000002): 100.0
+Balance(0000003): 500.0
+
+Depositting(0000001): 1000 
+Balance(0000001): 1000.0
+Withdrawing(0000002): 100 
+Balance(0000002): 0.0
+Depositting(0000003): 500 
+Balance(0000003): 1000.0
+
+Final Balances
+Balance(0000001): 1000.0
+Balance(0000002): 0.0
+Balance(0000003): 1000.0
+[ellery@ssh hw5]$ 
+
+
+
+
+#-----------------------------
+#  Server Output
+#-----------------------------
+
+[ellery@ssh hw5]$ java -cp hw5.jar cscie160.hw5.Server
+Initializing ATMFactory...
+Account #1 was created with balance of $0.0.
+Account #2 was created with balance of $100.0.
+Account #3 was created with balance of $500.0.
+ATM #1 has been added to the atm collection.
+atmFactory bound in registry...
+ATMImpl.getBalance() has been invoked for account #1.
+ATMImpl.getBalance() has been invoked for account #2.
+ATMImpl.getBalance() has been invoked for account #3.
+ATMImpl.deposit() has been invoked on account #1.
+Deposit to account #1,  new balance: $1000.0
+
+ATMImpl.getBalance() has been invoked for account #1.
+ATMImpl.withdraw() has been invoked for account #2.
+Withdrawal from account #2,  new balance: $0.0
+
+ATMImpl.getBalance() has been invoked for account #2.
+ATMImpl.deposit() has been invoked on account #3.
+Deposit to account #3,  new balance: $1000.0
+
+ATMImpl.getBalance() has been invoked for account #3.
+ATMImpl.getBalance() has been invoked for account #1.
+ATMImpl.getBalance() has been invoked for account #2.
+ATMImpl.getBalance() has been invoked for account #3.
