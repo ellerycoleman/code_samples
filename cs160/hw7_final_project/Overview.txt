@@ -48,8 +48,9 @@ the code:
 
 
 $ rmiregistry -J-cp -Jproject.jar
+$ java -cp project.jar cscie160.project.BankServer
+$ java -cp project.jar cscie160.project.ATMServer
 $ java -cp project.jar cscie160.project.Client
-$ java -cp project.jar cscie160.project.Server
 
 
 The jar file contains the overview for this assignment, along with the javadocs,

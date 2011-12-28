@@ -22,7 +22,7 @@ public class BankImpl extends UnicastRemoteObject implements Bank
     //------------------
     // 2 Data Members
     //------------------
-    private static Map<Integer, Account> bank;
+    private static Map<Integer, AccountImpl> bank;
     private static int numberGenerator;
 
 
@@ -39,7 +39,7 @@ public class BankImpl extends UnicastRemoteObject implements Bank
     public BankImpl() throws RemoteException
     {   // Initialize numberGenerator and bank
         numberGenerator= 1;
-        bank= new HashMap<Integer, Account>();
+        bank= new HashMap<Integer, AccountImpl>();
 
 
         // add bank accounts with specified balances.
@@ -72,7 +72,7 @@ public class BankImpl extends UnicastRemoteObject implements Bank
     * Adds an account to the bank.
     */
     public void addAccount(float balance) throws RemoteException
-    {   bank.put(numberGenerator,new Account(balance));
+    {   bank.put(numberGenerator,new AccountImpl(balance));
         System.out.println("Account #" + numberGenerator + " has been created " +
 	                   "with a balance of: $" + balance);
 	++numberGenerator;
