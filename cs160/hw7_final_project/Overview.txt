@@ -47,9 +47,9 @@ containg the hw5 implementation.  You can use the following commands to run
 the code:
 
 
-$ registry -J-cp -Jhw5.jar
-$ java -cp hw5.jar cscie160.hw5.Client
-$ java -cp hw5.jar cscie160.hw5.Server
+$ rmiregistry -J-cp -Jproject.jar
+$ java -cp project.jar cscie160.project.Client
+$ java -cp project.jar cscie160.project.Server
 
 
 The jar file contains the overview for this assignment, along with the javadocs,

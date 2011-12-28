@@ -75,7 +75,10 @@ cs160/hw7_final_project/cscie160/project/ATMException.java -text
 cs160/hw7_final_project/cscie160/project/ATMFactory.java -text
 cs160/hw7_final_project/cscie160/project/ATMFactoryImpl.java -text
 cs160/hw7_final_project/cscie160/project/ATMImpl.java -text
+cs160/hw7_final_project/cscie160/project/ATMServer.java -text
 cs160/hw7_final_project/cscie160/project/Account.java -text
+cs160/hw7_final_project/cscie160/project/Bank.java -text
+cs160/hw7_final_project/cscie160/project/BankImpl.java -text
+cs160/hw7_final_project/cscie160/project/BankServer.java -text
 cs160/hw7_final_project/cscie160/project/Client.java -text
-cs160/hw7_final_project/cscie160/project/Server.java -text
 cs160/hw7_final_project/output.txt -text
