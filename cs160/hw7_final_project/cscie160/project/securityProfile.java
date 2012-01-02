@@ -7,6 +7,7 @@
 # Revision: $Id: ATMImpl.java 65 2011-11-24 08:49:27Z ellery $
 #---------------------------------------------------------------------------*/
 package cscie160.project;
+import java.io.Serializable;
 import java.util.*;
 
 
@@ -15,7 +16,7 @@ import java.util.*;
 /**
  * The securityProfile class stores user authentication and authorization data.
  */
-public class securityProfile
+public class securityProfile implements Serializable
 {
 
 
