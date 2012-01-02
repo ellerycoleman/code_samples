@@ -21,10 +21,9 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
 {
 
     //------------------
-    // 2 Data Members
+    // 1 Data Members
     //------------------
     private static Bank bank;
-    private static int numberGenerator;
 
 
 
@@ -35,10 +34,13 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
 
 
    /**
-    * Default constructor to initialize the bank with 3 accounts.
+    * Default constructor to connect to the remote Bank server.
     */
     public ATMImpl() throws RemoteException
-    {   // Initialize bank
+    {   
+    
+        // Connect to the remote Bank
+        //----------------------------
         try 
         {
             bank = (Bank) Naming.lookup("//localhost/bank");

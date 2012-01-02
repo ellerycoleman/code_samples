@@ -37,7 +37,8 @@ public class BankImpl extends UnicastRemoteObject implements Bank
     * Default constructor to initialize the bank with 3 accounts.
     */
     public BankImpl() throws RemoteException
-    {   // Initialize numberGenerator and bank
+    {   
+        // Initialize numberGenerator and bank
         numberGenerator= 1;
         bank= new HashMap<Integer, AccountImpl>();
 
