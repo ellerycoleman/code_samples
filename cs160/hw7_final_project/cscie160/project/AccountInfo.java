@@ -49,7 +49,7 @@ public class AccountInfo implements Serializable
    /**
     * Returns the pin number.
     */
-    public int pin()
+    public int getPinNumber()
     {   return pin;
     }
 }

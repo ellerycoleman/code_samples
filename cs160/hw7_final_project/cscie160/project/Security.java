@@ -23,5 +23,5 @@ public interface Security extends Remote
     public boolean validAuth(AccountInfo a) throws RemoteException;
     public boolean depositAllowed(AccountInfo a) throws RemoteException;
     public boolean withdrawAllowed(AccountInfo a) throws RemoteException;
-    public boolean BalanceAllowed(AccountInfo a) throws RemoteException;
+    public boolean balanceAllowed(AccountInfo a) throws RemoteException;
 }

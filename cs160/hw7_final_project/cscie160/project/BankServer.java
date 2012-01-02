@@ -20,8 +20,6 @@ public class BankServer
      public static void main(String args[]) throws RemoteException, NamingException
      {   
          System.out.println("Initializing Bank...");
-
-
          try
 	 {   BankImpl bank= new BankImpl();
 	     Naming.rebind("//localhost/bank", bank);
@@ -31,5 +29,19 @@ public class BankServer
 	 {   System.out.println("BankServer error: " + e.getMessage());
 	     e.printStackTrace();
 	 }
+
+
+
+         System.out.println("Initializing Security Service...");
+         try
+	 {   SecurityImpl securityService= new SecurityImpl();
+	     Naming.rebind("//localhost/security", securityService);
+	     System.out.println("Security service bound in registry...");
+         }
+	 catch (Exception e)
+	 {   System.out.println("BankServer error: " + e.getMessage());
+	     e.printStackTrace();
+	 }
+
      }
 }
