@@ -21,9 +21,10 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
 {
 
     //------------------
-    // 1 Data Members
+    // 2 Data Members
     //------------------
     private static Bank bank;
+    private static Security securityService;
 
 
 
@@ -44,6 +45,7 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
         try 
         {
             bank = (Bank) Naming.lookup("//localhost/bank");
+	    securityService= (Security) Naming.lookup("//localhost/security");
         } catch (MalformedURLException mue) {
            mue.printStackTrace();
         } catch (NotBoundException nbe) {
@@ -89,9 +91,26 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
    /**
     * Returns the balance of the specified account.
     */
-    public Float getBalance(int account) throws ATMException, RemoteException
-    {   System.out.print("ATMImpl.getBalance() has been invoked for account #" + account + ".\n");
-        Account acct= bank.getAccount(account);
+    public Float getBalance(AccountInfo account) throws ATMException, RemoteException
+    {   System.out.print("ATMImpl.getBalance() has been invoked for account #" + account.getAccountNumber() + ".\n");
+
+        // Authenticate the specified account
+	//------------------------------------
+	if(securityService.validAuth(account) == false)
+	{   throw new ATMException("Invalid PIN number.");
+	}
+
+
+        // Verify that user is authorized to get balance
+	//-----------------------------------------------
+	if(securityService.balanceAllowed(account) == false)
+	{   throw new ATMException("User is not authorized to view account balance.");
+	}
+
+
+        // return balance
+	//----------------
+        Account acct= bank.getAccount(account.getAccountNumber());
 	if(acct == null)
 	{   System.out.println("Account #" + account + " is null!\n");
 	}
