@@ -13,7 +13,8 @@
    * and the "throws *Exception" declarations.  Everything else was copied verbatim.
    */
   
-  public class Client2 extends UnicastRemoteObject implements ATMListener {
+  public class Client2 extends UnicastRemoteObject implements ATMListener
+  {
 
 
      // Constructor
@@ -153,6 +154,7 @@
     {   System.out.println("\nStarting test harness...\n");
         Client2 client2= new Client2();
 	client2.testHarness();
+	System.exit(0);
 
     }
 }
