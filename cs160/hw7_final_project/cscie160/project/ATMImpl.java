@@ -17,7 +17,7 @@ import java.net.MalformedURLException;
  * Implements the ATM interface and provides a single bank account.
  */
 
-public class ATMImpl extends UnicastRemoteObject implements ATM
+public class ATMImpl extends Observable implements ATM
 {
 
     //------------------
@@ -62,6 +62,12 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
         } catch (RemoteException re) {
            re.printStackTrace();
         }
+
+
+	// Export the remote object to make it available to receive
+	// incoming calls on any port.
+	//----------------------------------------------------------
+	UnicastRemoteObject.exportObject(this,0);
     }
 
 
