@@ -7,8 +7,8 @@ import java.rmi.*;
 public interface ATM extends Remote
 {
     // Method Members
-    public void  deposit(int account, float amount) throws ATMException, RemoteException;
-    public void  withdraw(int account, float amount) throws ATMException, RemoteException;
+    public void  deposit(AccountInfo account, float amount) throws ATMException, RemoteException;
+    public void  withdraw(AccountInfo account, float amount) throws ATMException, RemoteException;
     public Float getBalance(AccountInfo account) throws ATMException, RemoteException;
-    public void  transfer(int fromAccount, int toAccount, float amount) throws ATMException, RemoteException;
+    public void  transfer(AccountInfo fromAccount, AccountInfo toAccount, float amount) throws ATMException, RemoteException;
 }

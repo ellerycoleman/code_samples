@@ -66,12 +66,45 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
     //-----------------
 
 
+
+   /**
+    * Authenticates the specified account.
+    */
+    public void authenticate(AccountInfo account) throws ATMException, RemoteException
+    {   
+        // Authenticate the specified account
+	//------------------------------------
+	if(securityService.validAuth(account) == false)
+	{   throw new ATMException("Invalid PIN number.");
+	}
+    }
+
+
+
+
    /**
     * Deposits the specified amount into the account.
     */
-    public void deposit(int account, float amount) throws ATMException, RemoteException
-    {   System.out.print("ATMImpl.deposit() has been invoked on account #" + account + ".\n");
-        Account acct= bank.getAccount(account);
+    public void deposit(AccountInfo account, float amount) throws ATMException, RemoteException
+    {   
+        System.out.print("ATMImpl.deposit() has been invoked on account #" + account.getAccountNumber() + ".\n");
+
+
+        // Authenticate the specified account
+	//------------------------------------
+	authenticate(account);
+
+
+        // Verify that user is authorized to get balance
+	//-----------------------------------------------
+	if(securityService.depositAllowed(account) == false)
+	{   throw new ATMException("User is not authorized to perform a deposit.");
+	}
+    
+
+        // perform deposit
+	//-----------------
+        Account acct= bank.getAccount(account.getAccountNumber());
 	acct.deposit(amount);
     }
 
@@ -80,9 +113,33 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
    /**
     * Withdraws the specified amount from the account.
     */
-    public void withdraw(int account, float amount) throws ATMException, RemoteException
+    public void withdraw(AccountInfo account, float amount) throws ATMException, RemoteException
     {   System.out.print("ATMImpl.withdraw() has been invoked for account #" + account + ".\n");
-        Account acct= bank.getAccount(account);
+
+        // Authenticate the specified account
+	//------------------------------------
+	authenticate(account);
+
+
+        // Verify that user is authorized to get balance
+	//-----------------------------------------------
+	if(securityService.withdrawAllowed(account) == false)
+	{   throw new ATMException("User is not authorized to withdraw funds.");
+	}
+    
+
+
+        // Verify sufficient funds...
+	//----------------------------
+        Account acct= bank.getAccount(account.getAccountNumber());
+	float currBalance= acct.getBalance();
+	if(currBalance < amount)
+	{   throw new ATMException("Insufficient Funds.");
+	}
+
+
+        // Perform withdrawal
+	//--------------------
 	acct.withdraw(amount);
     }
 
@@ -96,9 +153,7 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
 
         // Authenticate the specified account
 	//------------------------------------
-	if(securityService.validAuth(account) == false)
-	{   throw new ATMException("Invalid PIN number.");
-	}
+	authenticate(account);
 
 
         // Verify that user is authorized to get balance
@@ -124,19 +179,41 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
    /**
     * Transfers the specified amount from one account to another.
     */
-    public void transfer(int fromAccount, int toAccount, float amount) throws ATMException, RemoteException
+    public void transfer(AccountInfo fromAccount, AccountInfo toAccount, float amount) throws ATMException, RemoteException
     {   System.out.print("ATMImpl.transfer() has been invoked: $" + amount +
-                         " from account #" + fromAccount + " to account " +
-			 toAccount + "\n"
+                         " from account #" + fromAccount.getAccountNumber() + " to account " +
+			 toAccount.getAccountNumber() + "\n"
 		        );
-        Account fromAcct= bank.getAccount(fromAccount);
-	Account toAcct=   bank.getAccount(toAccount);
+
+
+        // Authenticate both accounts
+	//----------------------------
+	authenticate(fromAccount);
+	authenticate(toAccount);
+
+
+        // Verify that fromAccount is authorized for a withdrawal
+	//--------------------------------------------------------
+	if(securityService.withdrawAllowed(fromAccount) == false)
+	{   throw new ATMException("User is not authorized to withdraw funds from " +
+	                           "account #" + fromAccount.getAccountNumber() + ".");
+	}
+
+
+        // Verify that toAccount is authorized for a deposit
+	//---------------------------------------------------
+	if(securityService.depositAllowed(toAccount) == false)
+	{   throw new ATMException("User is not authorized to deposit funds into " +
+	                           "account #" + toAccount.getAccountNumber() + ".");
+	}
+
 
 
 
         // verify that there is enough money in the fromAccount
-	// to cover this transaction
+	// to cover the transfer transaction.
 	//------------------------------------------------------
+        Account fromAcct= bank.getAccount(fromAccount.getAccountNumber());
 	float fromAcctBalance= fromAcct.getBalance();
         if(fromAcctBalance < amount)
 	{   throw new ATMException("Insuffient Funds for Transfer; Tranfer Cancelled.");
@@ -147,6 +224,7 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
 	// withdrawing the funds from the fromAccount and
 	// depositing them into the toAccount.
 	//-------------------------------------------------
+	Account toAcct=   bank.getAccount(toAccount.getAccountNumber());
 	fromAcct.withdraw(amount);
 	toAcct.deposit(amount);
 
