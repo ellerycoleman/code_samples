@@ -21,10 +21,11 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
 {
 
     //------------------
-    // 2 Data Members
+    // 3 Data Members
     //------------------
     private static Bank bank;
     private static Security securityService;
+    private float cashOnHand;
 
 
 
@@ -35,10 +36,16 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
 
 
    /**
-    * Default constructor to connect to the remote Bank server.
+    * Default constructor to connect to the remote Bank and Security service.
     */
     public ATMImpl() throws RemoteException
     {   
+
+        // Initialze cashOnHand to $500
+	//-----------------------------
+	cashOnHand= 500F;
+
+
     
         // Connect to the remote Bank
         //----------------------------
@@ -129,8 +136,61 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
     
 
 
-        // Verify sufficient funds...
-	//----------------------------
+        // Verify that the account has sufficient funds...
+	//-------------------------------------------------
+        Account acct= bank.getAccount(account.getAccountNumber());
+	float currBalance= acct.getBalance();
+	if(currBalance < amount)
+	{   throw new ATMException("Insufficient Funds.");
+	}
+
+
+	// Verify that the ATM has sufficient funds...
+	//---------------------------------------------
+	if(amount > cashOnHand)
+	{   throw new ATMException("ATM is not able to fund this transaction.\n" +
+	                           "ATM cashOnHand: $" + cashOnHand);
+	}
+
+
+        // Perform withdrawal
+	//--------------------
+	acct.withdraw(amount);
+
+
+
+	// Update cashOnHand
+	//--------------------
+	cashOnHand-= amount;
+
+    }
+
+
+
+
+
+
+   /**
+    * Withdraws the specified amount from the account for the purpose of a transfer;
+    * does not verify or update the ATM's cashOnHand.
+    */
+    public void withdrawForTransfer(AccountInfo account, float amount) throws ATMException, RemoteException
+    {   System.out.print("ATMImpl.withdrawForTransfer() has been invoked for account #" + account + ".\n");
+
+        // Authenticate the specified account
+	//------------------------------------
+	authenticate(account);
+
+
+        // Verify that user is authorized to get balance
+	//-----------------------------------------------
+	if(securityService.withdrawAllowed(account) == false)
+	{   throw new ATMException("User is not authorized to withdraw funds.");
+	}
+    
+
+        // Verify that the account has sufficient funds...
+	//-------------------------------------------------
         Account acct= bank.getAccount(account.getAccountNumber());
 	float currBalance= acct.getBalance();
 	if(currBalance < amount)
@@ -141,7 +201,14 @@ public class ATMImpl extends UnicastRemoteObject implements ATM
         // Perform withdrawal
 	//--------------------
 	acct.withdraw(amount);
+
+
     }
+
+
+
+
+
 
 
 
