@@ -1,5 +1,6 @@
 package cscie160.project;
 import java.rmi.*;
+import java.util.*;
 
 /**
  * Interface for an ATM.
@@ -11,4 +12,5 @@ public interface ATM extends Remote
     public void  withdraw(AccountInfo account, float amount) throws ATMException, RemoteException;
     public Float getBalance(AccountInfo account) throws ATMException, RemoteException;
     public void  transfer(AccountInfo fromAccount, AccountInfo toAccount, float amount) throws ATMException, RemoteException;
+    public void  addObserver(ATMListener o) throws RemoteException;
 }

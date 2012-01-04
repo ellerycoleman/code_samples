@@ -1,23 +1,18 @@
 /*----------------------------------------------------------------------------
 # File:		ATMListener.java
-# Date:		Wed Jan  4 02:34:05 GMT 2012
+# Date:		Mon Nov 14 03:08:07 GMT 2011
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Defines the ATMListener interface for the final project.
+# Abstract:	Provides ATMListener interface for cscie160, final project.
+#               This interface extends Java's native Observer pattern to work
+#               with RMI.  Full description here:
+# http://sites.google.com/site/jamespandavan/Home/java/sample-remote-observer-based-on-rmi
 #-----------------------------------------------------------------------------
 # Revision: $Id: ATMImpl.java 65 2011-11-24 08:49:27Z ellery $
 #---------------------------------------------------------------------------*/
 package cscie160.project;
-import java.rmi.*;
-import java.util.*;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-
-
-/**
- * Remote interface for an ATMListener.
- */
 public interface ATMListener extends Remote 
-{
-    // Method Members
-    public void  registerATMListener(Observer o) throws RemoteException;
-    public void  handleTXNotification(Observable obj, Object arg) throws RemoteException;
+{   void update(Object observable, Object updateMsg) throws RemoteException;
 }

@@ -7,6 +7,7 @@
 # Revision: $Id: ATMImpl.java 65 2011-11-24 08:49:27Z ellery $
 #---------------------------------------------------------------------------*/
 package cscie160.project;
+import java.io.Serializable;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
@@ -19,6 +20,30 @@ import java.net.MalformedURLException;
 
 public class ATMImpl extends Observable implements ATM
 {
+
+    //-----------------------------------------------------
+    // Internal class to support TransactionNotifications
+    //-----------------------------------------------------
+    private class WrappedObserver implements Observer, Serializable
+    {
+        private static final long serialVersionUID = 1L;
+        private ATMListener tn = null;
+        public WrappedObserver(ATMListener tn) {
+            this.tn = tn;
+        }
+
+        public void update(Observable o, Object arg) 
+        {
+            try {
+                tn.update(o.toString(), arg);
+            } catch (RemoteException e) {
+                System.out
+                        .println("Remote exception removing observer:" + this);
+                o.deleteObserver(this);
+            }
+        }
+    }
+
 
     //------------------
     // 3 Data Members
@@ -77,6 +102,12 @@ public class ATMImpl extends Observable implements ATM
     //-----------------
     // Method members
     //-----------------
+    public void addObserver(ATMListener o) throws RemoteException {
+        WrappedObserver mo = new WrappedObserver(o);
+        addObserver(mo);
+        System.out.println("Added observer:" + mo);
+    }
+
 
 
 
@@ -100,7 +131,22 @@ public class ATMImpl extends Observable implements ATM
     */
     public void deposit(AccountInfo account, float amount) throws ATMException, RemoteException
     {   
-        System.out.print("ATMImpl.deposit() has been invoked on account #" + account.getAccountNumber() + ".\n");
+        // Transaction Description
+	//-------------------------
+        String txDesc= "ATMImpl.deposit() has been invoked on account #" + 
+	                account.getAccountNumber(); 
+
+
+        // Display pending transaction to STDOUT on server
+	//-------------------------------------------------
+	System.out.println(txDesc);
+
+
+        // Notify all ATMListeners of the pending transactcion
+	//-----------------------------------------------------
+	TransactionNotification tn= new TransactionNotification("ATMListener: " + txDesc);
+	setChanged();
+	notifyObservers(tn);
 
 
         // Authenticate the specified account

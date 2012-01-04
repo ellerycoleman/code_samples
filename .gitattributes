@@ -84,7 +84,9 @@ cs160/hw7_final_project/cscie160/project/Bank.java -text
 cs160/hw7_final_project/cscie160/project/BankImpl.java -text
 cs160/hw7_final_project/cscie160/project/BankServer.java -text
 cs160/hw7_final_project/cscie160/project/Client.java -text
+cs160/hw7_final_project/cscie160/project/Client2.java -text
 cs160/hw7_final_project/cscie160/project/Security.java -text
 cs160/hw7_final_project/cscie160/project/SecurityImpl.java -text
+cs160/hw7_final_project/cscie160/project/TransactionNotification.java -text
 cs160/hw7_final_project/cscie160/project/securityProfile.java -text
 cs160/hw7_final_project/output.txt -text
