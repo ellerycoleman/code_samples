@@ -20,7 +20,7 @@ public interface Account extends Remote
     // Method Members
     public Float getBalance() throws RemoteException;
     public void deposit(Float f) throws RemoteException;
-    public void withdraw(Float f) throws RemoteException;
+    public void withdraw(Float f) throws RemoteException,NSFException;
     public void setBalance(Float b) throws RemoteException;
     public int getAccountNumber() throws RemoteException;
 }

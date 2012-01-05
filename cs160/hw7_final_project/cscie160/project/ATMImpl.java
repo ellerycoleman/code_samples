@@ -20,7 +20,6 @@ import java.net.MalformedURLException;
 
 public class ATMImpl extends Observable implements ATM
 {
-
     //-----------------------------------------------------
     // Internal class to support TransactionNotifications
     //-----------------------------------------------------
@@ -45,9 +44,12 @@ public class ATMImpl extends Observable implements ATM
     }
 
 
-    //------------------
-    // 3 Data Members
-    //------------------
+
+
+
+    //----------------------------------
+    //        3 Data Members
+    //----------------------------------
     private static Bank bank;
     private static Security securityService;
     private float cashOnHand;
@@ -55,11 +57,9 @@ public class ATMImpl extends Observable implements ATM
 
 
 
-    //-------------
-    // Constructor
-    //-------------
-
-
+    //----------------------------------
+    //          Constructor
+    //----------------------------------
    /**
     * Default constructor to connect to the remote Bank and Security service.
     */
@@ -99,9 +99,9 @@ public class ATMImpl extends Observable implements ATM
 
 
 
-    //-----------------
-    // Method members
-    //-----------------
+    //----------------------------------
+    //        Method members
+    //----------------------------------
     public void addObserver(ATMListener o) throws RemoteException {
         WrappedObserver mo = new WrappedObserver(o);
         addObserver(mo);
@@ -172,12 +172,32 @@ public class ATMImpl extends Observable implements ATM
    /**
     * Withdraws the specified amount from the account.
     */
-    public void withdraw(AccountInfo account, float amount) throws ATMException, RemoteException
-    {   System.out.print("ATMImpl.withdraw() has been invoked for account #" + account + ".\n");
+    public void withdraw(AccountInfo account, float amount) throws ATMException, NSFException, RemoteException
+    {   
+        // Transaction Description
+	//-------------------------
+	String txDesc= "ATMImpl.withdraw() has been invoked for account #" + 
+	                account.getAccountNumber();
+
+
+        // Display pending transaction to STDOUT on server
+	//-------------------------------------------------
+	System.out.println(txDesc);
+
+
+
+        // Notify all ATMListeners of the pending transactcion
+	//-----------------------------------------------------
+	TransactionNotification tn= new TransactionNotification("ATMListener: " + txDesc);
+	setChanged();
+	notifyObservers(tn);
+
+
 
         // Authenticate the specified account
 	//------------------------------------
 	authenticate(account);
+
 
 
         // Verify that user is authorized to get balance
@@ -186,15 +206,6 @@ public class ATMImpl extends Observable implements ATM
 	{   throw new ATMException("User is not authorized to withdraw funds.");
 	}
     
-
-
-        // Verify that the account has sufficient funds...
-	//-------------------------------------------------
-        Account acct= bank.getAccount(account.getAccountNumber());
-	float currBalance= acct.getBalance();
-	if(currBalance < amount)
-	{   throw new ATMException("Insufficient Funds.");
-	}
 
 
 	// Verify that the ATM has sufficient funds...
@@ -207,8 +218,8 @@ public class ATMImpl extends Observable implements ATM
 
         // Perform withdrawal
 	//--------------------
+        Account acct= bank.getAccount(account.getAccountNumber());
 	acct.withdraw(amount);
-
 
 
 	// Update cashOnHand
@@ -216,48 +227,6 @@ public class ATMImpl extends Observable implements ATM
 	cashOnHand-= amount;
 
     }
-
-
-
-
-
-
-   /**
-    * Withdraws the specified amount from the account for the purpose of a transfer;
-    * does not verify or update the ATM's cashOnHand.
-    */
-    public void withdrawForTransfer(AccountInfo account, float amount) throws ATMException, RemoteException
-    {   System.out.print("ATMImpl.withdrawForTransfer() has been invoked for account #" + account + ".\n");
-
-        // Authenticate the specified account
-	//------------------------------------
-	authenticate(account);
-
-
-        // Verify that user is authorized to get balance
-	//-----------------------------------------------
-	if(securityService.withdrawAllowed(account) == false)
-	{   throw new ATMException("User is not authorized to withdraw funds.");
-	}
-    
-
-        // Verify that the account has sufficient funds...
-	//-------------------------------------------------
-        Account acct= bank.getAccount(account.getAccountNumber());
-	float currBalance= acct.getBalance();
-	if(currBalance < amount)
-	{   throw new ATMException("Insufficient Funds.");
-	}
-
-
-        // Perform withdrawal
-	//--------------------
-	acct.withdraw(amount);
-
-
-    }
-
-
 
 
 
@@ -298,11 +267,28 @@ public class ATMImpl extends Observable implements ATM
    /**
     * Transfers the specified amount from one account to another.
     */
-    public void transfer(AccountInfo fromAccount, AccountInfo toAccount, float amount) throws ATMException, RemoteException
-    {   System.out.print("ATMImpl.transfer() has been invoked: $" + amount +
-                         " from account #" + fromAccount.getAccountNumber() + " to account " +
-			 toAccount.getAccountNumber() + "\n"
-		        );
+    public void transfer(AccountInfo fromAccount, AccountInfo toAccount, float amount) throws ATMException, NSFException, RemoteException
+    {   
+        // Transaction Description
+	//-------------------------
+        String txDesc= "ATMImpl.transfer() has been invoked: $" + amount +
+                        " from account #" + fromAccount.getAccountNumber() + " to account " +
+			 toAccount.getAccountNumber();
+
+
+
+        // Display pending transaction to STDOUT on server
+	//-------------------------------------------------
+	System.out.println(txDesc);
+
+
+
+        // Notify all ATMListeners of the pending transactcion
+	//-----------------------------------------------------
+	TransactionNotification tn= new TransactionNotification("ATMListener: " + txDesc);
+	setChanged();
+	notifyObservers(tn);
+
 
 
         // Authenticate both accounts
@@ -311,12 +297,14 @@ public class ATMImpl extends Observable implements ATM
 	authenticate(toAccount);
 
 
+
         // Verify that fromAccount is authorized for a withdrawal
 	//--------------------------------------------------------
 	if(securityService.withdrawAllowed(fromAccount) == false)
 	{   throw new ATMException("User is not authorized to withdraw funds from " +
 	                           "account #" + fromAccount.getAccountNumber() + ".");
 	}
+
 
 
         // Verify that toAccount is authorized for a deposit
@@ -328,21 +316,10 @@ public class ATMImpl extends Observable implements ATM
 
 
 
-
-        // verify that there is enough money in the fromAccount
-	// to cover the transfer transaction.
-	//------------------------------------------------------
-        Account fromAcct= bank.getAccount(fromAccount.getAccountNumber());
-	float fromAcctBalance= fromAcct.getBalance();
-        if(fromAcctBalance < amount)
-	{   throw new ATMException("Insuffient Funds for Transfer; Tranfer Cancelled.");
-	}
-
-
-
 	// withdrawing the funds from the fromAccount and
 	// depositing them into the toAccount.
 	//-------------------------------------------------
+        Account fromAcct= bank.getAccount(fromAccount.getAccountNumber());
 	Account toAcct=   bank.getAccount(toAccount.getAccountNumber());
 	fromAcct.withdraw(amount);
 	toAcct.deposit(amount);

@@ -73,7 +73,7 @@
      //}
 
 
-     public static void main(String[] args) throws RemoteException, NamingException, ATMException 
+     public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException 
     {   System.out.println("\nStarting test harness...\n");
 
 
@@ -124,18 +124,18 @@
               atm.deposit(acct2, 1000);
 
 
-
               // make $20 transfer from acct3 to acct1 and get new balance
               //System.out.println("transferring( acct3 --> acct1): 20 ");
               //atm.transfer(acct3, acct1, 20);
 
+
               //System.out.println("transferring( acct1 --> acct2): 500 ");
-              //atm.transfer(acct1, acct2, 500);
+              atm.transfer(acct1, acct2, 5000);
 
 
               // withdraw $100 from acct1
               System.out.println("withdrawing(acct1): 100 ");
-              atm.withdraw(acct1, 100);
+              atm.withdraw(acct1, 10000);
 
 
 
@@ -151,12 +151,16 @@
 
            } 
 	   catch (RemoteException re) 
-	   {
-              System.out.println("An exception occurred while communicating with the ATM");
-              re.printStackTrace();
+	   {   System.out.println("An exception occurred while communicating with the ATM");
+               re.printStackTrace();
+	       System.exit(1);
            }
 	   catch (ATMException atme)
 	   {   atme.printStackTrace();
+	       System.exit(1);
+	   }
+	   catch (NSFException nsfe)
+	   {   nsfe.printStackTrace();
 	       System.exit(1);
 	   }
         }

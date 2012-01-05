@@ -84,8 +84,12 @@ public class AccountImpl extends UnicastRemoteObject implements Account
    /**
     * Withdraws money from the account.
     */
-    public void withdraw(Float f) throws RemoteException
-    {   balance-= f;
+    public void withdraw(Float f) throws RemoteException,NSFException
+    {   if(f > balance)
+        {   throw new NSFException("Insufficient Funds: account #" + accountNumber +
+	                           " has $" + balance + " and withdraw request is $" + f);
+        }
+        balance-= f;
         System.out.println("Withdrawal from account #" + accountNumber + ",  new balance: $" + balance + "\n");
     }
 
