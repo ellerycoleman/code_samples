@@ -4,7 +4,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Implements the ATMFactory interface for cscie160, final project.
 #-----------------------------------------------------------------------------
-# Revision: $Id: ATMFactoryImpl.java 65 2011-11-24 08:49:27Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.project;
 import java.rmi.*;

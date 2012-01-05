@@ -7,7 +7,7 @@
 #               with RMI.  Full description here:
 # http://sites.google.com/site/jamespandavan/Home/java/sample-remote-observer-based-on-rmi
 #-----------------------------------------------------------------------------
-# Revision: $Id: ATMImpl.java 65 2011-11-24 08:49:27Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.project;
 import java.rmi.Remote;

@@ -4,7 +4,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Provides the AccountInfo class for cscie160, final project.
 #-----------------------------------------------------------------------------
-# Revision: $Id: ATMImpl.java 65 2011-11-24 08:49:27Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.project;
 import java.io.Serializable;

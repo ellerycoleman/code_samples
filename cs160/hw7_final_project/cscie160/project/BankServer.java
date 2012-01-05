@@ -4,7 +4,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Implements a Server for cscie160, final project.
 #-----------------------------------------------------------------------------
-# Revision: $Id: Server.java 68 2011-11-24 10:02:57Z ellery $
+# Revision: $Id$
 #---------------------------------------------------------------------------*/
 package cscie160.project;
 import java.rmi.*;
