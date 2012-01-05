@@ -49,8 +49,9 @@ public class SecurityImpl extends UnicastRemoteObject implements Security
 	securityProfile profile2= new securityProfile(2,2345);
 	securityProfile profile3= new securityProfile(3,3456);
 
-	profile2.denyWithdraw();
-	profile3.denyDeposit();
+        profile1.denyBalance();
+	profile2.denyBalance();
+	profile3.denyBalance();
 
 	addSecurityProfile(1,profile1);
 	addSecurityProfile(2,profile2);

@@ -114,12 +114,12 @@ public class ATMImpl extends Observable implements ATM
    /**
     * Authenticates the specified account.
     */
-    public void authenticate(AccountInfo account) throws ATMException, RemoteException
+    public void authenticate(AccountInfo account) throws SecurityException, RemoteException
     {   
         // Authenticate the specified account
 	//------------------------------------
 	if(securityService.validAuth(account) == false)
-	{   throw new ATMException("Invalid PIN number.");
+	{   throw new SecurityException("Invalid PIN number.");
 	}
     }
 
@@ -129,7 +129,7 @@ public class ATMImpl extends Observable implements ATM
    /**
     * Deposits the specified amount into the account.
     */
-    public void deposit(AccountInfo account, float amount) throws ATMException, RemoteException
+    public void deposit(AccountInfo account, float amount) throws SecurityException, RemoteException
     {   
         // Transaction Description
 	//-------------------------
@@ -144,7 +144,7 @@ public class ATMImpl extends Observable implements ATM
 
         // Notify all ATMListeners of the pending transactcion
 	//-----------------------------------------------------
-	TransactionNotification tn= new TransactionNotification("ATMListener: " + txDesc);
+	TransactionNotification tn= new TransactionNotification("[ATMListener]: " + txDesc);
 	setChanged();
 	notifyObservers(tn);
 
@@ -157,7 +157,7 @@ public class ATMImpl extends Observable implements ATM
         // Verify that user is authorized to get balance
 	//-----------------------------------------------
 	if(securityService.depositAllowed(account) == false)
-	{   throw new ATMException("User is not authorized to perform a deposit.");
+	{   throw new SecurityException("User is not authorized to perform a deposit.");
 	}
     
 
@@ -172,7 +172,7 @@ public class ATMImpl extends Observable implements ATM
    /**
     * Withdraws the specified amount from the account.
     */
-    public void withdraw(AccountInfo account, float amount) throws ATMException, NSFException, RemoteException
+    public void withdraw(AccountInfo account, float amount) throws ATMException, NSFException, RemoteException, SecurityException
     {   
         // Transaction Description
 	//-------------------------
@@ -189,7 +189,7 @@ public class ATMImpl extends Observable implements ATM
 
         // Notify all ATMListeners of the pending transactcion
 	//-----------------------------------------------------
-	TransactionNotification tn= new TransactionNotification("ATMListener: " + txDesc);
+	TransactionNotification tn= new TransactionNotification("[ATMListener]: " + txDesc);
 	setChanged();
 	notifyObservers(tn);
 
@@ -204,7 +204,7 @@ public class ATMImpl extends Observable implements ATM
         // Verify that user is authorized to get balance
 	//-----------------------------------------------
 	if(securityService.withdrawAllowed(account) == false)
-	{   throw new ATMException("User is not authorized to withdraw funds.");
+	{   throw new SecurityException("User is not authorized to withdraw funds.");
 	}
     
 
@@ -237,7 +237,7 @@ public class ATMImpl extends Observable implements ATM
    /**
     * Returns the balance of the specified account.
     */
-    public Float getBalance(AccountInfo account) throws ATMException, RemoteException
+    public Float getBalance(AccountInfo account) throws SecurityException, RemoteException
     {   
         // Transaction Description
 	//-------------------------
@@ -253,7 +253,7 @@ public class ATMImpl extends Observable implements ATM
 
         // Notify all ATMListeners of the pending transactcion
 	//-----------------------------------------------------
-	TransactionNotification tn= new TransactionNotification("ATMListener: " + txDesc);
+	TransactionNotification tn= new TransactionNotification("[ATMListener]: " + txDesc);
 	setChanged();
 	notifyObservers(tn);
 
@@ -268,7 +268,7 @@ public class ATMImpl extends Observable implements ATM
         // Verify that user is authorized to get balance
 	//-----------------------------------------------
 	if(securityService.balanceAllowed(account) == false)
-	{   throw new ATMException("User is not authorized to view account balance.");
+	{   throw new SecurityException("User is not authorized to view account balance.");
 	}
 
 
@@ -288,7 +288,7 @@ public class ATMImpl extends Observable implements ATM
    /**
     * Transfers the specified amount from one account to another.
     */
-    public void transfer(AccountInfo fromAccount, AccountInfo toAccount, float amount) throws ATMException, NSFException, RemoteException
+    public void transfer(AccountInfo fromAccount, AccountInfo toAccount, float amount) throws SecurityException, NSFException, RemoteException
     {   
         // Transaction Description
 	//-------------------------
@@ -306,7 +306,7 @@ public class ATMImpl extends Observable implements ATM
 
         // Notify all ATMListeners of the pending transactcion
 	//-----------------------------------------------------
-	TransactionNotification tn= new TransactionNotification("ATMListener: " + txDesc);
+	TransactionNotification tn= new TransactionNotification("[ATMListener]: " + txDesc);
 	setChanged();
 	notifyObservers(tn);
 
@@ -322,8 +322,8 @@ public class ATMImpl extends Observable implements ATM
         // Verify that fromAccount is authorized for a withdrawal
 	//--------------------------------------------------------
 	if(securityService.withdrawAllowed(fromAccount) == false)
-	{   throw new ATMException("User is not authorized to withdraw funds from " +
-	                           "account #" + fromAccount.getAccountNumber() + ".");
+	{   throw new SecurityException("User is not authorized to withdraw funds from " +
+	                                "account #" + fromAccount.getAccountNumber() + ".");
 	}
 
 
@@ -331,8 +331,8 @@ public class ATMImpl extends Observable implements ATM
         // Verify that toAccount is authorized for a deposit
 	//---------------------------------------------------
 	if(securityService.depositAllowed(toAccount) == false)
-	{   throw new ATMException("User is not authorized to deposit funds into " +
-	                           "account #" + toAccount.getAccountNumber() + ".");
+	{   throw new SecurityException("User is not authorized to deposit funds into " +
+	                                "account #" + toAccount.getAccountNumber() + ".");
 	}
 
 

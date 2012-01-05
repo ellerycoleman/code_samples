@@ -74,8 +74,7 @@ public class BankImpl extends UnicastRemoteObject implements Bank
     */
     public void addAccount(float balance) throws RemoteException
     {   bank.put(numberGenerator,new AccountImpl(balance));
-        System.out.println("Account #" + numberGenerator + " has been created " +
-	                   "with a balance of: $" + balance);
+        System.out.println("Account #" + numberGenerator + " has been added to bank.");
 	++numberGenerator;
     }
 

@@ -73,7 +73,7 @@
      //}
 
 
-     public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException 
+     public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException, SecurityException 
     {   System.out.println("\nStarting test harness...\n");
 
 
@@ -125,17 +125,17 @@
 
 
               // make $20 transfer from acct3 to acct1 and get new balance
-              //System.out.println("transferring( acct3 --> acct1): 20 ");
-              //atm.transfer(acct3, acct1, 20);
+              System.out.println("transferring( acct3 --> acct1): 20 ");
+              atm.transfer(acct3, acct1, 20);
 
 
               //System.out.println("transferring( acct1 --> acct2): 500 ");
-              atm.transfer(acct1, acct2, 5000);
+              atm.transfer(acct1, acct2, 50);
 
 
               // withdraw $100 from acct1
               System.out.println("withdrawing(acct1): 100 ");
-              atm.withdraw(acct1, 10000);
+              atm.withdraw(acct1, 10);
 
 
 
