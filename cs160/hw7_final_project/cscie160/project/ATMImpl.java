@@ -133,7 +133,7 @@ public class ATMImpl extends Observable implements ATM
     {   
         // Transaction Description
 	//-------------------------
-        String txDesc= "ATMImpl.deposit() has been invoked on account #" + 
+        String txDesc= "ATMImpl.deposit() for $" + amount + " has been invoked on account #" + 
 	                account.getAccountNumber(); 
 
 
@@ -176,7 +176,8 @@ public class ATMImpl extends Observable implements ATM
     {   
         // Transaction Description
 	//-------------------------
-	String txDesc= "ATMImpl.withdraw() has been invoked for account #" + 
+	String txDesc= "ATMImpl.withdraw() for $" + amount + 
+	               " has been invoked for account #" + 
 	                account.getAccountNumber();
 
 
@@ -237,11 +238,31 @@ public class ATMImpl extends Observable implements ATM
     * Returns the balance of the specified account.
     */
     public Float getBalance(AccountInfo account) throws ATMException, RemoteException
-    {   System.out.print("ATMImpl.getBalance() has been invoked for account #" + account.getAccountNumber() + ".\n");
+    {   
+        // Transaction Description
+	//-------------------------
+	String txDesc= "ATMImpl.getBalance() has been invoked for account #" +
+	                account.getAccountNumber();
+
+
+        // Display pending transaction to STDOUT on server
+	//-------------------------------------------------
+	System.out.println(txDesc);
+
+
+
+        // Notify all ATMListeners of the pending transactcion
+	//-----------------------------------------------------
+	TransactionNotification tn= new TransactionNotification("ATMListener: " + txDesc);
+	setChanged();
+	notifyObservers(tn);
+
+
 
         // Authenticate the specified account
 	//------------------------------------
 	authenticate(account);
+
 
 
         // Verify that user is authorized to get balance
