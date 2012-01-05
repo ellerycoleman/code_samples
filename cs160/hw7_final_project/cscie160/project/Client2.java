@@ -68,8 +68,14 @@
      * A method to run the test harness.
      */
 
-     public void testHarness() throws RemoteException, NamingException, ATMException
-     {
+     //public void testHarness() throws RemoteException, NamingException, ATMException
+     //{
+     //}
+
+
+     public static void main(String[] args) throws RemoteException, NamingException, ATMException 
+    {   System.out.println("\nStarting test harness...\n");
+
 
 
      //----------------------
@@ -92,7 +98,8 @@
            try {
 
               // Register this client as an ATMListener (or Observer) of the ATM
-	      atm.addObserver(this);
+	      Client2 c2= new Client2();
+	      atm.addObserver(c2);
 
 
               // Specify account credentials
@@ -119,11 +126,11 @@
 
 
               // make $20 transfer from acct3 to acct1 and get new balance
-              System.out.println("transferring( acct3 --> acct1): 20 ");
-              atm.transfer(acct3, acct1, 20);
+              //System.out.println("transferring( acct3 --> acct1): 20 ");
+              //atm.transfer(acct3, acct1, 20);
 
-              System.out.println("transferring( acct1 --> acct2): 500 ");
-              atm.transfer(acct1, acct2, 500);
+              //System.out.println("transferring( acct1 --> acct2): 500 ");
+              //atm.transfer(acct1, acct2, 500);
 
 
               // withdraw $100 from acct1
@@ -142,18 +149,17 @@
 
 
 
-           } catch (RemoteException re) {
+           } 
+	   catch (RemoteException re) 
+	   {
               System.out.println("An exception occurred while communicating with the ATM");
               re.printStackTrace();
            }
+	   catch (ATMException atme)
+	   {   atme.printStackTrace();
+	       System.exit(1);
+	   }
         }
-     }
-
-
-     public static void main(String[] args) throws RemoteException, NamingException, ATMException 
-    {   System.out.println("\nStarting test harness...\n");
-        Client2 client2= new Client2();
-	client2.testHarness();
 	System.exit(0);
 
     }
