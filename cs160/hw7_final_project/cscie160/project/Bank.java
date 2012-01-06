@@ -2,7 +2,7 @@ package cscie160.project;
 import java.rmi.*;
 
 /**
- * Interface for an ATM.
+ * Interface for a Bank.
  */
 public interface Bank extends Remote
 {

@@ -11,7 +11,8 @@
 
 
  /** 
-  * This client is a modified version of Prof Sawyer's client.
+  * This is a modified version of Prof Sawyer's client; it runs the
+  * test suite that he provided for this assignment.
   */
   public class Client extends UnicastRemoteObject implements ATMListener
   {
@@ -173,9 +174,10 @@
 
 
 
-
-
-     public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException, SecurityException 
+   /**
+    *  Runs Prof. Sawyer's test suite.
+    */
+    public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException, SecurityException 
     {   
     
     

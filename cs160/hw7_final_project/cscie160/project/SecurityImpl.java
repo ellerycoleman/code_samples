@@ -13,7 +13,8 @@ import java.util.*;
 
 
 /**
- * Implements the Security interface.
+ * Implements the Security interface - it also creates 3 securityProfile
+ * objects for the 3 test accounts.
  */
 
 public class SecurityImpl extends UnicastRemoteObject implements Security
@@ -49,7 +50,7 @@ public class SecurityImpl extends UnicastRemoteObject implements Security
 	securityProfile profile2= new securityProfile(2,2345);
 	securityProfile profile3= new securityProfile(3,3456);
 
-        //profile1.denyBalance();
+
 	profile2.denyWithdraw();
 	profile3.denyDeposit();
 
@@ -64,6 +65,12 @@ public class SecurityImpl extends UnicastRemoteObject implements Security
     //----------------
     // Method Members
     //----------------
+
+
+   /**
+    * Adds the specified securityProfile to the Security system and maps it to
+    * the specified account number.
+    */
     public void addSecurityProfile(int acctNum, securityProfile profile)
     {   securityProfiles.put(acctNum,profile);
     }
@@ -127,10 +134,9 @@ public class SecurityImpl extends UnicastRemoteObject implements Security
 
     
 
-
-    //----------------
-    // Test Harness
-    //----------------
+   /**
+    *  Provides a simple test harness for this class.
+    */
     public static void main(String args[])
     {
         try
@@ -145,16 +151,3 @@ public class SecurityImpl extends UnicastRemoteObject implements Security
 
 }
 
-/*
-
-public interface Account extends Remote
-{
-    //----------------
-    // Method Members
-    //----------------
-    public boolean validAuth(AccountInfo a) throws RemoteException;
-    public boolean depositAllowed(AccountInfo a) throws RemoteException;
-    public boolean withdrawAllowed(AccountInfo a) throws RemoteException;
-    public boolean balanceAllowed(AccountInfo a) RemoteException;
-}
-*/

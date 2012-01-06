@@ -13,6 +13,10 @@ package cscie160.project;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+/**
+ * Interface for an ATMListener.  ATMListener is implemented via the
+ * Java Observer pattern.
+ */
 public interface ATMListener extends Remote 
 {   void update(Object observable, Object updateMsg) throws RemoteException;
 }

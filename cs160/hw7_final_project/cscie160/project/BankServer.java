@@ -12,7 +12,7 @@ import javax.naming.*;
 
 
 /**
- * This server program instantiates remote BankImpl and SecurityImpl objects
+ * This server program instantiates a BankImpl and a SecurityImpl object
  * and registers them with the naming service.
  */
 public class BankServer

@@ -114,7 +114,7 @@ public class AccountImpl extends UnicastRemoteObject implements Account
 
 
    /**
-    * Test harness for Account.
+    * Provides a simple test harness for this class.
     */
     public static void main(String args[]) throws RemoteException
     {

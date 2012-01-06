@@ -13,7 +13,8 @@ import java.util.*;
 
 
 /**
- * Implements the ATM interface and provides a single bank account.
+ * Implements the Bank interface - it also creates 3 bank accounts for test
+ * purposes.
  */
 
 public class BankImpl extends UnicastRemoteObject implements Bank

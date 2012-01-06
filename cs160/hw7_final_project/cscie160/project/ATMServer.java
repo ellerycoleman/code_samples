@@ -12,7 +12,7 @@ import javax.naming.*;
 
 
 /**
- * This server program instantiates a remote ATMFactory object and
+ * This server program instantiates an ATMFactory object and
  * registers it with the naming service.
  */
 public class ATMServer

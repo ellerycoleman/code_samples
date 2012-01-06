@@ -11,7 +11,7 @@
 
 
  /** 
-  * This client is a modified version of Prof Sawyer's client.
+  * This client is provided as a dev tool to run random tests.
   */
   public class Client2 extends UnicastRemoteObject implements ATMListener
   {
@@ -71,7 +71,10 @@
 
 
 
-     public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException, SecurityException 
+   /**
+    * Provides a simple test harness for this class.
+    */
+    public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException, SecurityException 
     {   System.out.println("\nStarting test harness...\n");
 
 

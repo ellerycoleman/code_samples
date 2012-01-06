@@ -23,6 +23,9 @@ public class securityProfile implements Serializable
     //---------------------
     //  Constants
     //---------------------
+   /**
+    * Used to enumerate available banking transactions; balance, deposit, withdraw, etc.
+    */
     public enum action { BALANCE, DEPOSIT, WITHDRAW };
 
 
@@ -153,7 +156,9 @@ public class securityProfile implements Serializable
 
 
 
-    // test harness
+   /**
+    *  Provides a simple test harness for this class.
+    */
     public static void main(String args[])
     {   securityProfile s= new securityProfile(1,1234);
         System.out.println("acct num: " + s.getAccountNumber());

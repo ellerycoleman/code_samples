@@ -13,6 +13,10 @@ import java.io.Serializable;
 
 
 
+/**
+ * A serializable object used to pass ATM transaction messages from
+ * the ATM to the ATMListeners.
+ */
 
 public class TransactionNotification implements Serializable
 {

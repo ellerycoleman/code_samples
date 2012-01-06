@@ -15,7 +15,7 @@ import java.net.MalformedURLException;
 
 
 /**
- * Implements the ATM interface and provides a single bank account.
+ * Implements the ATM interface.
  */
 
 public class ATMImpl extends Observable implements ATM
@@ -102,6 +102,13 @@ public class ATMImpl extends Observable implements ATM
     //----------------------------------
     //        Method members
     //----------------------------------
+
+
+
+   /**
+    * Registers the specified ATMListener to receive TransactionNotifications
+    * from the ATM.
+    */
     public void addObserver(ATMListener o) throws RemoteException {
         WrappedObserver mo = new WrappedObserver(o);
         addObserver(mo);
@@ -112,7 +119,7 @@ public class ATMImpl extends Observable implements ATM
 
 
    /**
-    * Authenticates the specified account.
+    * Authenticates the specified account using the remote bank's Security service.
     */
     public void authenticate(AccountInfo account) throws SecurityException, RemoteException
     {   
