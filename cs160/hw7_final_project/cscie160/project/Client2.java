@@ -8,15 +8,16 @@
   import javax.naming.*;
   import java.util.*;
   
-  /** 
-   * This is the client provided by Prof Sawyer. I had to add the "import javax.naming.*;" statement
-   * and the "throws *Exception" declarations.  Everything else was copied verbatim.
-   */
-  
+
+
+ /** 
+  * This client is a modified version of Prof Sawyer's client.
+  */
   public class Client2 extends UnicastRemoteObject implements ATMListener
   {
 
 
+     //-------------
      // Constructor
      //-------------
      protected Client2() throws RemoteException 
@@ -24,11 +25,16 @@
      }
 
 
+
+     //-----------
      // Constants
      //-----------
      private static final long serialVersionUID = 1L;
 
 
+
+
+     //----------------
      // Method Members
      //----------------
      
@@ -40,7 +46,6 @@
      }
 
 
-
     /**
      * An update() method as required by the Observer interface.
      * Simply passes the TransactionNotification to the handleTXNotification()
@@ -49,7 +54,6 @@
      public void  update(Object observable, Object updateMesg)
      {   handleTXNotification(observable,updateMesg);
      }
-
 
 
     /**
@@ -64,13 +68,111 @@
 
 
 
-    /**
-     * A method to run the test harness.
-     */
 
-     //public void testHarness() throws RemoteException, NamingException, ATMException
-     //{
-     //}
+
+
+//==============================================================================
+//  BEGIN -->  VERBATIM CLIENT CODE PROVIDED AND REQUIRED BY PROFESSOR SAWYER
+//==============================================================================
+
+   public static void testATM(ATM atm) {
+      if (atm!=null) {
+         printBalances(atm);
+         performTestOne(atm);
+         performTestTwo(atm);
+         performTestThree(atm);
+         performTestFour(atm);
+         performTestFive(atm);
+         performTestSix(atm);
+         performTestSeven(atm);
+         performTestEight(atm);
+         performTestNine(atm);
+         printBalances(atm);
+      }
+   }        
+   public static void printBalances(ATM atm) {        
+      try {
+         System.out.println("Balance(0000001): "+atm.getBalance(getAccountInfo(0000001, 1234)));
+         System.out.println("Balance(0000002): "+atm.getBalance(getAccountInfo(0000002, 2345)));
+         System.out.println("Balance(0000003): "+atm.getBalance(getAccountInfo(0000003, 3456)));
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+   }
+   public static void performTestOne(ATM atm) {       
+      try {
+         atm.getBalance(getAccountInfo(0000001, 5555));
+      } catch (Exception e) {
+         System.out.println("Failed as expected: "+e);
+      }
+   }
+   public static void performTestTwo(ATM atm) {       
+      try {
+         atm.withdraw(getAccountInfo(0000002, 2345), 500);
+      } catch (Exception e) {
+         System.out.println("Failed as expected: "+e);
+      }
+   }
+   public static void performTestThree(ATM atm) {        
+      try {
+         atm.withdraw(getAccountInfo(0000001, 1234), 50);
+      } catch (Exception e) {
+         System.out.println("Failed as expected: "+e);
+      }
+   }
+   public static void performTestFour(ATM atm) {         
+      try {
+         atm.deposit(getAccountInfo(0000001, 1234), 500);
+      } catch (Exception e) {
+         System.out.println("Unexpected error: "+e);
+      }
+   }
+   public static void performTestFive(ATM atm) {         
+      try {
+         atm.deposit(getAccountInfo(0000002, 2345), 100);
+      } catch (Exception e) {
+         System.out.println("Unexpected error: "+e);
+      }
+   }
+   public static void performTestSix(ATM atm) {       
+      try {
+         atm.withdraw(getAccountInfo(0000001, 1234), 100);
+      } catch (Exception e) {
+         System.out.println("Unexpected error: "+e);
+      }
+   }
+   public static void performTestSeven(ATM atm) {        
+      try {
+         atm.withdraw(getAccountInfo(0000003, 3456), 300);
+      } catch (Exception e) {
+         System.out.println("Unexpected error: "+e);
+      }
+   }
+   public static void performTestEight(ATM atm) {        
+      try {
+         atm.withdraw(getAccountInfo(0000001, 1234), 200);
+      } catch (Exception e) {
+         System.out.println("Failed as expected: "+e);
+      }
+   }
+   public static void performTestNine(ATM atm) {        
+      try {
+         atm.transfer(getAccountInfo(0000001, 1234),getAccountInfo(0000002, 2345), 100);
+      } catch (Exception e) {
+         System.out.println("Unexpected error: "+e);
+      }
+   }
+
+//==============================================================================
+//   END -->  VERBATIM CLIENT CODE PROVIDED AND REQUIRED BY PROFESSOR SAWYER
+//==============================================================================
+
+
+
+
+
+
+
 
 
      public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException, SecurityException 
@@ -95,13 +197,18 @@
            re.printStackTrace();
         }
         if (atm!=null) {
-           try {
 
-              // Register this client as an ATMListener (or Observer) of the ATM
+              // Per the spec, register this client as an ATMListener (i.e. Observer)
+	      // of the ATM.
 	      Client2 c2= new Client2();
 	      atm.addObserver(c2);
+	      testATM(atm);
 
 
+
+/*
+
+           try {
               // Specify account credentials
 	      AccountInfo acct1= getAccountInfo(1,1234);
 	      AccountInfo acct2= getAccountInfo(2,2345);
@@ -136,6 +243,7 @@
               // withdraw $100 from acct1
               System.out.println("withdrawing(acct1): 100 ");
               atm.withdraw(acct1, 10);
+              atm.withdraw(acct3, 501);
 
 
 
@@ -146,7 +254,6 @@
               System.out.println("Balance(acct2): "+atm.getBalance(acct2));
               System.out.println("Balance(acct3): "+atm.getBalance(acct3));
               System.out.println();
-
 
 
            } 
@@ -163,6 +270,13 @@
 	   {   nsfe.printStackTrace();
 	       System.exit(1);
 	   }
+	   catch (SecurityException sece)
+	   {   sece.printStackTrace();
+	       System.exit(1);
+	   }
+
+*/
+
         }
 	System.exit(0);
 

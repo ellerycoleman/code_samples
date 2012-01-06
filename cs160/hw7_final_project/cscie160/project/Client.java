@@ -176,7 +176,10 @@
 
 
      public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException, SecurityException 
-    {   System.out.println("\nStarting test harness...\n");
+    {   
+    
+    
+        System.out.println("\nStarting test harness...\n");
 
 
 
@@ -196,88 +199,37 @@
         } catch (RemoteException re) {
            re.printStackTrace();
         }
-        if (atm!=null) {
-
+        if (atm!=null) 
+	{
               // Per the spec, register this client as an ATMListener (i.e. Observer)
-	      // of the ATM.
+	      // of the ATM.  Since we are in a static context, we declare a new Client
+	      // object and register it as an ATMListener.  When the ATM sends messages
+	      // to this client object, they will be displayed on STDOUT.
+	      //
+	      // If we were in a non-static context, we could have said
+	      // atm.addObserver(this).  That statement would register "this" object
+	      // as the ATMListener.  We can accomplish this by moving this test
+	      // harness to a non-static method, and then calling this non-static
+	      // method from main().
+	      //---------------------------------------------------------------------
 	      Client c= new Client();
 	      atm.addObserver(c);
+
+
+
+	      // Run Professor Sawyer's test suite.
+	      //------------------------------------
 	      testATM(atm);
 
-
-
-/*
-
-           try {
-              // Specify account credentials
-	      AccountInfo acct1= getAccountInfo(1,1234);
-	      AccountInfo acct2= getAccountInfo(2,2345);
-	      AccountInfo acct3= getAccountInfo(3,3456);
-
-
-              // get initial account balances
-              System.out.println("Initial Balances");
-              System.out.println("Balance(acct1): "+atm.getBalance(acct1));
-              System.out.println("Balance(acct2): "+atm.getBalance(acct2));
-              System.out.println("Balance(acct3): "+atm.getBalance(acct3));
-              System.out.println();
-
-
-
-              // make $1000 depoist in acct2 and get new balance
-              System.out.println("Depositting(acct1): 1000 ");
-              atm.deposit(acct1, 1000);
-              System.out.println("Depositting(acct2): 1000 ");
-              atm.deposit(acct2, 1000);
-
-
-              // make $20 transfer from acct3 to acct1 and get new balance
-              System.out.println("transferring( acct3 --> acct1): 20 ");
-              atm.transfer(acct3, acct1, 20);
-
-
-              //System.out.println("transferring( acct1 --> acct2): 500 ");
-              atm.transfer(acct1, acct2, 50);
-
-
-              // withdraw $100 from acct1
-              System.out.println("withdrawing(acct1): 100 ");
-              atm.withdraw(acct1, 10);
-              atm.withdraw(acct3, 501);
-
-
-
-              // get final account balances
-              System.out.println();
-              System.out.println("Final Balances");
-              System.out.println("Balance(acct1): "+atm.getBalance(acct1));
-              System.out.println("Balance(acct2): "+atm.getBalance(acct2));
-              System.out.println("Balance(acct3): "+atm.getBalance(acct3));
-              System.out.println();
-
-
-           } 
-	   catch (RemoteException re) 
-	   {   System.out.println("An exception occurred while communicating with the ATM");
-               re.printStackTrace();
-	       System.exit(1);
-           }
-	   catch (ATMException atme)
-	   {   atme.printStackTrace();
-	       System.exit(1);
-	   }
-	   catch (NSFException nsfe)
-	   {   nsfe.printStackTrace();
-	       System.exit(1);
-	   }
-	   catch (SecurityException sece)
-	   {   sece.printStackTrace();
-	       System.exit(1);
-	   }
-
-*/
-
         }
+
+
+	// Since this client implements the ATMListener using the
+	// RemoteObserver interface, it must extend the UnicastRemoteObject.
+	// Extending this object causes the thread to hang around indefinitely
+	// unless it is explicitly asked to exit.  Thus, we ask it to exit
+	// once the test suite has run.
+	//--------------------------------------------------------------------
 	System.exit(0);
 
     }
