@@ -8,18 +8,19 @@
   import javax.naming.*;
   import java.util.*;
   
-  /** 
-   * This is the client provided by Prof Sawyer. I had to add the "import javax.naming.*;" statement
-   * and the "throws *Exception" declarations.  Everything else was copied verbatim.
-   */
+
+
+ /** 
+  * This client is a modified version of Prof Sawyer's client.
+  */
   
-  public class Client2 extends UnicastRemoteObject implements ATMListener
+  public class Client extends UnicastRemoteObject implements ATMListener
   {
 
 
      // Constructor
      //-------------
-     protected Client2() throws RemoteException 
+     protected Client() throws RemoteException 
      {   super();
      }
 
@@ -40,7 +41,6 @@
      }
 
 
-
     /**
      * An update() method as required by the Observer interface.
      * Simply passes the TransactionNotification to the handleTXNotification()
@@ -49,7 +49,6 @@
      public void  update(Object observable, Object updateMesg)
      {   handleTXNotification(observable,updateMesg);
      }
-
 
 
     /**
@@ -63,14 +62,6 @@
      }
 
 
-
-    /**
-     * A method to run the test harness.
-     */
-
-     //public void testHarness() throws RemoteException, NamingException, ATMException
-     //{
-     //}
 
 
      public static void main(String[] args) throws RemoteException, NamingException, ATMException, NSFException, SecurityException 
@@ -98,8 +89,8 @@
            try {
 
               // Register this client as an ATMListener (or Observer) of the ATM
-	      Client2 c2= new Client2();
-	      atm.addObserver(c2);
+	      Client c= new Client();
+	      atm.addObserver(c);
 
 
               // Specify account credentials
@@ -161,6 +152,10 @@
 	   }
 	   catch (NSFException nsfe)
 	   {   nsfe.printStackTrace();
+	       System.exit(1);
+	   }
+	   catch (SecurityException sece)
+	   {   sece.printStackTrace();
 	       System.exit(1);
 	   }
         }
