@@ -39,7 +39,8 @@ of what each file provides:
    An interface description for ATMs.
 
 9. ATMListener.java:
-   An interface description; supports ATM TransactionNotifications.
+   An interface description to support the distribution of ATM
+   TransactionNotifications.
 
 10. ATMServer.java:
     Registers the ATMFactoryImpl with the naming service.
@@ -66,13 +67,13 @@ of what each file provides:
     Implements the Security interface; initializes 3 security profiles.
 
 18. Security.java:
-    An interface for the Security system.
+    An interface for the bank's Security system.
 
 19. securityProfile.java:
     A class to store user authentication and authorization data.
 
 20. TransactionNotification.java:
-    A serializable component to transfer ATM transaction messages.
+    A serializable component to pass ATM transaction messages.
 
 
 
@@ -84,7 +85,7 @@ of what each file provides:
 #-------------------------------------------
 
 My solution for HW7 follows the HW7 spec very closely.  Rather than repeating
-the HW7 spec, I will highlight the unique design decisions and features found
+the HW7 spec I will highlight the unique design decisions and features found
 within my solution.
 
 
@@ -95,7 +96,7 @@ within my solution.
 In order to store pin numbers and permissions for each bank account I created the
 securityProfile class.  This class provides the appropriate data structures and
 getter/setter methods for pin numbers and permissions.  The security profiles are
-stored in a Map that uses the account number as a key.  The bank's Security service
+stored in a Map that uses account numbers as keys.  The bank's Security service
 performs authentication and authorization using the methods provided by this
 securityProfile class.
 
@@ -106,10 +107,10 @@ securityProfile class.
 # ATMListener Implementation
 #----------------------------
 Java SE provides the Observer pattern in order facilitate publisher/subscriber
-behavior between java objects.  To use the Observer pattern, the publishing object
+behavior between java objects.  To use the Observer pattern the publishing object
 must extend the Observable class and the subscribing objects must implement the
 Observer interface.  The publishing object adds observers (or listeners) to itself
-using the addObserver() method of the Observable class.  And whenever the publishing
+using the addObserver() method of the Observable class.  Whenever the publishing
 object wishes to notify its observers of an event, it calls the following 2 methods
 from the Observable class:
 
@@ -128,8 +129,8 @@ from the Observable class:
 
 
 Objects that wish to subscribe to these messages implement the Observer interface.
-The Observer interface lists an update() method that the Publisher will call each
-time that the observers need to be notified.
+The Observer interface has an update() method that the Publisher will call each
+time the observers need to be notified.
 
 I chose to use Java's standard Observer design pattern in order to implement the
 ATMListener interface for this project.  The ATM extends the Observable class
@@ -153,6 +154,17 @@ http://sites.google.com/site/jamespandavan/Home/java/sample-remote-observer-base
 
 
 
+#---------------------------------------
+# A note about local/remote references
+#---------------------------------------
+Objects that are required to be passed by value implement the
+java.io.Serializable interface.  
+
+Objects that are required to be passed by reference have interfaces that
+extend java.rmi.Remote, but they do not implement Serializable.
+
+
+
 
 
 #----------------------------
@@ -162,8 +174,8 @@ http://sites.google.com/site/jamespandavan/Home/java/sample-remote-observer-base
 The remainder of my project runs strictly according to the spec.
 The build.xml file for HW7 is similar to the build.xml files that I've
 submitted as part of previous homework assignments.  It builds a jar file
-containg the final project implementation.  You can use the following commands
-to run the code:
+containing the final project implementation.  You can use the following
+commands to run the code:
 
 
 $ rmiregistry -J-cp -Jproject.jar
