@@ -2,7 +2,7 @@
 # File:		securityProfile.java
 # Date:		Mon Jan  2 12:54:22 GMT 2012
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Implements customerProfile class for cscie160, final project.
+# Abstract:	Implements securityProfile class for cscie160, final project.
 #-----------------------------------------------------------------------------
 # Revision: $Id$
 #---------------------------------------------------------------------------*/

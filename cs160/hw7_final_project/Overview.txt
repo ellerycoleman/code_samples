@@ -1,24 +1,92 @@
 #----------------------------------------------------------------------------
-# File:		Overview.txt	
-# Date:		Mon Nov 14 21:07:23 GMT 2011
+# File:		Overview.txt
+# Date:		Fri Jan  6 02:05:32 GMT 2012
 # Author(s):	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Overview of HW5 Solution.
+# Abstract:	Overview of HW7 (final project) Solution.
 #----------------------------------------------------------------------------
-# Revision: $Id: Overview.txt 70 2011-11-24 11:07:12Z ellery $
+# Revision: $Id$
 #----------------------------------------------------------------------------
 
 
-My solution for HW5 is spread across 8 files:
+My solution for HW7 is spread across 20 files.  In the paragraphs below I will
+share details of how the components defined within these files work together to
+provide the distributed banking service.  But immediately I'd like to provide a
+listing of the files along with a short summary of what each file provides:
+
+1. AccountImpl.java:
+   Implements the Account interface, provides remote bank accounts.
+
+2. AccountInfo.java:
+   A serializable component that holds user account/pin info.
+
+3. Account.java:
+   An interface description for bank accounts.
+
+4. ATMException.java:
+   An exception to signal ATM-related problems.
+
+5. ATMFactoryImpl.java:
+   Implements the ATMFactory interface; provides references to ATMs.
+
+6. ATMFactory.java:
+   An interface description for an ATM factory.
+
+7. ATMImpl.java:
+   Implements the ATM interface, provides an ATM.
+
+8. ATM.java:
+   An interface description for ATMs.
+
+9. ATMListener.java:
+   An interface description; supports ATM TransactionNotifications.
+
+10. ATMServer.java:
+    Registers the ATMFactoryImpl with the naming service.
+
+11. BankImpl.java:
+    Implements the Bank interface; initializes 3 bank accounts.
+
+12. Bank.java:
+    An interface description for the Bank.
+
+13. BankServer.java:
+    Registers BankImpl and SecurityImpl with the naming service.
+
+14. Client.java:
+    A client application to run Prof. Sawyer's test suite.
+
+15. NSFException.java:
+    An exception to signal Insufficent Funds for a Bank Account.
+
+16. SecurityException.java:
+    An exception to signal authentication or authorization issues.
+
+17. SecurityImpl.java:
+    Implements the Security interface; initializes 3 security profiles.
+
+18. Security.java:
+    An interface for the Security system.
+
+19. securityProfile.java:
+    A class to store user authentication and authorization data.
+
+20. TransactionNotification.java:
+    A serializable component to transfer ATM transaction messages.
 
 
-1. cscie160/hw5/ATM.java
-2. cscie160/hw5/ATMException.java
-3. cscie160/hw5/ATMFactory.java
-4. cscie160/hw5/ATMFactoryImpl.java
-5. cscie160/hw5/ATMImpl.java
-6. cscie160/hw5/Account.java
-7. cscie160/hw5/Client.java
-8. cscie160/hw5/Server.java
+
+
+My solution for HW7 follows the HW7 spec very closely.  Rather than repeating
+the HW7 spec, I will highlight the unique design decisions found within my
+solution.
+
+
+
+#----------------------------
+# ATMListener Implementation
+#----------------------------
+Java provides the Observer pattern in order facilitate publisher/subscriber behavior
+between objects.  The publishing object
 
 
 The Account class now has 3 data members:

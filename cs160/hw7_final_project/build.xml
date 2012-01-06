@@ -6,7 +6,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	An ant build file for cscie160, final project.
 #============================================================================
-# Revision: $Id: build.xml 68 2011-11-24 10:02:57Z ellery $
+# Revision: $Id$
 #============================================================================
 -->
 
@@ -23,6 +23,7 @@
    <delete dir="build"/>
    <delete dir="javadoc"/>
    <delete file="project.jar"/>
+   <delete file="cscie160/project/*.class"/>
 </target>
 
 
