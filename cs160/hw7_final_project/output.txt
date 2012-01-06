@@ -1,56 +1,125 @@
 
-#-----------------------------
+
+
+#--------------------------------------------------------
 #  Client Output
-#-----------------------------
+#--------------------------------------------------------
 
-[ellery@ssh hw5]$ java -cp hw5.jar cscie160.hw5.Client
-Initial Balances
+[ellery@ssh hw7_final_project]$ java -cp project.jar cscie160.project.Client
+
+Starting test harness...
+
+[ATMListener]: ATMImpl.getBalance() has been invoked for account #1
 Balance(0000001): 0.0
+[ATMListener]: ATMImpl.getBalance() has been invoked for account #2
 Balance(0000002): 100.0
+[ATMListener]: ATMImpl.getBalance() has been invoked for account #3
 Balance(0000003): 500.0
+[ATMListener]: ATMImpl.getBalance() has been invoked for account #1
+Failed as expected: cscie160.project.SecurityException: Invalid PIN number.
+[ATMListener]: ATMImpl.withdraw() for $500.0 has been invoked for account #2
+Failed as expected: cscie160.project.SecurityException: User is not authorized to withdraw funds.
+[ATMListener]: ATMImpl.withdraw() for $50.0 has been invoked for account #1
+Failed as expected: cscie160.project.NSFException: Insufficient Funds: account #1 has $0.0 and withdraw request is $50.0
+[ATMListener]: ATMImpl.deposit() for $500.0 has been invoked on account #1
+[ATMListener]: ATMImpl.deposit() for $100.0 has been invoked on account #2
+[ATMListener]: ATMImpl.withdraw() for $100.0 has been invoked for account #1
+[ATMListener]: ATMImpl.withdraw() for $300.0 has been invoked for account #3
+[ATMListener]: ATMImpl.withdraw() for $200.0 has been invoked for account #1
+Failed as expected: cscie160.project.ATMException: ATM is not able to fund this transaction.
+ATM cashOnHand: $100.0
+[ATMListener]: ATMImpl.transfer() has been invoked: $100.0 from account #1 to account 2
+[ATMListener]: ATMImpl.getBalance() has been invoked for account #1
+Balance(0000001): 300.0
+[ATMListener]: ATMImpl.getBalance() has been invoked for account #2
+Balance(0000002): 300.0
+[ATMListener]: ATMImpl.getBalance() has been invoked for account #3
+Balance(0000003): 200.0
+[ellery@ssh hw7_final_project]$ 
 
-Depositting(0000001): 1000 
-Balance(0000001): 1000.0
-Withdrawing(0000002): 100 
-Balance(0000002): 0.0
-Depositting(0000003): 500 
-Balance(0000003): 1000.0
-
-Final Balances
-Balance(0000001): 1000.0
-Balance(0000002): 0.0
-Balance(0000003): 1000.0
-[ellery@ssh hw5]$ 
 
 
 
 
-#-----------------------------
-#  Server Output
-#-----------------------------
 
-[ellery@ssh hw5]$ java -cp hw5.jar cscie160.hw5.Server
-Initializing ATMFactory...
+
+#--------------------------------------------------------
+#  Bank Server Output
+#--------------------------------------------------------
+
+
+[ellery@ssh hw7_final_project]$ java -cp project.jar cscie160.project.BankServer
+
+Initializing Bank...
 Account #1 was created with balance of $0.0.
+Account #1 has been added to bank.
 Account #2 was created with balance of $100.0.
+Account #2 has been added to bank.
 Account #3 was created with balance of $500.0.
+Account #3 has been added to bank.
+bank bound in registry...
+Initializing Security Service...
+Security service bound in registry...
+BankImpl.getAccount() has been invoked for account #1.
+BankImpl.getAccount() has been invoked for account #2.
+BankImpl.getAccount() has been invoked for account #3.
+BankImpl.getAccount() has been invoked for account #1.
+BankImpl.getAccount() has been invoked for account #1.
+Deposit to account #1,  new balance: $500.0
+
+BankImpl.getAccount() has been invoked for account #2.
+Deposit to account #2,  new balance: $200.0
+
+BankImpl.getAccount() has been invoked for account #1.
+Withdrawal from account #1,  new balance: $400.0
+
+BankImpl.getAccount() has been invoked for account #3.
+Withdrawal from account #3,  new balance: $200.0
+
+BankImpl.getAccount() has been invoked for account #1.
+BankImpl.getAccount() has been invoked for account #2.
+Withdrawal from account #1,  new balance: $300.0
+
+Deposit to account #2,  new balance: $300.0
+
+BankImpl.getAccount() has been invoked for account #1.
+BankImpl.getAccount() has been invoked for account #2.
+BankImpl.getAccount() has been invoked for account #3.
+
+
+
+
+
+#--------------------------------------------------------
+#  Security Server Output
+#--------------------------------------------------------
+
+
+[ellery@ssh hw7_final_project]$ java -cp project.jar cscie160.project.ATMServer
+
+
+Initializing ATMFactory...
 ATM #1 has been added to the atm collection.
 atmFactory bound in registry...
-ATMImpl.getBalance() has been invoked for account #1.
-ATMImpl.getBalance() has been invoked for account #2.
-ATMImpl.getBalance() has been invoked for account #3.
-ATMImpl.deposit() has been invoked on account #1.
-Deposit to account #1,  new balance: $1000.0
+Registered ATMListener:cscie160.project.ATMImpl$WrappedObserver@65ea0252
+ATMImpl.getBalance() has been invoked for account #1
+ATMImpl.getBalance() has been invoked for account #2
+ATMImpl.getBalance() has been invoked for account #3
+ATMImpl.getBalance() has been invoked for account #1
+ATMImpl.withdraw() for $500.0 has been invoked for account #2
+ATMImpl.withdraw() for $50.0 has been invoked for account #1
+ATMImpl.deposit() for $500.0 has been invoked on account #1
+ATMImpl.deposit() for $100.0 has been invoked on account #2
+ATMImpl.withdraw() for $100.0 has been invoked for account #1
+ATMImpl.withdraw() for $300.0 has been invoked for account #3
+ATMImpl.withdraw() for $200.0 has been invoked for account #1
+ATMImpl.transfer() has been invoked: $100.0 from account #1 to account 2
+ATMImpl.getBalance() has been invoked for account #1
+ATMImpl.getBalance() has been invoked for account #2
+ATMImpl.getBalance() has been invoked for account #3
 
-ATMImpl.getBalance() has been invoked for account #1.
-ATMImpl.withdraw() has been invoked for account #2.
-Withdrawal from account #2,  new balance: $0.0
 
-ATMImpl.getBalance() has been invoked for account #2.
-ATMImpl.deposit() has been invoked on account #3.
-Deposit to account #3,  new balance: $1000.0
 
-ATMImpl.getBalance() has been invoked for account #3.
-ATMImpl.getBalance() has been invoked for account #1.
-ATMImpl.getBalance() has been invoked for account #2.
-ATMImpl.getBalance() has been invoked for account #3.
+
+
+
