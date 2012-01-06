@@ -159,6 +159,9 @@ http://sites.google.com/site/jamespandavan/Home/java/sample-remote-observer-base
 
 
 
+
+
+
 #---------------------------------------
 # A note about local/remote references
 #---------------------------------------
@@ -167,6 +170,8 @@ java.io.Serializable interface.
 
 Objects that are required to be passed by reference have interfaces that
 extend java.rmi.Remote, but they do not implement Serializable.
+
+
 
 
 
