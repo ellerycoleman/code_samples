@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
-# File:		ATMServer.java
+# File:		BankServer.java
 # Date:		Mon Nov 14 03:08:07 GMT 2011
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Implements a Server for cscie160, final project.
@@ -12,8 +12,8 @@ import javax.naming.*;
 
 
 /**
- * This server program instantiates a remote ATMFactory object and
- * registers it with the naming service.
+ * This server program instantiates remote BankImpl and SecurityImpl objects
+ * and registers them with the naming service.
  */
 public class BankServer
 {   

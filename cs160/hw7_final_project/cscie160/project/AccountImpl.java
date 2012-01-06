@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
-# File:		Account.java
+# File:		AccountImpl.java
 # Date:		Mon Nov 14 03:08:07 GMT 2011
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Implements the Account interface for cscie160, final project.

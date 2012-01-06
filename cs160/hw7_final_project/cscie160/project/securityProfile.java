@@ -43,7 +43,7 @@ public class securityProfile implements Serializable
     public securityProfile(int acctNum, int pinCode)
     {   accountNumber= acctNum;
         pin= pinCode;
-	permissions= new boolean[] {true,true,true};  //permissions default to true
+	permissions= new boolean[] {true,true,true};  //all permissions default to true
     }
 
 
