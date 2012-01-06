@@ -105,7 +105,7 @@ public class ATMImpl extends Observable implements ATM
     public void addObserver(ATMListener o) throws RemoteException {
         WrappedObserver mo = new WrappedObserver(o);
         addObserver(mo);
-        System.out.println("Added observer:" + mo);
+        System.out.println("Registered ATMListener:" + mo);
     }
 
 
@@ -154,8 +154,8 @@ public class ATMImpl extends Observable implements ATM
 	authenticate(account);
 
 
-        // Verify that user is authorized to get balance
-	//-----------------------------------------------
+        // Verify that user is authorized to make a deposit
+	//--------------------------------------------------
 	if(securityService.depositAllowed(account) == false)
 	{   throw new SecurityException("User is not authorized to perform a deposit.");
 	}
@@ -201,8 +201,8 @@ public class ATMImpl extends Observable implements ATM
 
 
 
-        // Verify that user is authorized to get balance
-	//-----------------------------------------------
+        // Verify that user is authorized to withdraw funds
+	//--------------------------------------------------
 	if(securityService.withdrawAllowed(account) == false)
 	{   throw new SecurityException("User is not authorized to withdraw funds.");
 	}
