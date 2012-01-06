@@ -119,7 +119,17 @@
               System.out.println();
 
 
+              // make $2000 transfer from acct3 to acct1 and get new balance
+              System.out.println("transferring( acct3 --> acct1): 2000 ");
+              atm.transfer(acct3, acct1, 2000);
 
+
+              // withdraw $10 from acct1
+              System.out.println("withdrawing(acct1): 10 ");
+              atm.withdraw(acct1, 10);
+
+
+/*
               // make $1000 depoist in acct2 and get new balance
               System.out.println("Depositting(acct1): 1000 ");
               atm.deposit(acct1, 1000);
@@ -151,7 +161,7 @@
               System.out.println("Balance(acct3): "+atm.getBalance(acct3));
               System.out.println();
 
-
+*/
            } 
 	   catch (RemoteException re) 
 	   {   System.out.println("An exception occurred while communicating with the ATM");
