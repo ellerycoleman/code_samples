@@ -9,9 +9,10 @@
 
 
 My solution for HW7 is spread across 20 files.  In the paragraphs below I will
-share details of how the components defined within these files work together to
-provide the distributed banking service.  But immediately I'd like to provide a
-listing of the files along with a short summary of what each file provides:
+discuss the design decisions that were implemented in this code and provide
+details that are unique to my solution.  To begin I'd like to provide a
+listing of all the files that make up my solution along with a short summary
+of what each file provides:
 
 1. AccountImpl.java:
    Implements the Account interface, provides remote bank accounts.
@@ -76,43 +77,92 @@ listing of the files along with a short summary of what each file provides:
 
 
 
+
+
+#-------------------------------------------
+#  Design decisions and unique features
+#-------------------------------------------
+
 My solution for HW7 follows the HW7 spec very closely.  Rather than repeating
-the HW7 spec, I will highlight the unique design decisions found within my
-solution.
+the HW7 spec, I will highlight the unique design decisions and features found
+within my solution.
+
+
+
+#--------------------------
+# Security Implementation
+#--------------------------
+In order to store pin numbers and permissions for each bank account I created the
+securityProfile class.  This class provides the appropriate data structures and
+getter/setter methods for pin numbers and permissions.  The security profiles are
+stored in a Map which is organized by account number.   The bank's Security service
+performs authentication and authorization using the methods provided by the
+securityProfile class.
+
 
 
 
 #----------------------------
 # ATMListener Implementation
 #----------------------------
-Java provides the Observer pattern in order facilitate publisher/subscriber behavior
-between objects.  The publishing object
+Java SE provides the Observer pattern in order facilitate publisher/subscriber
+behavior between java objects.  To use the Observer pattern, the publishing object
+must extend the Observable class and the subscribing objects must implement the
+Observer interface.  The publishing object adds observers (or listeners) to itself
+using the addObserver() method of the Observable class.  Whenever the publishing
+object wishes to notify its observers of an event, it calls the following 2 methods
+from the Observable class:
 
 
-The Account class now has 3 data members:
-1. balance
-2. accountNumber
-3. numberGenerator
+   // Assert that something has changed,
+   // otherwise no notifications will be sent out.
+   //---------------------------------------------
+   setChanged();
 
-The "numberGenerator" is a static integer that is used to provide a unique bank
-account number whenever a new Account is created.  The Account class now provides
-methods to support deposits, withdrawals, and balance inquiries based on the
-supplied account number.
+   // Notify all observers of the change by calling
+   // their update() method and passing them a copy of
+   // the Object 'obj'.
+   //--------------------------------------------------
+   notifyObservers(Object obj);
+                       
 
-The ATMImpl class provides a static collection of bank accounts.  These accounts
-are stored in a hashmap which uses the bank account number as the key.  The
-constructor for this class initializes 3 accounts as required by the spec.
 
-ATMFactoryImpl provides a static collection of atm machines.  You can request a
-reference to an ATM by calling getATM() with the atm number as a parameter.
-If you don't specify an ATM number then getATM() will return a reference to the
-first ATM.  For this assignment I've only created a single atm, but the support
-for multiple atms is present.
+In order to implement the Observer interface, the subscribers must provide an
+update() method that the Publisher will call each time that notifyObservers()
+is invoked.
 
-The build.xml file for HW5 is similar to the build.xml files that I've
+I chose to use this standard Java design pattern in order to implement the
+ATMListener interface for this project.  The ATM extends the Observable class
+and the addObserver() method is provided within the ATM interface so that clients
+can register themselves as ATMListeners.  The ATMListener interface requires that
+the client implement the update() method.  Whenevever the ATM wants to publish a
+message to the client it runs the following code:
+
+   TransactionNotification tn= new TransactionNotification("Message for ATMListener...");
+   setChanged();
+   notifyObservers(tn);  // sends TransactionNotification to all ATMListeners
+
+
+
+Java's standard Observer pattern only works within a single JVM.  In order to extend
+the pattern to work with RMI, I followed the straightforward instructions found here:
+
+http://sites.google.com/site/jamespandavan/Home/java/sample-remote-observer-based-on-rmi
+
+
+
+
+
+
+#----------------------------
+# Final Notes
+#----------------------------
+
+The remainder of my project runs strictly according to the spec.
+The build.xml file for HW7 is similar to the build.xml files that I've
 submitted as part of previous homework assignments.  It builds a jar file
-containg the hw5 implementation.  You can use the following commands to run
-the code:
+containg the final project implementation.  You can use the following commands
+to run the code:
 
 
 $ rmiregistry -J-cp -Jproject.jar
@@ -121,7 +171,18 @@ $ java -cp project.jar cscie160.project.ATMServer
 $ java -cp project.jar cscie160.project.Client
 
 
+
 The jar file contains the overview for this assignment, along with the javadocs,
-sample output, and the ant build file.  There is no source in the jar file; it is
-provided in a separate zip file.
+sample output, and the ant build file.  There source code is also included in the
+jar file.
+
+
+Please let me know if you have any questions or concerns.
+
+
+Thanks, and Happy New Year!
+ -el
+
+
+
 

@@ -39,6 +39,9 @@ public class TransactionNotification implements Serializable
     //----------------
     // Method Member
     //----------------
+   /**
+    * Returns a string representation of the TransactionNotification object.
+    */
     public String toString()
     {   return message;
     }

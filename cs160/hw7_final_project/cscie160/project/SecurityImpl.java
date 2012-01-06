@@ -50,7 +50,6 @@ public class SecurityImpl extends UnicastRemoteObject implements Security
 	securityProfile profile2= new securityProfile(2,2345);
 	securityProfile profile3= new securityProfile(3,3456);
 
-
 	profile2.denyWithdraw();
 	profile3.denyDeposit();
 
@@ -95,7 +94,6 @@ public class SecurityImpl extends UnicastRemoteObject implements Security
     */
     public boolean depositAllowed(AccountInfo a) throws RemoteException
     {   int acctNum= a.getAccountNumber();
-        int pinNum=  a.getPinNumber();
 
 	securityProfile currProfile= securityProfiles.get(acctNum);
 	return (currProfile.depositAllowed());
@@ -109,7 +107,6 @@ public class SecurityImpl extends UnicastRemoteObject implements Security
     */
     public boolean withdrawAllowed(AccountInfo a) throws RemoteException
     {   int acctNum= a.getAccountNumber();
-        int pinNum=  a.getPinNumber();
 
 	securityProfile currProfile= securityProfiles.get(acctNum);
 	return (currProfile.withdrawAllowed());
@@ -123,7 +120,6 @@ public class SecurityImpl extends UnicastRemoteObject implements Security
     */
     public boolean balanceAllowed(AccountInfo a) throws RemoteException
     {   int acctNum= a.getAccountNumber();
-        int pinNum=  a.getPinNumber();
 
 	securityProfile currProfile= securityProfiles.get(acctNum);
 	return (currProfile.balanceAllowed());

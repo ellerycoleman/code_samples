@@ -71,8 +71,18 @@ public class securityProfile implements Serializable
     }
 
 
+
    /**
-    * Returns balance permissions
+    * Sets the pin number.
+    */
+    public void setPinNumber(int p)
+    {   pin= p;
+    }
+
+
+
+   /**
+    * Returns balance permissions.
     */
     public boolean balanceAllowed()
     {   return permissions[action.BALANCE.ordinal()];
@@ -80,7 +90,7 @@ public class securityProfile implements Serializable
 
 
    /**
-    * Returns deposit permissions
+    * Returns deposit permissions.
     */
     public boolean depositAllowed()
     {   return permissions[action.DEPOSIT.ordinal()];
@@ -88,7 +98,7 @@ public class securityProfile implements Serializable
 
 
    /**
-    * Returns withdraw permissions
+    * Returns withdraw permissions.
     */
     public boolean withdrawAllowed()
     {   return permissions[action.WITHDRAW.ordinal()];
@@ -97,7 +107,7 @@ public class securityProfile implements Serializable
 
 
    /**
-    * Sets permissions to allow balance inquiries
+    * Sets permissions to allow balance inquiries.
     */
     public void allowBalance()
     {   permissions[action.BALANCE.ordinal()]= true;
@@ -106,7 +116,7 @@ public class securityProfile implements Serializable
 
 
    /**
-    * Sets permissions to deny balance inquiries
+    * Sets permissions to deny balance inquiries.
     */
     public void denyBalance()
     {   permissions[action.BALANCE.ordinal()]= false;
@@ -115,7 +125,7 @@ public class securityProfile implements Serializable
 
 
    /**
-    * Sets permissions to allow deposits
+    * Sets permissions to allow deposits.
     */
     public void allowDeposit()
     {   permissions[action.DEPOSIT.ordinal()]= true;
@@ -124,7 +134,7 @@ public class securityProfile implements Serializable
 
 
    /**
-    * Sets permissions to deny deposits
+    * Sets permissions to deny deposits.
     */
     public void denyDeposit()
     {   permissions[action.DEPOSIT.ordinal()]= false;
@@ -134,7 +144,7 @@ public class securityProfile implements Serializable
 
 
    /**
-    * Sets permissions to allow withdrawals
+    * Sets permissions to allow withdrawals.
     */
     public void allowWithdraw()
     {   permissions[action.WITHDRAW.ordinal()]= true;
@@ -143,7 +153,7 @@ public class securityProfile implements Serializable
 
 
    /**
-    * Sets permissions to deny withdrawals
+    * Sets permissions to deny withdrawals.
     */
     public void denyWithdraw()
     {   permissions[action.WITHDRAW.ordinal()]= false;
@@ -189,6 +199,12 @@ public class securityProfile implements Serializable
         System.out.println("withdraw: " + s.withdrawAllowed());
         s.allowWithdraw();
         System.out.println("withdraw: " + s.withdrawAllowed());
+
+
+	// changing the pin
+	System.out.println("Current Pin: " + s.getPinNumber());
+	s.setPinNumber(3456);
+	System.out.println("New Pin: " + s.getPinNumber());
 
 
     }
