@@ -100,6 +100,11 @@ stored in a Map that uses account numbers as keys.  The bank's Security service
 performs authentication and authorization using the methods provided by this
 securityProfile class.
 
+Regarding the authorization of transfers, if the fromAccount is allowed to
+perform withdrawals, and the toAccount is allowed to perform deposits, then
+the transfer is authorized.  On a side note, transfers do not affect the
+amount of money within the ATM.  The transfer is assumed to take place within
+the bank.
 
 
 

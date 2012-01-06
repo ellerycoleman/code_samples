@@ -203,16 +203,16 @@
         }
         if (atm!=null) 
 	{
-              // Per the spec, register this client as an ATMListener (i.e. Observer)
+              // Per the spec, register the client as an ATMListener (i.e. Observer)
 	      // of the ATM.  Since we are in a static context, we declare a new Client
 	      // object and register it as an ATMListener.  When the ATM sends messages
-	      // to this client object, they will be displayed on STDOUT.
+	      // to our client object, they will be displayed on STDOUT.
 	      //
 	      // If we were in a non-static context, we could have said
 	      // atm.addObserver(this).  That statement would register "this" object
-	      // as the ATMListener.  We can accomplish this by moving this test
-	      // harness to a non-static method, and then calling this non-static
-	      // method from main().
+	      // as the ATMListener.  This can be accomplished by moving the test
+	      // harness to a non-static method, and then calling the non-static
+	      // method from main().  But for simplicity we did not bother with it.
 	      //---------------------------------------------------------------------
 	      Client c= new Client();
 	      atm.addObserver(c);

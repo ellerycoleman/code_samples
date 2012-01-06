@@ -40,7 +40,7 @@ public class ATMFactoryImpl extends UnicastRemoteObject implements ATMFactory
         atms= new HashMap<Integer, ATMImpl>();
         
 
-	// add one ATM
+	// add one ATM for test purposes
 	atms.put(numberGenerator, new ATMImpl());
 	System.out.println("ATM #" + numberGenerator + " has been added to the atm collection.");
 	numberGenerator++;
