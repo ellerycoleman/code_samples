@@ -13,10 +13,13 @@
 /*-----------------------------------------------------------
  |                      declarations
  +---------------------------------------------------------*/
+%option yylineno
+
 %{
-     int chars= 0;
-     int words= 0;
-     int lines= 0;
+
+#include "e95_tokens.h"
+extern char *token_name;
+void set_token_name(char *name);
 %}
 
 
@@ -31,9 +34,15 @@
  |                 patterns and actions
  +---------------------------------------------------------*/
 %%
-[a-zA-Z]+ { words++; chars += strlen(yytext); }
-\n        { chars++; lines++; }
-.         { chars++; }
+"+"     { return ADDITION; set_token_name("Addition");  }
+"-"     { return SUBTRACTION;  }
+"*"     { return MULTIPLICATION;  }
+"/"     { return DIVISION; }
+"="     { return ASSIGNMENT; }
+[0-9]+  { printf("NUMBER: %s\n",yytext); }
+\n      { printf("NEWLINE\n"); }
+[ \t]   { /* do nothing */ }
+.       { printf("Mystery Char: '%s'\n", yytext); }
 
 
 
@@ -47,12 +56,9 @@
 /*-----------------------------------------------------------
  |                    user functions                        
  +---------------------------------------------------------*/
-main(int argc, char **argv)
-{   yylex();
-    printf("%8d %8d %8d\n", lines, words, chars);
+void set_token_name(char *name)
+{   token_name= name;
 }
-
-
 
 
 
