@@ -25,12 +25,12 @@ void *yylval;
 int main(int argc, char **argv)
 {   
      
-     init_token_definition_map();
+    init_token_definition_map();
+
 
 
     /* Retrieve first token */
-     int token= yylex();
-
+    int token= yylex();
 
 
 
@@ -47,3 +47,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
