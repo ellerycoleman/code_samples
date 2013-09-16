@@ -18,8 +18,7 @@
 %{
 
 #include "e95_tokens.h"
-extern char *token_name;
-void set_token_name(char *name);
+
 %}
 
 
@@ -34,7 +33,7 @@ void set_token_name(char *name);
  |                 patterns and actions
  +---------------------------------------------------------*/
 %%
-"+"     { return ADDITION; set_token_name("Addition");  }
+"+"     { return ADDITION; }
 "-"     { return SUBTRACTION;  }
 "*"     { return MULTIPLICATION;  }
 "/"     { return DIVISION; }
@@ -56,9 +55,5 @@ void set_token_name(char *name);
 /*-----------------------------------------------------------
  |                    user functions                        
  +---------------------------------------------------------*/
-void set_token_name(char *name)
-{   token_name= name;
-}
-
 
 

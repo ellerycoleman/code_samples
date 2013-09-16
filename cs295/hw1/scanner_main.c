@@ -17,9 +17,6 @@ extern char *yytext;
 extern int yyleng;
 extern FILE *yyin;
 extern int yylineno;
-extern char **token_type;
-extern char *token_name;
-
 void *yylval;
 
 
@@ -28,7 +25,7 @@ void *yylval;
 int main(int argc, char **argv)
 {   
      
-     init_token_typemap();
+     init_token_definition_map();
 
 
     /* Retrieve first token */
@@ -39,9 +36,10 @@ int main(int argc, char **argv)
 
     /* While token is not EOF, continue to process tokens */
     while( token != 0 )
-    {   printf("token: %-20s", yytext);
-        printf("name: %-20s", token_name);
-        printf("type: %20s\n", token_type[token]);
+    {   printf("line: %-5d", yylineno);
+        printf("token: %-20s", yytext);
+        printf("name: %-20s", token_def_map[token].name);
+        printf("type: %-20s\n", token_def_map[token].type);
         token= yylex();
     }
 

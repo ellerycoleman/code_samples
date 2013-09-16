@@ -9,15 +9,27 @@
 
 #include "e95_tokens.h"
 
+extern e95_token token_def_map[];
 
-void init_token_typemap()
-{   token_type= malloc(sizeof(char *) * MAX_TOKENS);
 
-    char *arithmetic_op_= "Arithmetic Operator";
+void init_token_definition_map()
+{   
 
-    token_type[ADDITION]= arithmetic_op_;
-    token_type[SUBTRACTION]= arithmetic_op_;
-    token_type[MULTIPLICATION]= arithmetic_op_;
-    token_type[DIVISION]= arithmetic_op_;
-    token_type[ASSIGNMENT]= arithmetic_op_;
+    /* Define all tokens */
+    e95_token addition_t         = {"Addition", "Mathematical Operator"};
+    e95_token subtraction_t      = {"Subtraction", "Mathematical Operator"};
+    e95_token multiplication_t   = {"Multiplication", "Mathematical Operator"};
+    e95_token division_t         = {"Division", "Mathematical Operator"};
+    e95_token assignment_t       = {"Assignment", "General Operator"};
+
+
+
+    /* Place tokens in array indexed by token number */
+    token_def_map[ADDITION]       = addition_t;
+    token_def_map[SUBTRACTION]    = subtraction_t;
+    token_def_map[MULTIPLICATION] = multiplication_t;
+    token_def_map[DIVISION]       = division_t;
+    token_def_map[ASSIGNMENT]     = assignment_t;
 }
+
+

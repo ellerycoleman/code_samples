@@ -12,12 +12,13 @@
 #ifndef _E95_TOKENS_H
 #define _E95_TOKENS_H  1
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
-#define MAX_TOKENS 1000
+#define MAX_TOKEN_DEFS 1000
 
 
 
@@ -29,10 +30,22 @@
 #define ASSIGNMENT	 262
 
 
-char **token_type;
-char *token_name;
-void init_token_typemap(void);
 
+
+/* creating token structure */
+typedef struct e95_token {
+    char *name;
+    char *type;
+} e95_token;
+
+
+
+/* defining a token map to hold all token definitions */
+e95_token token_def_map[MAX_TOKEN_DEFS];
+
+
+
+void init_token_definition_map(void);
 
 
 #endif
