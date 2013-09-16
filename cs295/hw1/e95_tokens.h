@@ -28,6 +28,8 @@
 #define MULTIPLICATION   260
 #define DIVISION         261
 #define ASSIGNMENT	 262
+#define IDENTIFIER       263
+#define RESERVED_WORD    264
 
 
 

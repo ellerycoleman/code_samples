@@ -33,6 +33,7 @@
  |                 patterns and actions
  +---------------------------------------------------------*/
 %%
+(do|for|return|break|short|else|goto|signed|unsigned) { return RESERVED_WORD; }
 "+"     { return ADDITION; }
 "-"     { return SUBTRACTION;  }
 "*"     { return MULTIPLICATION;  }
@@ -41,6 +42,7 @@
 [0-9]+  { printf("NUMBER: %s\n",yytext); }
 \n      { printf("NEWLINE\n"); }
 [ \t]   { /* do nothing */ }
+[A-Za-z_]{1}[A-Za-z0-9_]*   { return IDENTIFIER; }
 .       { printf("Mystery Char: '%s'\n", yytext); }
 
 
