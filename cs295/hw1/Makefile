@@ -22,6 +22,6 @@ flex_scanner.c:       flex_scanner.l
 
 clean:
 	rm -f *.o
-	rm -f scanner.c
+	rm -f flex_scanner.c
 	rm -f a.out
-	rm -f scanner
+	rm -f e95_scanner
