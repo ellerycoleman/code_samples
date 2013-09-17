@@ -95,5 +95,5 @@ cs160/hw7_final_project/output.txt -text
 cs295/hw1/Makefile -text
 cs295/hw1/e95_tokens.c -text
 cs295/hw1/e95_tokens.h -text
-cs295/hw1/scanner.l -text
+cs295/hw1/flex_scanner.l -text
 cs295/hw1/scanner_main.c -text

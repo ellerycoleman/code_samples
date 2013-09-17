@@ -9,16 +9,16 @@
 
 
 
-all:    clean scanner.o scanner_main.c e95_tokens.c
-	gcc scanner_main.c e95_tokens.c scanner.o -o scanner -lfl
+all:    clean flex_scanner.o e95_tokens.c
+	gcc e95_scanner.c e95_tokens.c flex_scanner.o -o e95_scanner -lfl
 
 
-scanner.o:   scanner.c
-	gcc -c scanner.c -lfl
+flex_scanner.o:   flex_scanner.c
+	gcc -c flex_scanner.c -lfl
 
 
-scanner.c:       scanner.l
-	flex -o scanner.c scanner.l
+flex_scanner.c:       flex_scanner.l
+	flex -o flex_scanner.c flex_scanner.l
 
 clean:
 	rm -f *.o

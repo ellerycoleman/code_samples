@@ -22,15 +22,33 @@
 
 
 
-/* Operators */
-#define ADDITION         258
-#define SUBTRACTION      259
-#define MULTIPLICATION   260
-#define DIVISION         261
-#define ASSIGNMENT	 262
-#define IDENTIFIER       263
-#define RESERVED_WORD    264
+/* Simple Operators   */
+enum e95_tokens
+{   ADDITION = 258,
+    SUBTRACTION,
+    MULTIPLICATION,
+    DIVISION,
+    REMAINDER,	
 
+    ASSIGNMENT,	
+    ASSIGNMENT_ADD,
+    ASSIGNMENT_SUBTRACT,
+    ASSIGNMENT_MULTIPLY,
+    ASSIGNMENT_DIVIDE,
+    ASSIGNMENT_REMAINDER,
+
+    LOGICAL_AND,
+    LOGICAL_OR,
+    LOGICAL_NOT,
+    BITWISE_AND,
+    BITWISE_OR,
+    BITWISE_XOR,
+    BITWISE_NOT,
+
+
+    IDENTIFIER,
+    RESERVED_WORD,
+};
 
 
 
