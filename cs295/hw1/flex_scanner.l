@@ -1,5 +1,5 @@
 /*============================================================================
-| File:		scanner.l
+| File:		flex_scanner.l
 | Date:		Sat Sep 14 20:54:57 GMT 2013
 | Author:	ellerycoleman@fas.harvard.edu
 | Abstract:	A flex program to generate a lexical analyzer for a subset
