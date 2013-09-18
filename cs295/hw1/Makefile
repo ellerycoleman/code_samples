@@ -11,6 +11,7 @@
 
 all:    clean flex_scanner.o e95_tokens.c
 	gcc e95_scanner.c e95_tokens.c flex_scanner.o -o e95_scanner -lfl
+	ln -s e95_scanner scanner
 
 
 flex_scanner.o:   flex_scanner.c
@@ -24,4 +25,4 @@ clean:
 	rm -f *.o
 	rm -f flex_scanner.c
 	rm -f a.out
-	rm -f e95_scanner
+	rm -f e95_scanner scanner
