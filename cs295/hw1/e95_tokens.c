@@ -68,6 +68,15 @@ void init_token_definition_map()
 
 
 
+    /* Bitwise Arithmetic Operators
+     *------------------------------*/
+    e95_token op_bitwise_and_t      = {"Bitwise AND Operator", math_op};
+    e95_token op_bitwise_or_t       = {"Bitwise OR Operator", math_op};
+    e95_token op_bitwise_xor_t      = {"Bitwise XOR Operator", math_op};
+    e95_token op_ones_compliment_t  = {"Ones' Compliment Operator", math_op};
+
+
+
     /* Compound Assignment Operators
      *-------------------------------*/
     e95_token op_assignment_add_t       = {"Compound Assignment (Add) Oper",       math_op};
@@ -79,10 +88,11 @@ void init_token_definition_map()
 
     /* Logical Operators
      *-------------------*/
-    e95_token op_logical_and_t = {"Logical AND Oper", logical_op};
-    e95_token op_logical_or_t  = {"Logical OR Oper", logical_op};
-    e95_token op_logical_not_t = {"Logical NOT Oper", logical_op};
-    e95_token op_logical_not_equal_t = {"Logical NOT EQUAL Oper", logical_op};
+    e95_token op_logical_and_t = {"Logical AND Operator", logical_op};
+    e95_token op_logical_or_t  = {"Logical OR Operator", logical_op};
+    e95_token op_logical_not_t = {"Logical NOT Operator", logical_op};
+    e95_token op_logical_not_equal_t = {"Logical NOT EQUAL Operator", logical_op};
+
 
 
 
@@ -148,6 +158,15 @@ void init_token_definition_map()
 
 
 
+    /* Bitwise Arithmetic Operators
+     *------------------------------*/
+    token_def_map[OP_BITWISE_AND]     = op_bitwise_and_t;
+    token_def_map[OP_BITWISE_OR]      = op_bitwise_or_t;
+    token_def_map[OP_BITWISE_XOR]     = op_bitwise_xor_t;
+    token_def_map[OP_ONES_COMPLIMENT] = op_ones_compliment_t;
+
+
+
     /* Compound Assignment Operators
      *-------------------------------*/
     token_def_map[OP_ASSIGNMENT_ADD]       = op_assignment_add_t;
@@ -159,52 +178,52 @@ void init_token_definition_map()
 
     /* General Assignment Operator
      *-------------------------------*/
-    token_def_map[OP_ASSIGNMENT]     = op_assignment_t;
+    token_def_map[OP_ASSIGNMENT]  = op_assignment_t;
 
 
 
     /* Logical Operators
      *-------------------*/
-    token_def_map[OP_LOGICAL_AND] = op_logical_and_t;
-    token_def_map[OP_LOGICAL_OR]  = op_logical_or_t;
-    token_def_map[OP_LOGICAL_NOT] = op_logical_not_t;
+    token_def_map[OP_LOGICAL_AND]       = op_logical_and_t;
+    token_def_map[OP_LOGICAL_OR]        = op_logical_or_t;
+    token_def_map[OP_LOGICAL_NOT]       = op_logical_not_t;
     token_def_map[OP_LOGICAL_NOT_EQUAL] = op_logical_not_equal_t;
 
 
 
     /* Reserved Words
      *----------------*/
-    token_def_map[RESERVED_WORD]  = reserved_word_t;
+    token_def_map[RESERVED_WORD] = reserved_word_t;
 
 
 
     /* Identifiers
      *----------------*/
-    token_def_map[IDENTIFIER]     = identifier_t;
+    token_def_map[IDENTIFIER]    = identifier_t;
 
 
 
     /* Integer Constants
      *-------------------*/
-    token_def_map[INT_CONSTANT]   = int_constant_t;
+    token_def_map[INT_CONSTANT]  = int_constant_t;
 
 
 
     /* Separators
      *----------------*/
-    token_def_map[SEP_SEMICOLON]  = sep_semicolon_t;
+    token_def_map[SEP_SEMICOLON] = sep_semicolon_t;
 
 
 
     /* End of line character
      *-----------------------*/
-    token_def_map[END_OF_LINE]    = end_of_line_t;
+    token_def_map[END_OF_LINE]   = end_of_line_t;
 
 
 
     /* Undefined
      *------------*/
-    token_def_map[UNDEFINED]    = undefined_t;
+    token_def_map[UNDEFINED]     = undefined_t;
 }
 
 

@@ -55,21 +55,27 @@
 
 
 
-"+"     { return OP_ADDITION; }
-"-"     { return OP_SUBTRACTION;  }
-"*"     { return OP_MULTIPLICATION;  }
-"/"     { return OP_DIVISION; }
-"%"     { return OP_REMAINDER; }
+"+"     { return OP_ADDITION;       }
+"-"     { return OP_SUBTRACTION;    }
+"*"     { return OP_MULTIPLICATION; }
+"/"     { return OP_DIVISION;       }
+"%"     { return OP_REMAINDER;      }
 
 
-"+="    { return OP_ASSIGNMENT_ADD; }
+"&"     { return OP_BITWISE_AND;     }
+"|"     { return OP_BITWISE_OR;      }
+"^"     { return OP_BITWISE_XOR;     }
+"~"     { return OP_ONES_COMPLIMENT; }
+
+
+"+="    { return OP_ASSIGNMENT_ADD;      }
 "-="    { return OP_ASSIGNMENT_SUBTRACT; }
 "*="    { return OP_ASSIGNMENT_MULTIPLY; }
-"/="    { return OP_ASSIGNMENT_DIVIDE; }
+"/="    { return OP_ASSIGNMENT_DIVIDE;   }
 
-"&&"    { return OP_LOGICAL_AND; }
-"||"    { return OP_LOGICAL_OR;  }
-"!"     { return OP_LOGICAL_NOT; }
+"&&"    { return OP_LOGICAL_AND;       }
+"||"    { return OP_LOGICAL_OR;        }
+"!"     { return OP_LOGICAL_NOT;       }
 "!="    { return OP_LOGICAL_NOT_EQUAL; }
 
 
@@ -81,16 +87,14 @@
 
 
 
-[0-9]+  {   return INT_CONSTANT;
-        }
+[0-9]+  { return INT_CONSTANT;  }
 
 
 
-\n      {   return END_OF_LINE;
-        }
+\n      { return END_OF_LINE;   }
 
 
-[ \t\v\f]   { /* Do nothing for these whitespace chars:
+[ \t\v\f]   { /* Do nothing for the following whitespace chars:
                   - space
 		  - horizontal tab
 		  - vertical tab
@@ -102,8 +106,7 @@
 [A-Za-z_]{1}[A-Za-z0-9_]*   { return IDENTIFIER; }
 
 
-.       {   return UNDEFINED;
-	}
+.       { return UNDEFINED; }
 
 
 
