@@ -48,10 +48,11 @@ enum e95_tokens
 
     IDENTIFIER,
     RESERVED_WORD,
+    INT_CONSTANT,
 
 
-
-    SEP_SEMICOLON
+    SEP_SEMICOLON,
+    END_OF_LINE
 };
 
 

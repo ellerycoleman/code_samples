@@ -35,7 +35,24 @@
 %%
 
 
+\/\*([^\*]|\*+[^\/\*])*\*\/+  { /* 
+                                   NOTE: The core of this regex was taken from page 40
+				         of the Flex & Bison book by John Levine.
+					 It was modified slightly in order to get flex
+					 to accept it.
+			                 ISBN: 978-0-596-15597-1
+                                */ 
+
+
+
+                                  /* Replace C comments with a single space. */
+                                  printf(" ");
+                              }
+
+
+
 (do|for|return|break|short|else|goto|signed|unsigned|char|if|void|int|continue|long|while) { return RESERVED_WORD; }
+
 
 
 "+"     { return OP_ADDITION; }
@@ -59,23 +76,29 @@
 
 
 
-
-[0-9]+  {   printf("line: %-5d", yylineno); 
-            printf("NUMBER: %s\n",yytext); 
+[0-9]+  {   return INT_CONSTANT;
         }
 
-\n      {   printf("line: %-5d", yylineno); 
-            printf("NEWLINE\n"); 
+
+
+\n      {   return END_OF_LINE;
         }
 
-[ \t]   { /* do nothing */ }
+
+[ \t\v\f]   { /* Do nothing for these whitespace chars:
+                  - space
+		  - horizontal tab
+		  - vertical tab
+		  - form feed
+             */
+	    }
 
 
 [A-Za-z_]{1}[A-Za-z0-9_]*   { return IDENTIFIER; }
 
 
-.       {   printf("line: %-5d", yylineno); 
-            printf("Unknown: '%s'\n", yytext); 
+.       {   printf("line: %-5d", yylineno);
+            printf("Unknown: '%s'\n", yytext);
 	}
 
 
@@ -88,7 +111,7 @@
 
 %%
 /*-----------------------------------------------------------
- |                    user functions                        
+ |                    user functions
  +---------------------------------------------------------*/
 
 
