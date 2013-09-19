@@ -68,10 +68,17 @@
 "~"     { return OP_ONES_COMPLIMENT; }
 
 
+">"     { return OP_RELATIONAL_GT;  }
+">="    { return OP_RELATIONAL_GTE; }
+"<"     { return OP_RELATIONAL_LT;  }
+"<="    { return OP_RELATIONAL_LTE; }
+
+
 "+="    { return OP_ASSIGNMENT_ADD;      }
 "-="    { return OP_ASSIGNMENT_SUBTRACT; }
 "*="    { return OP_ASSIGNMENT_MULTIPLY; }
 "/="    { return OP_ASSIGNMENT_DIVIDE;   }
+
 
 "&&"    { return OP_LOGICAL_AND;       }
 "||"    { return OP_LOGICAL_OR;        }

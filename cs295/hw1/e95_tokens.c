@@ -39,11 +39,12 @@ void init_token_definition_map()
     /*-----------------------------------------------------------------+
       |  Step 1 of 3:  Define all token types
       +----------------------------------------------------------------*/
-    char *math_op      = "Arithmetic Operator";
-    char *general_op   = "General Operator";
-    char *bitwise_op   = "Bitwise Operator";
-    char *separator    = "Separator";
-    char *logical_op   = "Logical Operator";
+    char *math_op       = "Arithmetic Operator";
+    char *general_op    = "General Operator";
+    char *bitwise_op    = "Bitwise Operator";
+    char *relational_op = "Relational Operator";
+    char *separator     = "Separator";
+    char *logical_op    = "Logical Operator";
     char *bitwise_logical_op= "Bitwise Logical Oper";
 
 
@@ -60,23 +61,32 @@ void init_token_definition_map()
 
     /* Basic Arithmetic Operators 
      *----------------------------*/
-    e95_token op_addition_t        = {"Addition Operator",        math_op};
-    e95_token op_subtraction_t     = {"Subtraction Operator",     math_op};
-    e95_token op_multiplication_t  = {"Multiplication Operator",  math_op};
-    e95_token op_division_t        = {"Division Operator",        math_op};
-    e95_token op_remainder_t       = {"Remainder Operator",       math_op};
+    e95_token op_addition_t        = {"Addition Operator",       math_op};
+    e95_token op_subtraction_t     = {"Subtraction Operator",    math_op};
+    e95_token op_multiplication_t  = {"Multiplication Operator", math_op};
+    e95_token op_division_t        = {"Division Operator",       math_op};
+    e95_token op_remainder_t       = {"Remainder Operator",      math_op};
 
 
 
     /* Bitwise Arithmetic Operators
      *------------------------------*/
     e95_token op_bitwise_and_t      = {"Bitwise AND Operator", math_op};
-    e95_token op_bitwise_or_t       = {"Bitwise OR Operator", math_op};
+    e95_token op_bitwise_or_t       = {"Bitwise OR Operator",  math_op};
     e95_token op_bitwise_xor_t      = {"Bitwise XOR Operator", math_op};
     e95_token op_ones_compliment_t  = {"Ones' Compliment Operator", math_op};
 
 
 
+    /* Relational Operators
+     *----------------------*/
+    e95_token op_relational_gt_t    = {"Relational Greater Than",       relational_op};
+    e95_token op_relational_gte_t   = {"Relational Greater Than/Equal", relational_op};
+    e95_token op_relational_lt_t    = {"Relational Less Than",          relational_op};
+    e95_token op_relational_lte_t   = {"Relational Less Than/Equal",    relational_op};
+    
+
+  
     /* Compound Assignment Operators
      *-------------------------------*/
     e95_token op_assignment_add_t       = {"Compound Assignment (Add) Oper",       math_op};
@@ -89,7 +99,7 @@ void init_token_definition_map()
     /* Logical Operators
      *-------------------*/
     e95_token op_logical_and_t = {"Logical AND Operator", logical_op};
-    e95_token op_logical_or_t  = {"Logical OR Operator", logical_op};
+    e95_token op_logical_or_t  = {"Logical OR Operator",  logical_op};
     e95_token op_logical_not_t = {"Logical NOT Operator", logical_op};
     e95_token op_logical_not_equal_t = {"Logical NOT EQUAL Operator", logical_op};
 
@@ -164,6 +174,15 @@ void init_token_definition_map()
     token_def_map[OP_BITWISE_OR]      = op_bitwise_or_t;
     token_def_map[OP_BITWISE_XOR]     = op_bitwise_xor_t;
     token_def_map[OP_ONES_COMPLIMENT] = op_ones_compliment_t;
+
+
+
+    /* Relational Operators
+     *----------------------*/
+    token_def_map[OP_RELATIONAL_GT]  = op_relational_gt_t;
+    token_def_map[OP_RELATIONAL_GTE] = op_relational_gte_t;
+    token_def_map[OP_RELATIONAL_LT]  = op_relational_lt_t;
+    token_def_map[OP_RELATIONAL_LTE] = op_relational_lte_t;
 
 
 
