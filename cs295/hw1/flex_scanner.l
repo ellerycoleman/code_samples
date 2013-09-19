@@ -67,6 +67,10 @@
 "*="    { return OP_ASSIGNMENT_MULTIPLY; }
 "/="    { return OP_ASSIGNMENT_DIVIDE; }
 
+"&&"    { return OP_LOGICAL_AND; }
+"||"    { return OP_LOGICAL_OR;  }
+"!"     { return OP_LOGICAL_NOT; }
+
 
 "="     { return OP_ASSIGNMENT; }
 

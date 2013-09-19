@@ -2,16 +2,33 @@
 | File:		e95_tokens.c
 | Date:		Sat Sep 14 20:54:57 GMT 2013
 | Author:	ellerycoleman@fas.harvard.edu
-| Abstract:	Implements data structures for classifying tokens.
+| Abstract:	Implements the data structures used for classifying tokens.
 +-----------------------------------------------------------------------------
 | Revision: $Id$
 +===========================================================================*/
 
+
+
+/*---------------------------------------------------------------------------
+ * This file implements a single function: init_token_definition_map().
+ *
+ * The token definition map is actually an array of type e95_token.  The
+ * array is indexed by token names, and those token names/values are
+ * defined in the e95_token.h file.
+ *
+ * The function init_token_definition_map() follows 3 main steps:
+ *    1. Define all token types
+ *    2. Define all e95_tokens
+ *    3. Place all of the e95_tokens in an array; use the token name
+ *       defined in e95_token.h as the array index.
+ *
+ *--------------------------------------------------------------------------*/
+
+
+
 #include "e95_tokens.h"
 
-
 extern e95_token token_def_map[];
-
 
 
 
@@ -22,10 +39,12 @@ void init_token_definition_map()
     /*-----------------------------------------------------------------+
       |  Step 1 of 3:  Define all token types
       +----------------------------------------------------------------*/
-    char *math_op= "Arithmetic Operator";
-    char *general_op= "General Operator";
-    char *bitwise_op= "Bitwise Operator";
-    char *separator= "Separator";
+    char *math_op      = "Arithmetic Operator";
+    char *general_op   = "General Operator";
+    char *bitwise_op   = "Bitwise Operator";
+    char *separator    = "Separator";
+    char *logical_op   = "Logical Operator";
+    char *bitwise_logical_op= "Bitwise Logical Oper";
 
 
 
@@ -42,6 +61,7 @@ void init_token_definition_map()
     e95_token op_subtraction_t     = {"Subtraction Operator",     math_op};
     e95_token op_multiplication_t  = {"Multiplication Operator",  math_op};
     e95_token op_division_t        = {"Division Operator",        math_op};
+    e95_token op_remainder_t       = {"Remainder Operator",       math_op};
 
 
 
@@ -51,6 +71,14 @@ void init_token_definition_map()
     e95_token op_assignment_subtract_t  = {"Compound Assignment (Subtract) Oper",  math_op};
     e95_token op_assignment_multiply_t  = {"Compound Assignment (Multiply) Oper",  math_op};
     e95_token op_assignment_divide_t    = {"Compound Assignment (Divide) Oper",    math_op};
+
+
+
+    /* Logical Operators
+     *-------------------*/
+    e95_token op_logical_and_t = {"Logical AND Oper", logical_op};
+    e95_token op_logical_or_t  = {"Logical OR Oper", logical_op};
+    e95_token op_logical_not_t = {"Logical NOT Oper", logical_op};
 
 
 
@@ -105,6 +133,7 @@ void init_token_definition_map()
     token_def_map[OP_SUBTRACTION]    = op_subtraction_t;
     token_def_map[OP_MULTIPLICATION] = op_multiplication_t;
     token_def_map[OP_DIVISION]       = op_division_t;
+    token_def_map[OP_REMAINDER]      = op_remainder_t;
 
 
 
@@ -120,6 +149,13 @@ void init_token_definition_map()
     /* General Assignment Operator
      *-------------------------------*/
     token_def_map[OP_ASSIGNMENT]     = op_assignment_t;
+
+
+    /* Logical Operators
+     *-------------------*/
+    token_def_map[OP_LOGICAL_AND] = op_logical_and_t;
+    token_def_map[OP_LOGICAL_OR]  = op_logical_or_t;
+    token_def_map[OP_LOGICAL_NOT] = op_logical_not_t;
 
 
 
