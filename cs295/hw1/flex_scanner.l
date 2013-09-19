@@ -70,6 +70,7 @@
 "&&"    { return OP_LOGICAL_AND; }
 "||"    { return OP_LOGICAL_OR;  }
 "!"     { return OP_LOGICAL_NOT; }
+"!="    { return OP_LOGICAL_NOT_EQUAL; }
 
 
 "="     { return OP_ASSIGNMENT; }
@@ -101,8 +102,7 @@
 [A-Za-z_]{1}[A-Za-z0-9_]*   { return IDENTIFIER; }
 
 
-.       {   printf("line: %-5d", yylineno);
-            printf("Unknown: '%s'\n", yytext);
+.       {   return UNDEFINED;
 	}
 
 

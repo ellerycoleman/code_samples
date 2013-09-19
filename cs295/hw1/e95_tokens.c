@@ -13,14 +13,14 @@
  * This file implements a single function: init_token_definition_map().
  *
  * The token definition map is actually an array of type e95_token.  The
- * array is indexed by token names, and those token names/values are
+ * array is indexed by token names, and those token names and values are
  * defined in the e95_token.h file.
  *
  * The function init_token_definition_map() follows 3 main steps:
  *    1. Define all token types
  *    2. Define all e95_tokens
- *    3. Place all of the e95_tokens in an array; use the token name
- *       defined in e95_token.h as the array index.
+ *    3. Place all of the e95_tokens in an array using the token name
+ *       as defined in e95_token.h as the array index.
  *
  *--------------------------------------------------------------------------*/
 
@@ -45,6 +45,9 @@ void init_token_definition_map()
     char *separator    = "Separator";
     char *logical_op   = "Logical Operator";
     char *bitwise_logical_op= "Bitwise Logical Oper";
+
+
+
 
 
 
@@ -79,6 +82,7 @@ void init_token_definition_map()
     e95_token op_logical_and_t = {"Logical AND Oper", logical_op};
     e95_token op_logical_or_t  = {"Logical OR Oper", logical_op};
     e95_token op_logical_not_t = {"Logical NOT Oper", logical_op};
+    e95_token op_logical_not_equal_t = {"Logical NOT EQUAL Oper", logical_op};
 
 
 
@@ -113,6 +117,13 @@ void init_token_definition_map()
     /* End of line character
      *-----------------------*/
     e95_token end_of_line_t  = {"NEWLINE", "End Of Line Char"};
+
+
+
+    /* Undefined
+     *------------*/
+    e95_token undefined_t  = {"UNDEFINED", "UNDEFINED"};
+
 
 
 
@@ -151,11 +162,13 @@ void init_token_definition_map()
     token_def_map[OP_ASSIGNMENT]     = op_assignment_t;
 
 
+
     /* Logical Operators
      *-------------------*/
     token_def_map[OP_LOGICAL_AND] = op_logical_and_t;
     token_def_map[OP_LOGICAL_OR]  = op_logical_or_t;
     token_def_map[OP_LOGICAL_NOT] = op_logical_not_t;
+    token_def_map[OP_LOGICAL_NOT_EQUAL] = op_logical_not_equal_t;
 
 
 
@@ -170,9 +183,11 @@ void init_token_definition_map()
     token_def_map[IDENTIFIER]     = identifier_t;
 
 
-    /* Identifiers
-     *----------------*/
+
+    /* Integer Constants
+     *-------------------*/
     token_def_map[INT_CONSTANT]   = int_constant_t;
+
 
 
     /* Separators
@@ -180,9 +195,16 @@ void init_token_definition_map()
     token_def_map[SEP_SEMICOLON]  = sep_semicolon_t;
 
 
+
     /* End of line character
      *-----------------------*/
     token_def_map[END_OF_LINE]    = end_of_line_t;
+
+
+
+    /* Undefined
+     *------------*/
+    token_def_map[UNDEFINED]    = undefined_t;
 }
 
 

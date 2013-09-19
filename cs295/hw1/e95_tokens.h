@@ -40,6 +40,7 @@ enum e95_tokens
     OP_LOGICAL_AND,
     OP_LOGICAL_OR,
     OP_LOGICAL_NOT,
+    OP_LOGICAL_NOT_EQUAL,
     OP_BITWISE_AND,
     OP_BITWISE_OR,
     OP_BITWISE_XOR,
@@ -52,7 +53,8 @@ enum e95_tokens
 
 
     SEP_SEMICOLON,
-    END_OF_LINE
+    END_OF_LINE,
+    UNDEFINED
 };
 
 
