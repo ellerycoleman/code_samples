@@ -18,23 +18,26 @@
 #include <string.h>
 
 
-#define MAX_TOKEN_DEFS 1000
+#define MAX_TOKEN_DEFS 500
 
 
 
 /* Simple Operators   */
 enum e95_tokens
-{   OP_ADDITION = 258,
+{   
+
+    OP_ADDITION = 258,
     OP_SUBTRACTION,
-    OP_MULTIPLICATION,
     OP_DIVISION,
-    OP_REMAINDER,	
+    OP_REMAINDER,
 
 
     OP_BITWISE_AND,
     OP_BITWISE_OR,
     OP_BITWISE_XOR,
     OP_ONES_COMPLIMENT,
+    OP_LEFT_BITSHIFT,
+    OP_RIGHT_BITSHIFT,
 
 
     OP_RELATIONAL_GT,
@@ -43,25 +46,53 @@ enum e95_tokens
     OP_RELATIONAL_LTE,
 
 
-    OP_ASSIGNMENT,	
     OP_ASSIGNMENT_ADD,
     OP_ASSIGNMENT_SUBTRACT,
     OP_ASSIGNMENT_MULTIPLY,
     OP_ASSIGNMENT_DIVIDE,
     OP_ASSIGNMENT_REMAINDER,
+    OP_ASSIGNMENT_LEFT_BITSHIFT,
+    OP_ASSIGNMENT_RIGHT_BITSHIFT,
+    OP_ASSIGNMENT_BITWISE_AND,
+    OP_ASSIGNMENT_BITWISE_OR,
+    OP_ASSIGNMENT_BITWISE_XOR,
+
 
     OP_LOGICAL_AND,
     OP_LOGICAL_OR,
     OP_LOGICAL_NOT,
-    OP_LOGICAL_NOT_EQUAL,
 
 
-    IDENTIFIER,
+    OP_EQUALITY,
+    OP_NON_EQUALITY,
+
+
+    OP_INCREMENT,
+    OP_DECREMENT,
+
+
+    OP_ASSIGNMENT,
+    OP_ASTERISK,
+    OP_QUESTION_MARK,
+
+
+    SEP_LEFT_PAREN,
+    SEP_RIGHT_PAREN,
+    SEP_LEFT_CURLY_BRACE,
+    SEP_RIGHT_CURLY_BRACE,
+    SEP_LEFT_SQUARE_BRACKET,
+    SEP_RIGHT_SQUARE_BRACKET,
+    SEP_SEMICOLON,
+    SEP_COLON,
+    SEP_COMMA,
+
+
     RESERVED_WORD,
+    IDENTIFIER,
     INT_CONSTANT,
 
 
-    SEP_SEMICOLON,
+
     END_OF_LINE,
     UNDEFINED
 };
@@ -69,8 +100,8 @@ enum e95_tokens
 
 
 /* creating token structure */
-typedef struct e95_token {
-    char *name;
+typedef struct e95_token 
+{   char *name;
     char *type;
 } e95_token;
 
