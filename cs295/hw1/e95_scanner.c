@@ -18,6 +18,8 @@ extern int yyleng;
 extern FILE *yyin;
 extern int yylineno;
 void *yylval;
+extern int cvalue;
+
 
 int get_char_val(char *);
 
@@ -60,10 +62,22 @@ int main(int argc, char **argv)
                printf("line: %-3d", yylineno);
                printf(" token: %-15s", yytext);
                printf(" name: %-18s", token_def_map[token].name);
-               printf("  value: %-10d", yytext);
+               printf("  value: %-10d", cvalue);
                printf(" type: %-15s\n", token_def_map[token].type);
                token= yylex();
 	       break;
+
+
+
+            case CHARACTER_CONSTANT_OCTAL:
+               printf("line: %-3d", yylineno);
+               printf(" token: %-15s", yytext);
+               printf(" name: %-18s", token_def_map[token].name);
+               printf("  value: %-10d", cvalue);
+               printf(" type: %-15s\n", token_def_map[token].type);
+               token= yylex();
+	       break;
+
 
 
 	    default:

@@ -107,6 +107,7 @@ enum e95_tokens
     IDENTIFIER,
     INTEGER_CONSTANT,
     CHARACTER_CONSTANT,
+    CHARACTER_CONSTANT_OCTAL,
     STRING_CONSTANT,
 
 
@@ -138,7 +139,7 @@ typedef struct e95_token
 
 /* defining a token map to hold all token definitions */
 e95_token token_def_map[MAX_TOKEN_DEFS];
-
+int cvalue;
 
 
 void init_token_definition_map(void);

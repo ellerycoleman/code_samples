@@ -134,14 +134,22 @@
 [0-9]+                             { return INTEGER_CONSTANT;    }
 
 
-'[^\'\\\n]'                        { /* This regex matches a normal character constant */
-                                     return CHARACTER_CONSTANT;
-                                   }
+
+'\\n'   { cvalue= 10; return CHARACTER_CONSTANT; }
+'\\t'   { cvalue= 9;  return CHARACTER_CONSTANT; }
+'\\b'   { cvalue= 8;  return CHARACTER_CONSTANT; }
+'\\r'   { cvalue= 13; return CHARACTER_CONSTANT; }
+'\\f'   { cvalue= 12; return CHARACTER_CONSTANT; }
+'\\v'   { cvalue= 11; return CHARACTER_CONSTANT; }
+'\\\\'  { cvalue= 92; return CHARACTER_CONSTANT; }
+'\\''   { cvalue= 39; return CHARACTER_CONSTANT; }
+'\\\"'  { cvalue= 34; return CHARACTER_CONSTANT; }
+'\\a'   { cvalue= 7;  return CHARACTER_CONSTANT; }
+'\\\?'  { cvalue= 63; return CHARACTER_CONSTANT; }
 
 
-'\\([0-7]{1,3}|[ntbrfva])'  { /* This regex matches allowed escape chars. */
-                                     return CHARACTER_CONSTANT;  
-				   }
+
+
 
 
 \"[^"\n]*($|\\n)\"                 { return STRING_CONSTANT;     }
