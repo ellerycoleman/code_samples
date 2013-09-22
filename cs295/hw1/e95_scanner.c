@@ -62,8 +62,8 @@ int main(int argc, char **argv)
                printf("line: %-3d", yylineno);
                printf(" token: %-15s", yytext);
                printf(" name: %-18s", token_def_map[token].name);
-               printf("  value: %-10d", cvalue);
-               printf(" type: %-15s\n", token_def_map[token].type);
+               printf("  dec_val: %-9d", cvalue);
+               printf("type: %-15s\n", token_def_map[token].type);
                token= yylex();
 	       break;
 
@@ -73,8 +73,8 @@ int main(int argc, char **argv)
                printf("line: %-3d", yylineno);
                printf(" token: %-15s", yytext);
                printf(" name: %-18s", token_def_map[token].name);
-               printf("  value: %-10d", cvalue);
-               printf(" type: %-15s\n", token_def_map[token].type);
+               printf("  dec_val: %-9d", cvalue);
+               printf("type: %-15s\n", token_def_map[token].type);
                token= yylex();
 	       break;
 

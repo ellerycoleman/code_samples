@@ -148,6 +148,7 @@
 '\\\?'  { cvalue= 63; return CHARACTER_CONSTANT; }
 
 
+'\\[0-7]{1,3}' { return CHARACTER_CONSTANT_OCTAL; }
 
 
 

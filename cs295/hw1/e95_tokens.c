@@ -170,9 +170,10 @@ void init_token_definition_map()
 
     /* Constants
      *----------------*/
-    e95_token integer_constant_t   = {"Integer Constant", "Constant"};
-    e95_token character_constant_t = {"Character Constant", "Constant"};
-    e95_token string_constant_t    = {"String Constant", "Constant"};
+    e95_token integer_constant_t         = {"Integer Constant", "Constant"};
+    e95_token character_constant_t       = {"Character Constant", "Constant"};
+    e95_token character_constant_octal_t = {"Octal Character Constant", "Constant"};
+    e95_token string_constant_t          = {"String Constant", "Constant"};
 
 
 
@@ -298,10 +299,11 @@ void init_token_definition_map()
 
 
 
-    token_def_map[IDENTIFIER]          = identifier_t;
-    token_def_map[INTEGER_CONSTANT]    = integer_constant_t;
-    token_def_map[CHARACTER_CONSTANT]  = character_constant_t;
-    token_def_map[STRING_CONSTANT]     = string_constant_t;
+    token_def_map[IDENTIFIER]               = identifier_t;
+    token_def_map[INTEGER_CONSTANT]         = integer_constant_t;
+    token_def_map[CHARACTER_CONSTANT]       = character_constant_t;
+    token_def_map[CHARACTER_CONSTANT_OCTAL] = character_constant_octal_t;
+    token_def_map[STRING_CONSTANT]          = string_constant_t;
 
 
     token_def_map[APOSTROPHE]          = char_apostrophe_t;
