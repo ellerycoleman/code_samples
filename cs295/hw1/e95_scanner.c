@@ -45,6 +45,26 @@ int main(int argc, char **argv)
 	       break;
 
 
+            case INTEGER_CONSTANT:
+               printf("line: %-3d", yylineno);
+               printf(" token: %-15s", yytext);
+               printf(" name: %-18s", token_def_map[token].name);
+               printf("value: %-12d", atoi(yytext));
+               printf(" type: %-15s\n", token_def_map[token].type);
+               token= yylex();
+	       break;
+
+
+            case CHARACTER_CONSTANT:
+               printf("line: %-3d", yylineno);
+               printf(" token: %-15s", yytext);
+               printf(" name: %-18s", token_def_map[token].name);
+               printf(" value: %-10d", yytext);
+               printf(" type: %-15s\n", token_def_map[token].type);
+               token= yylex();
+	       break;
+
+
 	    default:
                printf("line: %-3d", yylineno);
                printf(" token: %-15s", yytext);

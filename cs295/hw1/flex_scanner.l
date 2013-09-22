@@ -35,14 +35,14 @@
 %%
 
 
-\/\*([^\*]|\*+[^\/\*])*\*\/+  { /*
-                                   NOTE: The core of this regex was taken from page 40
-				         of the Flex & Bison book by John Levine.
-			                 ISBN: 978-0-596-15597-1
-
-					 It was modified slightly in order to get flex
-					 to accept it.
-                                */
+\/\*([^\*]|\*+[^\/\*])*\*\/+  {   /* NOTE: This is a regex to match C comments.
+                                           The core of this regex was taken from page 40
+                                           of the Flex & Bison book by John Levine.
+                                           ISBN: 978-0-596-15597-1
+                                   
+                                           It was modified slightly in order to get flex
+                                           to accept it.
+                                  */
 
 
 
@@ -56,13 +56,11 @@
 
 
 
-"+"     { return OP_ADDITION;       }
-"-"     { return OP_SUBTRACTION;    }
-"/"     { return OP_DIVISION;       }
-"%"     { return OP_REMAINDER;      }
+"+"     { return OP_ADDITION;  }
+"/"     { return OP_DIVISION;  }
+"%"     { return OP_REMAINDER; }
 
 
-"&"     { return OP_BITWISE_AND;     }
 "|"     { return OP_BITWISE_OR;      }
 "^"     { return OP_BITWISE_XOR;     }
 "~"     { return OP_ONES_COMPLIMENT; }
@@ -70,10 +68,9 @@
 ">>"    { return OP_RIGHT_BITSHIFT;  }
 
 
-">"     { return OP_RELATIONAL_GT;  }
-">="    { return OP_RELATIONAL_GTE; }
-"<"     { return OP_RELATIONAL_LT;  }
-"<="    { return OP_RELATIONAL_LTE; }
+">="    { return OP_RELATIONAL_GTE;  }
+"<"     { return OP_RELATIONAL_LT;   }
+"<="    { return OP_RELATIONAL_LTE;  }
 
 
 "+="    { return OP_ASSIGNMENT_ADD;            }
@@ -88,9 +85,9 @@
 "^="    { return OP_ASSIGNMENT_BITWISE_XOR;    }
 
 
-"&&"    { return OP_LOGICAL_AND;       }
-"||"    { return OP_LOGICAL_OR;        }
-"!"     { return OP_LOGICAL_NOT;       }
+"&&"    { return OP_LOGICAL_AND;  }
+"||"    { return OP_LOGICAL_OR;   }
+"!"     { return OP_LOGICAL_NOT;  }
 
 
 "=="    { return OP_EQUALITY;     }
@@ -118,11 +115,38 @@
 
 
 
-[0-9]+  { return INT_CONSTANT;  }
+
+[0-9]+                             { return INTEGER_CONSTANT;    }
+
+
+'[^\'\\\n]'                        { /* This regex matches a normal character constant */
+                                     return CHARACTER_CONSTANT;
+                                   }
+
+
+'\\([0-7]{1,3}|[ntbrfva])'  { /* This regex matches allowed escape chars. */
+                                     return CHARACTER_CONSTANT;  
+				   }
+
+
+\"[^"\n]*($|\\n)\"                 { return STRING_CONSTANT;     }
 
 
 
-\n      { return END_OF_LINE;   }
+"'"                                { return APOSTROPHE;          }
+"\""                               { return DOUBLEQUOTE;         }
+"\\"                               { return BACKSLASH;           }
+"`"                                { return BACKTICK;            }
+"."                                { return PERIOD;              }
+"&"                                { return AMPERSAND;           }
+"$"                                { return DOLLAR_SIGN;         }
+"@"                                { return AT_SIGN;             }
+"#"                                { return NUMBER_SIGN;         }
+"-"                                { return MINUS_SIGN;          }
+">"                                { return GREATER_THAN_SYMBOL; }
+
+
+\n   { return END_OF_LINE;   }
 
 
 [ \t\v\f]   { /* Ignore the following whitespace chars:
@@ -137,7 +161,7 @@
 [A-Za-z_]{1}[A-Za-z0-9_]*   { return IDENTIFIER; }
 
 
-.       { return UNDEFINED; }
+.   { return UNDEFINED; }
 
 
 

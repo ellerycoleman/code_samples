@@ -39,13 +39,14 @@ void init_token_definition_map()
     /*-----------------------------------------------------------------+
       |  Step 1 of 3:  Define common token types
       +----------------------------------------------------------------*/
-    char *math_op             = "Arithmetic Operator";
-    char *bitwise_op          = "Bitwise Operator";
-    char *relational_op       = "Relational Operator";
-    char *logical_op          = "Logical Operator";
-    char *ambiguous_op        = "Ambiguous Operator";
-    char *equality_op         = "Equality Operator";
-    char *separator           = "Separator";
+    char *math_op           = "Arithmetic Operator";
+    char *bitwise_op        = "Bitwise Operator";
+    char *relational_op     = "Relational Operator";
+    char *logical_op        = "Logical Operator";
+    char *ambiguous_op      = "Ambiguous Operator";
+    char *equality_op       = "Equality Operator";
+    char *separator         = "Separator";
+    char *standalone_char   = "Standalone Character";
 
 
 
@@ -59,16 +60,14 @@ void init_token_definition_map()
 
     /* Basic Arithmetic Operators 
      *----------------------------*/
-    e95_token op_addition_t      = {"Addition Operator",       math_op};
-    e95_token op_subtraction_t   = {"Subtraction Operator",    math_op};
-    e95_token op_division_t      = {"Division Operator",       math_op};
-    e95_token op_remainder_t     = {"Remainder Operator",      math_op};
+    e95_token op_addition_t     = {"Addition Operator",   math_op};
+    e95_token op_division_t     = {"Division Operator",   math_op};
+    e95_token op_remainder_t    = {"Remainder Operator",  math_op};
 
 
 
     /* Bitwise Arithmetic Operators
      *------------------------------*/
-    e95_token op_bitwise_and_t      = {"Bitwise AND Operator",      bitwise_op};
     e95_token op_bitwise_or_t       = {"Bitwise OR Operator",       bitwise_op};
     e95_token op_bitwise_xor_t      = {"Bitwise XOR Operator",      bitwise_op};
     e95_token op_ones_compliment_t  = {"Ones' Compliment Operator", bitwise_op};
@@ -79,7 +78,6 @@ void init_token_definition_map()
 
     /* Relational Operators
      *----------------------*/
-    e95_token op_relational_gt_t    = {"Greater Than Operator",          relational_op};
     e95_token op_relational_gte_t   = {"Greater Than/Equal To Operator", relational_op};
     e95_token op_relational_lt_t    = {"Less Than Operator",             relational_op};
     e95_token op_relational_lte_t   = {"Less Than/Equal To Operator",    relational_op};
@@ -156,7 +154,25 @@ void init_token_definition_map()
 
     /* Constants
      *----------------*/
-    e95_token int_constant_t   = {"Integer Constant", "Constant"};
+    e95_token integer_constant_t   = {"Integer Constant", "Constant"};
+    e95_token character_constant_t = {"Character Constant", "Constant"};
+    e95_token string_constant_t    = {"String Constant", "Constant"};
+
+
+
+    /* Potential stand-alone characters
+     *----------------------------------*/
+    e95_token char_apostrophe_t          = {"Apostrophe",   standalone_char};
+    e95_token char_doublequote_t         = {"Double Quote", standalone_char};
+    e95_token char_backslash_t           = {"Backslash",    standalone_char};
+    e95_token char_backtick_t            = {"Backtick",     standalone_char};
+    e95_token char_period_t              = {"Period",       standalone_char};
+    e95_token char_ampersand_t           = {"Ampersand",    standalone_char};
+    e95_token char_minus_sign_t          = {"Minus Sign",   standalone_char};
+    e95_token char_dollar_sign_t         = {"Dollar Sign",  standalone_char};
+    e95_token char_at_sign_t             = {"At Sign",      standalone_char};
+    e95_token char_number_sign_t         = {"Number Sign",  standalone_char};
+    e95_token char_greater_than_symbol_t = {"Greater Than Symbol", standalone_char};
 
 
 
@@ -184,13 +200,11 @@ void init_token_definition_map()
       +---------------------------------------------------------------*/
      
 
-    token_def_map[OP_ADDITION]    = op_addition_t;
-    token_def_map[OP_SUBTRACTION] = op_subtraction_t;
-    token_def_map[OP_DIVISION]    = op_division_t;
-    token_def_map[OP_REMAINDER]   = op_remainder_t;
+    token_def_map[OP_ADDITION]   = op_addition_t;
+    token_def_map[OP_DIVISION]   = op_division_t;
+    token_def_map[OP_REMAINDER]  = op_remainder_t;
 
 
-    token_def_map[OP_BITWISE_AND]     = op_bitwise_and_t;
     token_def_map[OP_BITWISE_OR]      = op_bitwise_or_t;
     token_def_map[OP_BITWISE_XOR]     = op_bitwise_xor_t;
     token_def_map[OP_ONES_COMPLIMENT] = op_ones_compliment_t;
@@ -198,7 +212,6 @@ void init_token_definition_map()
     token_def_map[OP_RIGHT_BITSHIFT]  = op_right_bitshift_t;
 
 
-    token_def_map[OP_RELATIONAL_GT]  = op_relational_gt_t;
     token_def_map[OP_RELATIONAL_GTE] = op_relational_gte_t;
     token_def_map[OP_RELATIONAL_LT]  = op_relational_lt_t;
     token_def_map[OP_RELATIONAL_LTE] = op_relational_lte_t;
@@ -245,13 +258,28 @@ void init_token_definition_map()
     token_def_map[SEP_COMMA]                = sep_comma_t;
 
 
-    token_def_map[RESERVED_WORD] = reserved_word_t;
-    token_def_map[IDENTIFIER]    = identifier_t;
-    token_def_map[INT_CONSTANT]  = int_constant_t;
+    token_def_map[RESERVED_WORD]       = reserved_word_t;
+    token_def_map[IDENTIFIER]          = identifier_t;
+    token_def_map[INTEGER_CONSTANT]    = integer_constant_t;
+    token_def_map[CHARACTER_CONSTANT]  = character_constant_t;
+    token_def_map[STRING_CONSTANT]     = string_constant_t;
 
 
-    token_def_map[END_OF_LINE]   = end_of_line_t;
-    token_def_map[UNDEFINED]     = undefined_t;
+    token_def_map[APOSTROPHE]          = char_apostrophe_t;
+    token_def_map[DOUBLEQUOTE]         = char_doublequote_t;
+    token_def_map[BACKSLASH]           = char_backslash_t;
+    token_def_map[PERIOD]              = char_period_t;
+    token_def_map[AMPERSAND]           = char_ampersand_t;
+    token_def_map[BACKTICK]            = char_backtick_t;
+    token_def_map[MINUS_SIGN]          = char_minus_sign_t;
+    token_def_map[DOLLAR_SIGN]         = char_dollar_sign_t;
+    token_def_map[AT_SIGN]             = char_at_sign_t;
+    token_def_map[NUMBER_SIGN]         = char_number_sign_t;
+    token_def_map[GREATER_THAN_SYMBOL] = char_greater_than_symbol_t;
+
+
+    token_def_map[END_OF_LINE]  = end_of_line_t;
+    token_def_map[UNDEFINED]    = undefined_t;
 }
 
 
