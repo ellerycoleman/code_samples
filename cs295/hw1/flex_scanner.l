@@ -52,7 +52,22 @@
 
 
 
-(do|for|return|break|short|else|goto|signed|unsigned|char|if|void|int|continue|long|while) { return RESERVED_WORD; }
+"do"        { return RESERVED_WORD_DO;       }
+"for"       { return RESERVED_WORD_FOR;      }
+"return"    { return RESERVED_WORD_RETURN;   }
+"break"     { return RESERVED_WORD_BREAK;    }
+"short"     { return RESERVED_WORD_SHORT;    }
+"else"      { return RESERVED_WORD_ELSE;     }
+"goto"      { return RESERVED_WORD_GOTO;     }
+"signed"    { return RESERVED_WORD_SIGNED;   }
+"unsigned"  { return RESERVED_WORD_UNSIGNED; }
+"char"      { return RESERVED_WORD_CHAR;     }
+"if"        { return RESERVED_WORD_IF;       }
+"void"      { return RESERVED_WORD_VOID;     }
+"int"       { return RESERVED_WORD_INT;      }
+"continue"  { return RESERVED_WORD_CONTINUE; }
+"long"      { return RESERVED_WORD_LONG;     }
+"while"     { return RESERVED_WORD_WHILE;    }
 
 
 

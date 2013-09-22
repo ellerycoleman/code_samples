@@ -47,6 +47,7 @@ void init_token_definition_map()
     char *equality_op       = "Equality Operator";
     char *separator         = "Separator";
     char *standalone_char   = "Standalone Character";
+    char *reserved_word     = "Reserved Word";
 
 
 
@@ -142,7 +143,22 @@ void init_token_definition_map()
 
     /* Reserved Words
      *----------------*/
-    e95_token reserved_word_t  = {"Reserved Word", "Reserved Word"};    
+    e95_token resword_do_t       = {"Reserved Word do", reserved_word};    
+    e95_token resword_for_t      = {"Reserved Word for", reserved_word};
+    e95_token resword_return_t   = {"Reserved Word return", reserved_word};
+    e95_token resword_break_t    = {"Reserved Word break", reserved_word};
+    e95_token resword_short_t    = {"Reserved Word short", reserved_word};
+    e95_token resword_else_t     = {"Reserved Word else", reserved_word};
+    e95_token resword_goto_t     = {"Reserved Word goto", reserved_word};
+    e95_token resword_signed_t   = {"Reserved Word signed", reserved_word};
+    e95_token resword_unsigned_t = {"Reserved Word unsigned", reserved_word};
+    e95_token resword_char_t     = {"Reserved Word char", reserved_word};
+    e95_token resword_if_t       = {"Reserved Word if", reserved_word};
+    e95_token resword_void_t     = {"Reserved Word void", reserved_word};
+    e95_token resword_int_t      = {"Reserved Word int", reserved_word};
+    e95_token resword_continue_t = {"Reserved Word continue", reserved_word};
+    e95_token resword_long_t     = {"Reserved Word long", reserved_word};
+    e95_token resword_while_t    = {"Reserved Word while", reserved_word};
 
 
 
@@ -258,7 +274,30 @@ void init_token_definition_map()
     token_def_map[SEP_COMMA]                = sep_comma_t;
 
 
-    token_def_map[RESERVED_WORD]       = reserved_word_t;
+    token_def_map[RESERVED_WORD_DO]       = resword_do_t;
+    token_def_map[RESERVED_WORD_FOR]      = resword_for_t;
+    token_def_map[RESERVED_WORD_RETURN]   = resword_return_t;
+    token_def_map[RESERVED_WORD_BREAK]    = resword_break_t;
+    token_def_map[RESERVED_WORD_SHORT]    = resword_short_t;
+    token_def_map[RESERVED_WORD_ELSE]     = resword_else_t;
+    token_def_map[RESERVED_WORD_GOTO]     = resword_goto_t;
+    token_def_map[RESERVED_WORD_SIGNED]   = resword_signed_t;
+    token_def_map[RESERVED_WORD_UNSIGNED] = resword_unsigned_t;
+    token_def_map[RESERVED_WORD_CHAR]     = resword_char_t;
+    token_def_map[RESERVED_WORD_IF]       = resword_if_t;
+    token_def_map[RESERVED_WORD_VOID]     = resword_void_t;
+    token_def_map[RESERVED_WORD_INT]      = resword_int_t;
+    token_def_map[RESERVED_WORD_CONTINUE] = resword_continue_t;
+    token_def_map[RESERVED_WORD_LONG]     = resword_long_t;
+    token_def_map[RESERVED_WORD_WHILE]    = resword_while_t;
+
+
+
+
+
+
+
+
     token_def_map[IDENTIFIER]          = identifier_t;
     token_def_map[INTEGER_CONSTANT]    = integer_constant_t;
     token_def_map[CHARACTER_CONSTANT]  = character_constant_t;

@@ -15,7 +15,7 @@ all:    clean flex_scanner.o e95_tokens.c
 
 
 flex_scanner.o:   flex_scanner.c
-	gcc -c flex_scanner.c -lfl
+	gcc -c flex_scanner.c
 
 
 flex_scanner.c:       flex_scanner.l
