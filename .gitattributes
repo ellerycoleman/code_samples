@@ -98,3 +98,4 @@ cs295/hw1/e95_scanner.c -text
 cs295/hw1/e95_tokens.c -text
 cs295/hw1/e95_tokens.h -text
 cs295/hw1/flex_scanner.l -text
+cs295/hw1/test.sh -text

@@ -20,8 +20,9 @@ The scanner for hw1 is built from the following 5 files:
 
 
 
+======================================
 BUILD INSTRUCTIONS
-===================
+======================================
 Make sure that the "make" command is in your path.
 Then run:
 
@@ -36,8 +37,9 @@ binary called "scanner".
 
 
 
+======================================
 RUN INSTRUCTIONS
-=================
+======================================
 If the binary is invoked without arguments, it will read/write from
 STDIN/STDOUT.
 
@@ -54,3 +56,10 @@ $ ./scanner - -
 
 
 
+
+
+
+======================================
+TEST INSTRUCTIONS
+======================================
+$ make test

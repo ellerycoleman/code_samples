@@ -88,12 +88,12 @@ int main(int argc, char **argv)
 	       else if(ivalue_tmp <= ULONG_MAX)
 	       {   ivalue_ulong= ivalue_tmp;
 	           itype="unsigned long";
-                   fprintf(output,"value: %-12d", ivalue_ulong);
+                   fprintf(output,"value: %-12ld", ivalue_ulong);
 	       }
 	       else
 	       {   ivalue_ulong= ivalue_tmp;
 	           itype="truncated to unsigned long";
-                   fprintf(output,"value: %-12d", ivalue_ulong);
+                   fprintf(output,"value: %-12ld", ivalue_ulong);
 	       }
                fprintf(output," type: %-15s\n", itype);
                token= yylex();

@@ -26,3 +26,6 @@ clean:
 	rm -f flex_scanner.c
 	rm -f a.out
 	rm -f e95_scanner scanner
+
+test:	all
+	./test.sh
