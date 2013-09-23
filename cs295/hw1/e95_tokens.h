@@ -140,10 +140,17 @@ typedef struct e95_token
 
 /* defining a token map to hold all token definitions */
 e95_token token_def_map[MAX_TOKEN_DEFS];
-int cvalue;
 
+
+int cvalue;
+long long ivalue_tmp;
+int  ivalue_int;
+long ivalue_long;
+unsigned long ivalue_ulong;
+char *itype;
 
 void init_token_definition_map(void);
+
 
 
 #endif

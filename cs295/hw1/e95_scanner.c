@@ -9,6 +9,9 @@
 
 
 #include "e95_tokens.h"
+#define INT_MAX       2147483647
+#define LONG_MAX      2147483647
+#define ULONG_MAX     4294967295
 
 
 int get_octal_val(char *);
@@ -23,7 +26,8 @@ extern int yyleng;
 extern FILE *yyin;
 extern int yylineno;
 void *yylval;
-extern int cvalue;
+extern int cvalue;            /* for converting char constants */
+extern long long ivalue_tmp;  /* for converting int constants  */
 FILE *input, *output;
 
 
@@ -31,7 +35,6 @@ FILE *input, *output;
 int main(int argc, char **argv)
 {
     
-
 
     /* Configure input/output sources based on
      * user invocation of command.
@@ -62,11 +65,37 @@ int main(int argc, char **argv)
 
 
             case INTEGER_CONSTANT:
+	       itype="";
                fprintf(output,"line: %-3d", yylineno);
                fprintf(output," token: %-15s", yytext);
+	       ivalue_tmp= strtoll(yytext,NULL,10);
                fprintf(output," name: %-18s", token_def_map[token].name);
-               fprintf(output,"value: %-12d", atoi(yytext));
-               fprintf(output," type: %-15s\n", token_def_map[token].type);
+
+	       /*  Per H&S, if the value can fit in an int, then make it an int.
+	        |  Otherwise try a long.
+		|  Otherwise try an unsigned long.
+               */
+	       if(ivalue_tmp <= INT_MAX)
+	       {   ivalue_int= ivalue_tmp;
+	           itype="int";
+                   fprintf(output,"value: %-12d", ivalue_int);
+	       }
+	       else if(ivalue_tmp <= LONG_MAX)
+	       {   ivalue_long= ivalue_tmp;
+	           itype="long";
+                   fprintf(output,"value: %-12ld", ivalue_long);
+	       }
+	       else if(ivalue_tmp <= ULONG_MAX)
+	       {   ivalue_ulong= ivalue_tmp;
+	           itype="unsigned long";
+                   fprintf(output,"value: %-12d", ivalue_ulong);
+	       }
+	       else
+	       {   ivalue_ulong= ivalue_tmp;
+	           itype="truncated to unsigned long";
+                   fprintf(output,"value: %-12d", ivalue_ulong);
+	       }
+               fprintf(output," type: %-15s\n", itype);
                token= yylex();
 	       break;
 
