@@ -153,7 +153,7 @@
 
 
 
-\"[^"\n]*($|\\n)\"                 { return STRING_CONSTANT;     }
+\"[^"\n]*\"                 { return STRING_CONSTANT;     }
 
 
 
