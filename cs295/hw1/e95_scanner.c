@@ -11,22 +11,36 @@
 #include "e95_tokens.h"
 
 
-
+int get_octal_val(char *);
+void connect_io(int,char **);
+void usage(void);
 int yylex();
+
+
+
 extern char *yytext;
 extern int yyleng;
 extern FILE *yyin;
 extern int yylineno;
 void *yylval;
 extern int cvalue;
+FILE *input, *output;
 
-
-int get_octal_val(char *);
 
 
 int main(int argc, char **argv)
 {
+    
 
+
+    /* Configure input/output sources based on
+     * user invocation of command.
+     *------------------------------------------*/
+     connect_io(argc,argv);
+     yyin= input;
+     
+
+    /* Initialize token definition map */
     init_token_definition_map();
 
 
@@ -39,52 +53,52 @@ int main(int argc, char **argv)
     {
         switch (token)
 	{   case END_OF_LINE:
-               printf("line: %-3d", yylineno-1);
-               printf(" token: %-15s", "\\n");
-               printf(" name: %-37s", token_def_map[token].name);
-               printf(" type: %-15s\n", token_def_map[token].type);
+               fprintf(output,"line: %-3d", yylineno-1);
+               fprintf(output," token: %-15s", "\\n");
+               fprintf(output," name: %-37s", token_def_map[token].name);
+               fprintf(output," type: %-15s\n", token_def_map[token].type);
                token= yylex();
 	       break;
 
 
             case INTEGER_CONSTANT:
-               printf("line: %-3d", yylineno);
-               printf(" token: %-15s", yytext);
-               printf(" name: %-18s", token_def_map[token].name);
-               printf("value: %-12d", atoi(yytext));
-               printf(" type: %-15s\n", token_def_map[token].type);
+               fprintf(output,"line: %-3d", yylineno);
+               fprintf(output," token: %-15s", yytext);
+               fprintf(output," name: %-18s", token_def_map[token].name);
+               fprintf(output,"value: %-12d", atoi(yytext));
+               fprintf(output," type: %-15s\n", token_def_map[token].type);
                token= yylex();
 	       break;
 
 
             case CHARACTER_CONSTANT:
-               printf("line: %-3d", yylineno);
-               printf(" token: %-15s", yytext);
-               printf(" name: %-18s", token_def_map[token].name);
-               printf("  dec_val: %-9d", cvalue);
-               printf("type: %-15s\n", token_def_map[token].type);
+               fprintf(output,"line: %-3d", yylineno);
+               fprintf(output," token: %-15s", yytext);
+               fprintf(output," name: %-18s", token_def_map[token].name);
+               fprintf(output,"  dec_val: %-9d", cvalue);
+               fprintf(output,"type: %-15s\n", token_def_map[token].type);
                token= yylex();
 	       break;
 
 
 
             case CHARACTER_CONSTANT_OCTAL:
-               printf("line: %-3d", yylineno);
-               printf(" token: %-15s", yytext);
+               fprintf(output,"line: %-3d", yylineno);
+               fprintf(output," token: %-15s", yytext);
 	       cvalue= get_octal_val(yytext);
-               printf(" name: %-18s", token_def_map[token].name);
-               printf("  dec_val: %-9d", cvalue);
-               printf("type: %-15s\n", token_def_map[token].type);
+               fprintf(output," name: %-18s", token_def_map[token].name);
+               fprintf(output,"  dec_val: %-9d", cvalue);
+               fprintf(output,"type: %-15s\n", token_def_map[token].type);
                token= yylex();
 	       break;
 
 
 
 	    default:
-               printf("line: %-3d", yylineno);
-               printf(" token: %-15s", yytext);
-               printf(" name: %-37s", token_def_map[token].name);
-               printf(" type: %-15s\n", token_def_map[token].type);
+               fprintf(output,"line: %-3d", yylineno);
+               fprintf(output," token: %-15s", yytext);
+               fprintf(output," name: %-37s", token_def_map[token].name);
+               fprintf(output," type: %-15s\n", token_def_map[token].type);
                token= yylex();
         }
     }
@@ -97,13 +111,17 @@ int main(int argc, char **argv)
 
 
 
-
+/*
+ * A method to convert an octal escape sequence
+ * to it's decimal value.
+ *
+ */
 int get_octal_val(char *str)
 {   
 
 #ifdef DEBUG
-    printf("\n\n\n");
-    printf("input string: |%s|\n\n", str);
+    fprintf("\n\n\n");
+    fprintf("input string: |%s|\n\n", str);
 #endif
 
     /* initialization */
@@ -114,7 +132,7 @@ int get_octal_val(char *str)
 
 
 #ifdef DEBUG
-    printf("String Length: %d\n", len);
+    fprintf("String Length: %d\n", len);
 #endif
 
     /* read octal digits into separate string */
@@ -127,7 +145,7 @@ int get_octal_val(char *str)
 
 
 #ifdef DEBUG
-    printf("Octal Digits: %s\n", oct);
+    fprintf("Octal Digits: %s\n", oct);
 #endif
 
     /* calculate decimal value of octal string */
@@ -135,6 +153,65 @@ int get_octal_val(char *str)
 
     return sum;
 }
+
+
+
+
+
+/*
+ * This method contains code from scanner_main.c provided
+ * on the section website.
+ */
+void connect_io(int argc,char **argv)
+{   
+    if(argc == 3)
+    {   
+#ifdef DEBUG
+        printf("argc == 3\n\n");
+	printf("argv[1]: %s\n", argv[1]);
+	printf("argv[2]: %s\n", argv[2]);
+#endif
+        /* connect input  */
+        if(strcmp("-",argv[1]))
+	{   
+
+#ifdef DEBUG
+	    printf("connecting input: %s\n", argv[1]);
+#endif
+	    input= fopen(argv[1], "r");
+	}
+	else
+	{   input= stdin;
+	}
+
+	/* connect output */
+	if(strcmp("-",argv[2]))
+	{   
+#ifdef DEBUG
+   	    printf("connecting output: %s\n", argv[2]);
+#endif
+	    output= fopen(argv[2], "w");
+	}
+	else
+	{   output= stdout;
+	}
+    }
+    else if(argc <= 2)
+    {   input= stdin;
+        output= stdout;
+    }
+    else
+    {   usage();
+    }
+}
+
+
+
+void usage(void)
+{   printf("\n\nUsage: scanner [input_file output_file]\n\n");
+    exit(-1);
+}
+
 
 
 
