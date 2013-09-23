@@ -27,20 +27,65 @@ done
 
 
 
+
 printf "\n\n\n\n\n";
 cat <<EOF;
 #-------------------------
 #   Operator test
 #-------------------------
 EOF
-printf "!"   | ./scanner
-echo -n "%"  | ./scanner
-printf "<<=" | ./scanner
-printf ">>=" | ./scanner
-echo -n "^"  | ./scanner
+echo -n "!"   | ./scanner
+echo -n "%"   | ./scanner
+echo -n "^"   | ./scanner
+echo -n "&"   | ./scanner
+echo -n "*"   | ./scanner
+echo -n "-"   | ./scanner
+echo -n "+"   | ./scanner
+echo -n "="   | ./scanner
+echo -n "~"   | ./scanner
+echo -n "|"   | ./scanner
+echo -n "<"   | ./scanner
+echo -n ">"   | ./scanner
+echo -n "/"   | ./scanner
+echo -n "?"   | ./scanner
+echo -n "+="  | ./scanner
+echo -n "-="  | ./scanner
+echo -n "*="  | ./scanner
+echo -n "/="  | ./scanner
+echo -n "%="  | ./scanner
+echo -n "<<=" | ./scanner
+echo -n ">>=" | ./scanner
+echo -n "&="  | ./scanner
+echo -n "^="  | ./scanner
+echo -n "|="  | ./scanner
+echo -n "++"  | ./scanner
+echo -n "--"  | ./scanner
+echo -n "<<"  | ./scanner
+echo -n ">>"  | ./scanner
+echo -n "<="  | ./scanner
+echo -n ">="  | ./scanner
+echo -n "=="  | ./scanner
+echo -n "&&"  | ./scanner
+echo -n "||"  | ./scanner
 
 
 
+
+printf "\n\n\n\n\n";
+cat <<EOF;
+#-------------------------
+#   Separator test
+#-------------------------
+EOF
+echo -n "("   | ./scanner
+echo -n ")"   | ./scanner
+echo -n "["   | ./scanner
+echo -n "]"   | ./scanner
+echo -n "{"   | ./scanner
+echo -n "}"   | ./scanner
+echo -n ","   | ./scanner
+echo -n ";"   | ./scanner
+echo -n ":"   | ./scanner
 
 
 
@@ -54,5 +99,11 @@ EOF
 echo -n "2147483647" | ./scanner
 echo -n "2147483648" | ./scanner
 echo -n "4294967296" | ./scanner
-printf "\"this is a test\"" | ./scanner
+echo -n "\"this is a test\"" | ./scanner
 echo -n "'\n'" | ./scanner
+printf "\n\n\n\n\n";
+
+
+
+
+
