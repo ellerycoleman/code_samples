@@ -250,7 +250,7 @@ char convert_escape_char(char *escape_code)
     char converted_char=0;
 
     if(isalpha(escape_code[1]) || ispunct(escape_code[1]))
-    {   printf("escape code is alphabetic\n");
+    {   /* printf("escape code is alphabetic\n"); */
         switch(escape_code[1])
 	{
             case 'n':
@@ -299,7 +299,7 @@ char convert_escape_char(char *escape_code)
         }
     }
     else if(isdigit(escape_code[1]))
-    {   printf("escape code is octal\n");
+    {   /* printf("escape code is octal\n"); */
         converted_char= (char) get_octal_value(escape_code);
     }
 
