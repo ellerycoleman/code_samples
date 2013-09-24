@@ -70,29 +70,34 @@ int main(int argc, char **argv)
 	       ivalue_tmp= strtoll(yytext,NULL,10);
                fprintf(output," name: %-18s", token_def_map[token].name);
 
-	       /*  Per H&S, if the value can fit in an int, then make it an int.
+	       /*------------------------------------------------------------------  
+	        |  Per H&S, if the value can fit in an int, then make it an int.
 	        |  Otherwise try a long.
 		|  Otherwise try an unsigned long.
+		|
+		|  For our purposes, int and long are both 4 bytes, so while the
+		|  variable names refer to "long", we're actually using ints.
+	        +------------------------------------------------------------------  
                */
 	       if(ivalue_tmp <= INT_MAX)
-	       {   ivalue_int= ivalue_tmp;
+	       {   e95_int_constant.ival= (int) ivalue_tmp;
 	           itype="int";
-                   fprintf(output,"value: %-12d", ivalue_int);
+                   fprintf(output,"value: %-12d", e95_int_constant.ival);
 	       }
 	       else if(ivalue_tmp <= LONG_MAX)
-	       {   ivalue_long= ivalue_tmp;
+	       {   e95_int_constant.lval= (int) ivalue_tmp;
 	           itype="long";
-                   fprintf(output,"value: %-12ld", ivalue_long);
+                   fprintf(output,"value: %-12d", e95_int_constant.lval);
 	       }
 	       else if(ivalue_tmp <= ULONG_MAX)
-	       {   ivalue_ulong= ivalue_tmp;
+	       {   e95_int_constant.ulval= (unsigned int) ivalue_tmp;
 	           itype="unsigned long";
-                   fprintf(output,"value: %-12ld", ivalue_ulong);
+                   fprintf(output,"value: %-12u", e95_int_constant.ulval);
 	       }
 	       else
-	       {   ivalue_ulong= ivalue_tmp;
+	       {   e95_int_constant.ulval= (unsigned int) ivalue_tmp;
 	           itype="truncated to unsigned long";
-                   fprintf(output,"value: %-12ld", ivalue_ulong);
+                   fprintf(output,"value: %-12u", e95_int_constant.ulval);
 	       }
                fprintf(output," type: %-15s\n", itype);
                token= yylex();

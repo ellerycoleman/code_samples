@@ -98,8 +98,11 @@ cat <<EOF;
 EOF
 echo -n "2147483647" | ./scanner
 echo -n "2147483648" | ./scanner
-echo -n "4294967296" | ./scanner
+echo -n "4294967294" | ./scanner
+echo -n "4294967295" | ./scanner
+echo -n "4294967299" | ./scanner
 echo -n "\"this is a test\"" | ./scanner
+echo -n "\"this is a tab\ttest\"" | ./scanner
 echo -n "'\n'" | ./scanner
 printf "\n\n\n\n\n";
 
