@@ -9,14 +9,13 @@
 
 
 
-all:    clean flex_scanner.o calc_tokens.c
-	gcc calc_scanner.c calc_tokens.c flex_scanner.o -o calc_scanner -lfl
+all:    clean flex_scanner.o bison_parser.o calc_tokens.c calc_scanner.c
+	gcc calc_scanner.c calc_tokens.c flex_scanner.o bison_parser.o -o calc_scanner -lfl
 	ln -s calc_scanner scanner
 
 
 flex_scanner.o:   flex_scanner.c
 	gcc -c flex_scanner.c
-
 
 flex_scanner.c:       flex_scanner.l bison_parser.tab.h
 	flex -o flex_scanner.c flex_scanner.l
@@ -25,12 +24,21 @@ flex_scanner.c:       flex_scanner.l bison_parser.tab.h
 bison_parser.tab.h:	bison_parser.y
 	bison -d bison_parser.y
 
+
+bison_parser.o:   bison_parser.tab.c
+	gcc -c bison_parser.tab.c -o bison_parser.o
+
+bison_parser.tab.c:	bison_parser.y
+	bison -d bison_parser.y
+
+
 clean:
 	rm -f *.o
 	rm -f flex_scanner.c
 	rm -f a.out
 	rm -f calc_scanner scanner
 	rm -f bison_parser.tab.*
+
 
 test:	all
 	./test.sh
