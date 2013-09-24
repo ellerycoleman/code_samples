@@ -94,7 +94,7 @@ void init_token_definition_map()
      
 
     token_def_map[OP_ADDITION]       = op_addition_t;
-    token_def_map[OP_DIVISION]       = op_division_t;
+    token_def_map[OP_SUBTRACTION]    = op_subtraction_t;
     token_def_map[OP_MULTIPLICATION] = op_multiplication_t;
     token_def_map[OP_DIVISION]       = op_division_t;
     token_def_map[OP_ABSVALUE]       = op_absvalue_t;
