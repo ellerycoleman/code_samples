@@ -104,6 +104,12 @@ echo -n "4294967299" | ./scanner
 echo -n "\"this is a test\"" | ./scanner
 echo -n "\"this is a tab\ttest\"" | ./scanner
 echo -n "'\n'" | ./scanner
+echo -n "'\t'" | ./scanner
+echo -n "'\b'" | ./scanner
+echo -n "'\r'" | ./scanner
+echo -n "'\f'" | ./scanner
+echo -n "'\v'" | ./scanner
+echo -n "'\a'" | ./scanner
 printf "\n\n\n\n\n";
 
 
