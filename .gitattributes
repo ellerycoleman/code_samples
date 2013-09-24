@@ -99,3 +99,9 @@ cs295/hw1/e95_tokens.c -text
 cs295/hw1/e95_tokens.h -text
 cs295/hw1/flex_scanner.l -text
 cs295/hw1/test.sh -text
+cs295/hw2/calc/Makefile -text
+cs295/hw2/calc/bison_parser.y -text
+cs295/hw2/calc/calc_scanner.c -text
+cs295/hw2/calc/calc_tokens.c -text
+cs295/hw2/calc/calc_tokens.h -text
+cs295/hw2/calc/flex_scanner.l -text
