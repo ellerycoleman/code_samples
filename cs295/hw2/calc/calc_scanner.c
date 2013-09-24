@@ -21,7 +21,6 @@ extern char *yytext;
 extern int yyleng;
 extern FILE *yyin;
 extern int yylineno;
-void *yylval;
 FILE *input, *output;
 
 

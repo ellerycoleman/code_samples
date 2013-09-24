@@ -18,8 +18,12 @@ flex_scanner.o:   flex_scanner.c
 	gcc -c flex_scanner.c
 
 
-flex_scanner.c:       flex_scanner.l
+flex_scanner.c:       flex_scanner.l bison_parser.tab.h
 	flex -o flex_scanner.c flex_scanner.l
+
+
+bison_parser.tab.h:	bison_parser.y
+	bison -d bison_parser.y
 
 clean:
 	rm -f *.o

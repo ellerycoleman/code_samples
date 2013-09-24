@@ -24,6 +24,7 @@
 
 
 /* Simple Operators   */
+/*
 enum calc_tokens
 {   
 
@@ -39,7 +40,8 @@ enum calc_tokens
 
     UNDEFINED
 };
-
+*/
+#include "bison_parser.tab.h"
 
 
 /* creating token structure */
