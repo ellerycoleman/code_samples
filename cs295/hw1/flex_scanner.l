@@ -14,6 +14,7 @@
  |                      declarations
  +---------------------------------------------------------*/
 %option yylineno
+%x e95_string
 
 %{
 
@@ -131,43 +132,80 @@
 
 
 
-[0-9]+                             { return INTEGER_CONSTANT;    }
+[0-9]+                  { return INTEGER_CONSTANT;    }
+
+
+'\\[ntbrfv\\\'\"a?]' { /* Handle non-octal escape char constants */
+                      char tmp[10];
+                      strncpy(tmp,yytext,10);
+                      e95_strbuf[0]= '\0';
+                      yytext[strlen(yytext)-1]= '\0';            /* remove trailing apostrophe */
+                      strncpy(e95_strbuf,yytext+1,3);            /* remove leading apostrophe  */
+                      cvalue= convert_escape_char(e95_strbuf);   /* get decimal value of escape sequence */
+                      strncpy(yytext,tmp,10);                    /* restore yytext */
+                      return CHARACTER_CONSTANT;
+                    }
 
 
 
-'\\n'   { cvalue= 10; return CHARACTER_CONSTANT; }
-'\\t'   { cvalue= 9;  return CHARACTER_CONSTANT; }
-'\\b'   { cvalue= 8;  return CHARACTER_CONSTANT; }
-'\\r'   { cvalue= 13; return CHARACTER_CONSTANT; }
-'\\f'   { cvalue= 12; return CHARACTER_CONSTANT; }
-'\\v'   { cvalue= 11; return CHARACTER_CONSTANT; }
-'\\\\'  { cvalue= 92; return CHARACTER_CONSTANT; }
-'\\''   { cvalue= 39; return CHARACTER_CONSTANT; }
-'\\\"'  { cvalue= 34; return CHARACTER_CONSTANT; }
-'\\a'   { cvalue= 7;  return CHARACTER_CONSTANT; }
-'\\\?'  { cvalue= 63; return CHARACTER_CONSTANT; }
-
-
-'\\[0-7]{1,3}' { return CHARACTER_CONSTANT_OCTAL; }
+'\\[0-7]{1,3}' {  /* Handle octal character constants */
+                  cvalue= get_octal_value(yytext);
+                  return CHARACTER_CONSTANT_OCTAL; 
+               }
 
 
 
+"\""                    {   /* Beginning of string constant has been detected  */
+                            BEGIN(e95_string); 
+			    e95_strbuf[0]='\0';
+                            e95_strbuf_idx=0;
+                        }
 
-\"[^"\n]*\"                 { return STRING_CONSTANT;     }
+<e95_string>[^"\n\\]*   {   /* All string chars except double quotes,
+                               newlines, and escape chars will be copied
+			       to our string buffer: e95_strbfr[].
+                            */
+                            strncat(e95_strbuf, yytext,strlen(yytext));
+			    e95_strbuf_idx+= strlen(yytext);
+			}
+
+<e95_string>\\([ntbrfv\\'"a?]|[0-9]{1,3})  { /* Detected an escape sequence */
+				                char converted_escape_code= (char) convert_escape_char(yytext);
+				                strncat(e95_strbuf,&converted_escape_code,1); 
+			                   }
 
 
+<e95_string>\\\n        {  /* allow escaped returns, but don't copy them
+                              to the string buffer.
+                           */ 
+		        }
 
-"'"                                { return APOSTROPHE;          }
-"\""                               { return DOUBLEQUOTE;         }
-"\\"                               { return BACKSLASH;           }
-"`"                                { return BACKTICK;            }
-"."                                { return PERIOD;              }
-"&"                                { return AMPERSAND;           }
-"$"                                { return DOLLAR_SIGN;         }
-"@"                                { return AT_SIGN;             }
-"#"                                { return NUMBER_SIGN;         }
-"-"                                { return MINUS_SIGN;          }
-">"                                { return GREATER_THAN_SYMBOL; }
+
+<e95_string>\n          {   /* unescaped returns are errors - try to fail gracefully */ 
+                               strncat(e95_strbuf, "...UNTERMINATED_STRING",22);
+			       yytext= e95_strbuf;
+			       BEGIN(INITIAL);
+			       return STRING_CONSTANT;
+                        }
+
+
+<e95_string>"\""        {   /* End of string has been detected */
+			    yytext= e95_strbuf;
+                            BEGIN(INITIAL);
+			    return STRING_CONSTANT;
+		        }
+
+
+"'"                     { return APOSTROPHE;          }
+"\\"                    { return BACKSLASH;           }
+"`"                     { return BACKTICK;            }
+"."                     { return PERIOD;              }
+"&"                     { return AMPERSAND;           }
+"$"                     { return DOLLAR_SIGN;         }
+"@"                     { return AT_SIGN;             }
+"#"                     { return NUMBER_SIGN;         }
+"-"                     { return MINUS_SIGN;          }
+">"                     { return GREATER_THAN_SYMBOL; }
 
 
 \n   { return END_OF_LINE;   }
@@ -178,7 +216,7 @@
 		  - horizontal tab
 		  - vertical tab
 		  - form feed
-             */
+              */
 	    }
 
 
@@ -199,5 +237,124 @@
 /*-----------------------------------------------------------
  |                    user functions
  +---------------------------------------------------------*/
+
+/*========================================================
+ * Function: convert_escape_char()
+ *
+ * A method to convert an octal escape sequence
+ * to it's decimal value.
+ *========================================================
+ */
+char convert_escape_char(char *escape_code)
+{   
+    char converted_char=0;
+
+    if(isalpha(escape_code[1]) || ispunct(escape_code[1]))
+    {   printf("escape code is alphabetic\n");
+        switch(escape_code[1])
+	{
+            case 'n':
+	      converted_char= 10;
+	      break;
+
+            case 't':
+	      converted_char= 9;
+	      break;
+
+            case 'b':
+	      converted_char= 8;
+	      break;
+
+            case 'r':
+	      converted_char= 13;
+	      break;
+
+            case 'f':
+	      converted_char= 12;
+	      break;
+
+            case 'v':
+	      converted_char= 11;
+	      break;
+
+            case '\\':
+	      converted_char= 92;
+	      break;
+
+            case '\'':
+	      converted_char= 39;
+	      break;
+
+            case '"':
+	      converted_char= 34;
+	      break;
+
+            case 'a':
+	      converted_char= 7;
+	      break;
+
+            case '?':
+	      converted_char= 63;
+	      break;
+        }
+    }
+    else if(isdigit(escape_code[1]))
+    {   printf("escape code is octal\n");
+        converted_char= (char) get_octal_value(escape_code);
+    }
+
+
+    return converted_char;
+}
+
+
+
+
+
+/*========================================================
+ * Function: get_octal_value()
+ *
+ * A method to convert an octal escape sequence
+ * to it's decimal value.
+ *========================================================
+ */
+int get_octal_value(char *str)
+{
+
+#ifdef DEBUG
+    fprintf("\n\n\n");
+    fprintf("input string: |%s|\n\n", str);
+#endif
+
+    /* initialization */
+    int len= strlen(str);
+    char oct[4]= "000";
+    int i,j,sum;
+
+
+
+#ifdef DEBUG
+    fprintf("String Length: %d\n", len);
+#endif
+
+    /* read octal digits into separate string */
+    j=2;
+    for(i=len-1; i>=0; i--)
+    {   if( isdigit(str[i]) )
+        {   oct[j--]= str[i];
+        }
+    }
+
+
+#ifdef DEBUG
+    fprintf("Octal Digits: %s\n", oct);
+#endif
+
+    /* calculate decimal value of octal string */
+    sum= (int) strtol(oct,NULL,8);
+
+    return sum;
+}
+
 
 

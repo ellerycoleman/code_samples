@@ -148,8 +148,13 @@ int  ivalue_int;
 long ivalue_long;
 unsigned long ivalue_ulong;
 char *itype;
+char e95_strbuf[16000];
+int  e95_strbuf_idx;
+
 
 void init_token_definition_map(void);
+char convert_escape_char(char *);
+int get_octal_value(char *);
 
 
 

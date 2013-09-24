@@ -14,7 +14,6 @@
 #define ULONG_MAX     4294967295
 
 
-int get_octal_val(char *);
 void connect_io(int,char **);
 void usage(void);
 int yylex();
@@ -114,7 +113,6 @@ int main(int argc, char **argv)
             case CHARACTER_CONSTANT_OCTAL:
                fprintf(output,"line: %-3d", yylineno);
                fprintf(output," token: %-15s", yytext);
-	       cvalue= get_octal_val(yytext);
                fprintf(output," name: %-18s", token_def_map[token].name);
                fprintf(output,"  dec_val: %-9d", cvalue);
                fprintf(output,"type: %-15s\n", token_def_map[token].type);
@@ -140,56 +138,13 @@ int main(int argc, char **argv)
 
 
 
-/*
- * A method to convert an octal escape sequence
- * to it's decimal value.
- *
- */
-int get_octal_val(char *str)
-{   
-
-#ifdef DEBUG
-    fprintf("\n\n\n");
-    fprintf("input string: |%s|\n\n", str);
-#endif
-
-    /* initialization */
-    int len= strlen(str);
-    char oct[4]= "000";
-    int i,j,sum;
 
 
-
-#ifdef DEBUG
-    fprintf("String Length: %d\n", len);
-#endif
-
-    /* read octal digits into separate string */
-    j=2;
-    for(i=len-1; i>=0; i--)
-    {   if( isdigit(str[i]) )
-        {   oct[j--]= str[i];
-	}
-    } 
-
-
-#ifdef DEBUG
-    fprintf("Octal Digits: %s\n", oct);
-#endif
-
-    /* calculate decimal value of octal string */
-    sum= (int) strtol(oct,NULL,8);
-
-    return sum;
-}
-
-
-
-
-
-/*
+/*===============================================================
+ * Function: connect_io()
  * This method contains code from scanner_main.c provided
  * on the section website.
+ *===============================================================
  */
 void connect_io(int argc,char **argv)
 {   
@@ -236,6 +191,12 @@ void connect_io(int argc,char **argv)
 
 
 
+
+/*===============================================================
+ * Function: usage()
+ * Writes proper scanner usage notice to STDOUT.
+ *===============================================================
+ */
 void usage(void)
 {   printf("\n\nUsage: scanner [input_file output_file]\n\n");
     exit(-1);
