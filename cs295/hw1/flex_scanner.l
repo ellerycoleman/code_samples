@@ -153,6 +153,7 @@
                   return CHARACTER_CONSTANT_OCTAL; 
                }
 
+'[0-9A-Za-z]'  {  cvalue= yytext[1]; return CHARACTER_CONSTANT; }
 
 
 "\""                    {   /* Beginning of string constant has been detected  */
