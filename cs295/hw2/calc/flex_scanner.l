@@ -37,12 +37,14 @@
 
 
 
-"+"     { return OP_ADDITION;       }
-"-"     { return OP_SUBTRACTION;    }
-"*"     { return OP_MULTIPLICATION; }
-"/"     { return OP_DIVISION;       }
-"|"     { return OP_ABSVALUE;       }
-
+"+"     { return OP_ADDITION;         }
+"-"     { return OP_SUBTRACTION;      }
+"*"     { return OP_MULTIPLICATION;   }
+"/"     { return OP_DIVISION;         }
+"|"     { return OP_ABSVALUE;         }
+"("     { return SEPARATOR_LPAREN;    }
+")"     { return SEPARATOR_RPAREN;    }
+";"     { return SEPARATOR_SEMICOLON; }
 
 
 [0-9]+ { yylval= atoi(yytext); return INTEGER_CONSTANT;   }

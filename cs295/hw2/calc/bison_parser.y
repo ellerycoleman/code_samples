@@ -28,6 +28,9 @@
 %token OP_MULTIPLICATION
 %token OP_DIVISION
 %token OP_ABSVALUE
+%token SEPARATOR_LPAREN;
+%token SEPARATOR_RPAREN;
+%token SEPARATOR_SEMICOLON;
 
 %token INTEGER_CONSTANT
 
@@ -46,25 +49,26 @@
  +---------------------------------------------------------*/
 %%
 
-calclist: /* nothing */
-| calclist exp END_OF_LINE    { printf("= %d\n\n", $2); }
+statement:  /* null statement */
+| statement expr END_OF_LINE    { printf("= %d\n\n", $2); }
 ;
 
 
-exp: factor
-| exp OP_ADDITION    factor  { $$= $1 + $3; }
-| exp OP_SUBTRACTION factor  { $$= $1 - $3; }
+expr:  expr OP_ADDITION    term  { $$= $1 + $3; }
+|      expr OP_SUBTRACTION term  { $$= $1 - $3; }
+|      term;
 ;
 
 
-factor: term
-| factor OP_MULTIPLICATION term  { $$= $1 * $3; }
-| factor OP_DIVISION       term  { $$= $1 / $3; }
+term:  term OP_MULTIPLICATION factor  { $$= $1 * $3; }
+|      term OP_DIVISION       factor  { $$= $1 / $3; }
+|      factor;
 ;
 
 
-term: INTEGER_CONSTANT
-| OP_ABSVALUE term  { $$= ($2 > 0)? $2 : - $2; }
+factor:  OP_ABSVALUE term  { $$= ($2 > 0)? $2 : - $2; }
+|        SEPARATOR_LPAREN expr SEPARATOR_RPAREN {$$= $2};
+|        INTEGER_CONSTANT;
 ;
 
 
@@ -77,6 +81,12 @@ term: INTEGER_CONSTANT
 /*-----------------------------------------------------------
  |                    user functions
  +---------------------------------------------------------*/
+int main(void)
+{   yyparse();
+    return 0;
+}
+
+
 yyerror(char *s)
 {   fprintf(stderr, "error: %s\n", s);
 }

@@ -40,6 +40,7 @@ void init_token_definition_map()
       |  Step 1 of 3:  Define common token types
       +----------------------------------------------------------------*/
     char *math_op           = "Arithmetic Operator";
+    char *separator         = "Separator";
     char *standalone_char   = "Standalone Character";
 
 
@@ -59,6 +60,8 @@ void init_token_definition_map()
     calc_token op_multiplication_t  = {"Multiplication Operator", math_op};
     calc_token op_division_t        = {"Division Operator",       math_op};
     calc_token op_absvalue_t        = {"Absolute Value Operator", math_op};
+    calc_token separator_lparen_t   = {"Left Paren", separator};
+    calc_token separator_rparen_t   = {"Right Paren", separator};
 
 
 
