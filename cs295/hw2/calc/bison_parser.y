@@ -74,14 +74,22 @@ statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with
 
 
 expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} term { $$= $2}
-|      expr OP_ADDITION    term  { printf("Performing expr addition...\n"); $$= $1 + $3; }
-|      expr OP_SUBTRACTION term  { printf("Performing expr subtraction...\n"); $$= $1 - $3; }
+|      expr OP_ADDITION    term  { printf("Performing expr addition...\n"); 
+                                   $$= $1 + $3; 
+				 }
+|      expr OP_SUBTRACTION term  { printf("Performing expr subtraction...\n"); 
+                                   $$= $1 - $3; 
+				 }
 ;
 
 
 term:  {fprintf(stderr,"Entering term symbol with token '%s'\n", yytext);} factor { $$= $2}
-|      term OP_MULTIPLICATION factor  { printf("Performing term multiplication...\n"); $$= $1 * $3; }
-|      term OP_DIVISION       factor  { printf("Performing term division...\n"); $$= $1 / $3; }
+|      term OP_MULTIPLICATION factor  { printf("Performing term multiplication...\n"); 
+                                        $$= $1 * $3; 
+				      }
+|      term OP_DIVISION       factor  { printf("Performing term division...\n"); 
+                                        $$= $1 / $3; 
+				      }
 ;
 
 
