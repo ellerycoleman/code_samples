@@ -24,25 +24,6 @@
 
 
 /* Simple Operators   */
-/*
-enum calc_tokens
-{   
-
-    OP_ADDITION = 258,
-    OP_SUBTRACTION,
-    OP_MULTIPLICATION,
-    OP_DIVISION,
-    OP_ABSVALUE,
-    SEPARATOR_LPAREN,
-    SEPARATOR_RPAREN,
-
-    INTEGER_CONSTANT,
-
-    END_OF_LINE,
-
-    UNDEFINED
-};
-*/
 #include "bison_parser.tab.h"
 
 
@@ -61,7 +42,6 @@ calc_token token_def_map[MAX_TOKEN_DEFS];
 
 /* function prototypes */
 void init_token_definition_map(void);
-
 
 
 #endif

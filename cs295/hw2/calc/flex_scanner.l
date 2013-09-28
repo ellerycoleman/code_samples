@@ -16,8 +16,9 @@
 %option yylineno
 
 %{
-
 #include "calc_tokens.h"
+int num_of_tokens_processed=0;
+
 
 %}
 
@@ -37,20 +38,20 @@
 
 
 
-"+"     { return OP_ADDITION;         }
-"-"     { return OP_SUBTRACTION;      }
-"*"     { return OP_MULTIPLICATION;   }
-"/"     { return OP_DIVISION;         }
-"|"     { return OP_ABSVALUE;         }
-"("     { return SEPARATOR_LPAREN;    }
-")"     { return SEPARATOR_RPAREN;    }
-";"     { return SEPARATOR_SEMICOLON; }
+"+"     { ++num_of_tokens_processed; return OP_ADDITION;         }
+"-"     { ++num_of_tokens_processed; return OP_SUBTRACTION;      }
+"*"     { ++num_of_tokens_processed; return OP_MULTIPLICATION;   }
+"/"     { ++num_of_tokens_processed; return OP_DIVISION;         }
+"|"     { ++num_of_tokens_processed; return OP_ABSVALUE;         }
+"("     { ++num_of_tokens_processed; return SEPARATOR_LPAREN;    }
+")"     { ++num_of_tokens_processed; return SEPARATOR_RPAREN;    }
+";"     { ++num_of_tokens_processed; return SEPARATOR_SEMICOLON; }
 
 
-[0-9]+ { yylval= atoi(yytext); return INTEGER_CONSTANT;   }
+-?[0-9]+ { ++num_of_tokens_processed; yylval= atoi(yytext); return INTEGER_CONSTANT;   }
 
 
-\n     { return END_OF_LINE;        }
+\n     { ++num_of_tokens_processed; return END_OF_LINE;        }
 
 
 [ \t]  { /* Ignore the following whitespace chars:
@@ -63,7 +64,7 @@
 
 
 
-.      { return UNDEFINED; }
+.      { ++num_of_tokens_processed; return UNDEFINED; }
 
 
 

@@ -17,6 +17,7 @@ all:    clean flex_scanner.o bison_parser.o calc_tokens.c calc_scanner.c calc_to
 flex_scanner.o:   flex_scanner.c
 	gcc -c flex_scanner.c
 
+
 flex_scanner.c:       flex_scanner.l bison_parser.tab.h
 	flex -o flex_scanner.c flex_scanner.l
 
@@ -38,6 +39,7 @@ clean:
 	rm -f a.out
 	rm -f calc_scanner scanner
 	rm -f bison_parser.tab.*
+	rm -f parser
 
 
 test:	all
