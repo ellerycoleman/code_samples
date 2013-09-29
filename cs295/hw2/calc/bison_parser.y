@@ -18,6 +18,7 @@
 
 extern char *yytext;
 extern int num_of_tokens_processed;
+int answer=0;
 
 enum node_type {NODE_OPERATOR,NODE_NUMBER};
 
@@ -71,9 +72,11 @@ statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with
                                                  "sizeof(struct node): %d\n\n", yytext,sizeof(struct node));
 				 }
 |  statement expr END_OF_LINE    { print_tree((struct node *)$2);
-                                   printf("\n");
+                                   printf("\n\nanswer: %d\n", answer);
                                    fprintf(stderr,"\n\nNum_of_tokens: %d\n\n", num_of_tokens_processed);
+				   
                                    num_of_tokens_processed = 0;
+				   answer=0;
 				 }
 ;
 
@@ -81,9 +84,15 @@ statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with
 expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} term { $$= $2}
 |      expr OP_ADDITION    term  { printf("Performing expr addition...\n"); 
                                    $$= (long)malloc_op_node("+", (struct node *)$1, (struct node *)$3);
+				   struct node *tmpleft= (struct node *)$1;
+				   struct node *tmpright= (struct node *)$3;
+				   answer+= tmpleft->val + tmpright->val;
 				 }
 |      expr OP_SUBTRACTION term  { printf("Performing expr addition...\n"); 
                                    $$= (long)malloc_op_node("-", (struct node *)$1, (struct node *)$3);
+				   struct node *tmpleft= (struct node *)$1;
+				   struct node *tmpright= (struct node *)$3;
+				   answer+= tmpleft->val - tmpright->val;
 				 }
 ;
 
@@ -91,9 +100,15 @@ expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} term 
 term:  {fprintf(stderr,"Entering term symbol with token '%s'\n", yytext);} factor { $$= $2}
 |      term OP_MULTIPLICATION factor  { printf("Performing term multiplication...\n"); 
                                         $$= (long)malloc_op_node("*", (struct node *)$1, (struct node *)$3);
+				        struct node *tmpleft= (struct node *)$1;
+				        struct node *tmpright= (struct node *)$3;
+				        answer+= tmpleft->val * tmpright->val;
 				      }
 |      term OP_DIVISION       factor  { printf("Performing term multiplication...\n"); 
                                         $$= (long)malloc_op_node("/", (struct node *)$1, (struct node *)$3);
+				        struct node *tmpleft= (struct node *)$1;
+				        struct node *tmpright= (struct node *)$3;
+				        answer+= tmpleft->val / tmpright->val;
 				      }
 ;
 
