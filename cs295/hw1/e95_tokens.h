@@ -19,6 +19,9 @@
 #include <ctype.h>
 
 
+extern void *yylval;
+
+
 #define MAX_TOKEN_DEFS 500
 
 
