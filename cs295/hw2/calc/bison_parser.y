@@ -71,6 +71,7 @@ statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with
                                                  "sizeof(struct node): %d\n\n", yytext,sizeof(struct node));
 				 }
 |  statement expr END_OF_LINE    { print_tree((struct node *)$2);
+                                   printf("\n");
                                    fprintf(stderr,"\n\nNum_of_tokens: %d\n\n", num_of_tokens_processed);
                                    num_of_tokens_processed = 0;
 				 }
@@ -80,11 +81,9 @@ statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with
 expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} term { $$= $2}
 |      expr OP_ADDITION    term  { printf("Performing expr addition...\n"); 
                                    $$= (long)malloc_op_node("+", (struct node *)$1, (struct node *)$3);
-				   printf("Validating malloc_op_node return val:\n");
-				   struct node *tmp= (struct node *)$$;
-				   printf("   * operator: %s\n", tmp->operator);
-				   printf("   * left child: %d\n", tmp->left->val);
-				   printf("   * right child: %d\n", tmp->right->val);
+				 }
+|      expr OP_SUBTRACTION term  { printf("Performing expr addition...\n"); 
+                                   $$= (long)malloc_op_node("-", (struct node *)$1, (struct node *)$3);
 				 }
 ;
 
@@ -92,6 +91,9 @@ expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} term 
 term:  {fprintf(stderr,"Entering term symbol with token '%s'\n", yytext);} factor { $$= $2}
 |      term OP_MULTIPLICATION factor  { printf("Performing term multiplication...\n"); 
                                         $$= (long)malloc_op_node("*", (struct node *)$1, (struct node *)$3);
+				      }
+|      term OP_DIVISION       factor  { printf("Performing term multiplication...\n"); 
+                                        $$= (long)malloc_op_node("/", (struct node *)$1, (struct node *)$3);
 				      }
 ;
 
@@ -123,13 +125,16 @@ yyerror(char *s)
 
 
 struct node *malloc_op_node(char *operator, struct node *child_left, struct node *child_right)
-{   printf("Creating an op node with these args:\n"
+{   printf("Entering malloc_op_node with op '%s', left child '%d', right child '%d'...\n", operator,child_left->val, child_right->val);
+#ifdef DEBUG
+    printf("Creating an op node with these args:\n"
            "op: '%s'\n"
 	   "left: '%d'\n"
 	   "right: '%d'\n",
 	   operator, child_left, child_right);
     printf("   * left child access test  --> %d\n", child_left->val);
     printf("   * right child access test --> %d\n", child_right->val);
+#endif
 
     struct node *nodeptr= malloc(sizeof(struct node));
     if(nodeptr == NULL)
@@ -147,10 +152,7 @@ struct node *malloc_op_node(char *operator, struct node *child_left, struct node
 }
 
 struct node *malloc_number_node(int val)
-{   printf("Creating a number node with this arg: '%d'\n", val);
-
-
-    struct node *nodeptr= malloc(sizeof(struct node));
+{   struct node *nodeptr= malloc(sizeof(struct node));
     if(nodeptr == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
@@ -159,15 +161,38 @@ struct node *malloc_number_node(int val)
         nodeptr->val= val;
     }
 
-    printf("Number node allocated... access test --> %d\n", nodeptr->val);
     return nodeptr;
 }
 
 void print_tree(struct node *nodeptr)
-{   struct node *tmp= nodeptr;
-    printf("preparing to print tree...\n");
-    printf("node_type: %s\n", display_node_type(tmp->type));
-    printf("Exiting print_tree()...\n");
+{   
+    printf("(");
+    if(nodeptr->type == NODE_OPERATOR)
+    {   
+        /* print left branch of tree */
+        if(nodeptr->left->type == NODE_OPERATOR)
+        {   print_tree(nodeptr->left);
+	}
+	else
+	{   printf("%d ", nodeptr->left->val);
+	}
+
+        /* print root of tree */
+	printf("%s ", nodeptr->operator);
+
+
+        /* print right branch of tree */
+	if(nodeptr->right->type == NODE_OPERATOR)
+        {   print_tree(nodeptr->right);
+	}
+	else
+	{   printf("%d ", nodeptr->right->val);
+	}
+    }
+    if(nodeptr->type == NODE_NUMBER)
+    {   printf("%d\n", nodeptr->val);
+    }
+    printf(")");
 }
 
 char *display_node_type(int i)
