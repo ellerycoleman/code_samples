@@ -20,19 +20,19 @@ extern char *yytext;
 extern int num_of_tokens_processed;
 int answer=0;
 
-enum node_type {NODE_OPERATOR,NODE_NUMBER};
+typedef enum node_type {NODE_OPERATOR,NODE_NUMBER} node_type;
 
-struct node
-{   enum node_type type;
+typedef struct node
+{   node_type type;
     char *operator;
     struct node *left;
     struct node *right;
     int val;
-};
+} node;
 
-struct node *malloc_op_node(char *operator, struct node *child_left, struct node *child_right);
-struct node *malloc_number_node(int val);
-void print_tree(struct node *nodeptr);
+node *malloc_op_node(char *operator, node *child_left, node *child_right);
+node *malloc_number_node(int val);
+void print_tree(node *nodeptr);
 char *display_node_type(int i);
 
 %}
@@ -69,9 +69,9 @@ char *display_node_type(int i);
 %%
 
 statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with token '%s'\n"
-                                                 "sizeof(struct node): %d\n\n", yytext,sizeof(struct node));
+                                                 "sizeof(node): %d\n\n", yytext,sizeof(node));
 				 }
-|  statement expr END_OF_LINE    { print_tree((struct node *)$2);
+|  statement expr END_OF_LINE    { print_tree((node *)$2);
                                    printf("\n\nanswer: %d\n", answer);
                                    fprintf(stderr,"\n\nNum_of_tokens: %d\n\n", num_of_tokens_processed);
 				   
@@ -83,15 +83,15 @@ statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with
 
 expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} term { $$= $2}
 |      expr OP_ADDITION    term  { printf("Performing expr addition...\n"); 
-                                   $$= (long)malloc_op_node("+", (struct node *)$1, (struct node *)$3);
-				   struct node *tmpleft= (struct node *)$1;
-				   struct node *tmpright= (struct node *)$3;
+                                   $$= (long)malloc_op_node("+", (node *)$1, (node *)$3);
+				   node *tmpleft= (node *)$1;
+				   node *tmpright= (node *)$3;
 				   answer+= tmpleft->val + tmpright->val;
 				 }
 |      expr OP_SUBTRACTION term  { printf("Performing expr addition...\n"); 
-                                   $$= (long)malloc_op_node("-", (struct node *)$1, (struct node *)$3);
-				   struct node *tmpleft= (struct node *)$1;
-				   struct node *tmpright= (struct node *)$3;
+                                   $$= (long)malloc_op_node("-", (node *)$1, (node *)$3);
+				   node *tmpleft= (node *)$1;
+				   node *tmpright= (node *)$3;
 				   answer+= tmpleft->val - tmpright->val;
 				 }
 ;
@@ -99,15 +99,15 @@ expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} term 
 
 term:  {fprintf(stderr,"Entering term symbol with token '%s'\n", yytext);} factor { $$= $2}
 |      term OP_MULTIPLICATION factor  { printf("Performing term multiplication...\n"); 
-                                        $$= (long)malloc_op_node("*", (struct node *)$1, (struct node *)$3);
-				        struct node *tmpleft= (struct node *)$1;
-				        struct node *tmpright= (struct node *)$3;
+                                        $$= (long)malloc_op_node("*", (node *)$1, (node *)$3);
+				        node *tmpleft= (node *)$1;
+				        node *tmpright= (node *)$3;
 				        answer+= tmpleft->val * tmpright->val;
 				      }
 |      term OP_DIVISION       factor  { printf("Performing term multiplication...\n"); 
-                                        $$= (long)malloc_op_node("/", (struct node *)$1, (struct node *)$3);
-				        struct node *tmpleft= (struct node *)$1;
-				        struct node *tmpright= (struct node *)$3;
+                                        $$= (long)malloc_op_node("/", (node *)$1, (node *)$3);
+				        node *tmpleft= (node *)$1;
+				        node *tmpright= (node *)$3;
 				        answer+= tmpleft->val / tmpright->val;
 				      }
 ;
@@ -139,7 +139,7 @@ yyerror(char *s)
 
 
 
-struct node *malloc_op_node(char *operator, struct node *child_left, struct node *child_right)
+node *malloc_op_node(char *operator, node *child_left, node *child_right)
 {   printf("Entering malloc_op_node with op '%s', left child '%d', right child '%d'...\n", operator,child_left->val, child_right->val);
 #ifdef DEBUG
     printf("Creating an op node with these args:\n"
@@ -151,7 +151,7 @@ struct node *malloc_op_node(char *operator, struct node *child_left, struct node
     printf("   * right child access test --> %d\n", child_right->val);
 #endif
 
-    struct node *nodeptr= malloc(sizeof(struct node));
+    node *nodeptr= malloc(sizeof(node));
     if(nodeptr == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
@@ -166,8 +166,8 @@ struct node *malloc_op_node(char *operator, struct node *child_left, struct node
     return nodeptr;
 }
 
-struct node *malloc_number_node(int val)
-{   struct node *nodeptr= malloc(sizeof(struct node));
+node *malloc_number_node(int val)
+{   node *nodeptr= malloc(sizeof(node));
     if(nodeptr == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
@@ -179,7 +179,7 @@ struct node *malloc_number_node(int val)
     return nodeptr;
 }
 
-void print_tree(struct node *nodeptr)
+void print_tree(node *nodeptr)
 {   
     printf("(");
     if(nodeptr->type == NODE_OPERATOR)
