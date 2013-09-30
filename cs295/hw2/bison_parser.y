@@ -171,13 +171,15 @@ top_level_decl:  { fprintf(stderr,"Entering top_level_decl symbol with token '%s
 
 
 
-
 decl:  { fprintf(stderr,"Entering decl symbol with token '%s'\n", yytext);}
        declaration_specifier SEP_SEMICOLON 
        {  $$= $2;
           node *tmpnode= (node *)(long)$2;
 	  printf("validating nodeptr from decl symbol in grammar: %d\n", tmpnode->val);
        }
+;
+
+
 
 declaration_specifier:  { fprintf(stderr,"Entering declaration_specifier symbol with token '%s'\n", yytext);}
                         type_specifier { $$= $2; }
@@ -191,19 +193,28 @@ type_specifier:   { fprintf(stderr,"Entering type_specifier symbol with token '%
 ;
 
 
+
 integer_type_specifier:  { fprintf(stderr,"Entering integer_type_specifier symbol with token '%s'\n", yytext);}
                          term1 { $$ = $2; }                  
+;
+
+
 
 void_type_specifier:  { fprintf(stderr,"Entering void_type_specifier symbol with token '%s'\n", yytext);}
                          term2 { $$ = $2; }                  
+;
+
+
 
 term1:  {fprintf(stderr,"Entering term1 symbol with token '%s'\n", yytext);}
         INTEGER_CONSTANT { $$= (long)malloc_number_node($2);}
+;
+
+
 
 term2:  {fprintf(stderr,"Entering term2 symbol with token '%s'\n", yytext);}
         CHARACTER_CONSTANT { $$= (long)malloc_number_node($2);}
-
-
+;
 
 
 
