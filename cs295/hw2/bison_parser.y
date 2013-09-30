@@ -149,32 +149,58 @@ char *display_node_type(int i);
  +---------------------------------------------------------*/
 %%
 
-translation_unit:   { fprintf(stderr,"Entering translation_unit symbol with token '%s'\n", yytext);}
-   top_level_decl END_OF_LINE { printf("made it back to Point A...\n");
-                                print_tree((node *)$2);
-				putchar('\n');
-	                      }
-|  translation_unit top_level_decl END_OF_LINE { printf("made it back to Point B...\n");
-                                                 print_tree((node *)$2);
-						 putchar('\n');
-					       }
+translation_unit:   {  fprintf(stderr,"Entering translation_unit symbol with token '%s'\n", yytext);}
+                    top_level_decl END_OF_LINE 
+		    {  printf("made it back to Point A...\n");
+                       print_tree((node *)(long)$2);
+		       putchar('\n');
+	            }
+|                   translation_unit top_level_decl END_OF_LINE 
+                    {  printf("made it back to Point B...\n");
+                       print_tree((node *)(long)$2);
+		       putchar('\n');
+	            }
 ;
+
+
 
 top_level_decl:  { fprintf(stderr,"Entering top_level_decl symbol with token '%s'\n", yytext);}
                  decl { $$= $2; }
 ;
 
 
+
+
 decl:  { fprintf(stderr,"Entering decl symbol with token '%s'\n", yytext);}
-       term { $$= $2;
-              node *tmpnode= (node *)$2;
-	      printf("validating nodeptr from decl symbol in grammar: %d\n", tmpnode->val);
-            }
+       declaration_specifier SEP_SEMICOLON 
+       {  $$= $2;
+          node *tmpnode= (node *)(long)$2;
+	  printf("validating nodeptr from decl symbol in grammar: %d\n", tmpnode->val);
+       }
+
+declaration_specifier:  { fprintf(stderr,"Entering declaration_specifier symbol with token '%s'\n", yytext);}
+                        type_specifier { $$= $2; }
+;
 
 
-term:  {fprintf(stderr,"Entering term symbol with token '%s'\n", yytext);}
-       INTEGER_CONSTANT { $$= (long)malloc_number_node($2);}
 
+type_specifier:   { fprintf(stderr,"Entering type_specifier symbol with token '%s'\n", yytext);}
+                  integer_type_specifier { $$ = $2; }
+|                 void_type_specifier    { $$ = $1; }
+;
+
+
+integer_type_specifier:  { fprintf(stderr,"Entering integer_type_specifier symbol with token '%s'\n", yytext);}
+                         term1 { $$ = $2; }                  
+
+void_type_specifier:  { fprintf(stderr,"Entering void_type_specifier symbol with token '%s'\n", yytext);}
+                         term2 { $$ = $2; }                  
+
+term1:  {fprintf(stderr,"Entering term1 symbol with token '%s'\n", yytext);}
+        INTEGER_CONSTANT { $$= (long)malloc_number_node($2);}
+
+term2:  {fprintf(stderr,"Entering term2 symbol with token '%s'\n", yytext);}
+        CHARACTER_CONSTANT { $$= (long)malloc_number_node($2);}
 
 
 
