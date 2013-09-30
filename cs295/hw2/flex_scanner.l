@@ -134,7 +134,7 @@ extern YYSTYPE yylval;
 
 
 
-[0-9]+                  { return INTEGER_CONSTANT;  }
+[0-9]+                  { yylval= atoi(yytext); return INTEGER_CONSTANT;  }
 
 
 '\\[ntbrfv\\\'\"a?]' { /* Handle non-octal escape char constants */
