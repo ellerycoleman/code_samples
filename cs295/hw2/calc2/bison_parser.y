@@ -15,26 +15,9 @@
 %{
 
 #include "calc_tokens.h"
+#include "parser_support.h"
 
-extern char *yytext;
-extern int num_of_tokens_processed;
-int answer=0;
-
-typedef enum node_type {NODE_OPERATOR,NODE_NUMBER} node_type;
-
-typedef struct node
-{   node_type type;
-    char *operator;
-    struct node *left;
-    struct node *right;
-    int val;
-} node;
-
-node *malloc_op_node(char *operator, node *child_left, node *child_right);
-node *malloc_number_node(int val);
-void print_tree(node *nodeptr);
-char *display_node_type(int i);
-
+int answer = 0;
 %}
 
 
@@ -137,84 +120,4 @@ yyerror(char *s)
     fprintf(stderr, "error: %s\n", s);
 }
 
-
-
-node *malloc_op_node(char *operator, node *child_left, node *child_right)
-{   printf("Entering malloc_op_node with op '%s', left child '%d', right child '%d'...\n", operator,child_left->val, child_right->val);
-#ifdef DEBUG
-    printf("Creating an op node with these args:\n"
-           "op: '%s'\n"
-	   "left: '%d'\n"
-	   "right: '%d'\n",
-	   operator, child_left, child_right);
-    printf("   * left child access test  --> %d\n", child_left->val);
-    printf("   * right child access test --> %d\n", child_right->val);
-#endif
-
-    node *nodeptr= malloc(sizeof(node));
-    if(nodeptr == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   nodeptr->type= NODE_OPERATOR;
-        nodeptr->operator= operator;
-	nodeptr->left= child_left;
-	nodeptr->right= child_right;
-    }
-
-    printf("Returning from malloc_op_node...\n");
-    return nodeptr;
-}
-
-node *malloc_number_node(int val)
-{   node *nodeptr= malloc(sizeof(node));
-    if(nodeptr == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   nodeptr->type= NODE_NUMBER;
-        nodeptr->val= val;
-    }
-
-    return nodeptr;
-}
-
-void print_tree(node *nodeptr)
-{   
-    printf("(");
-    if(nodeptr->type == NODE_OPERATOR)
-    {   
-        /* print left branch of tree */
-        if(nodeptr->left->type == NODE_OPERATOR)
-        {   print_tree(nodeptr->left);
-	}
-	else
-	{   printf("%d ", nodeptr->left->val);
-	}
-
-        /* print root of tree */
-	printf("%s ", nodeptr->operator);
-
-
-        /* print right branch of tree */
-	if(nodeptr->right->type == NODE_OPERATOR)
-        {   print_tree(nodeptr->right);
-	}
-	else
-	{   printf("%d ", nodeptr->right->val);
-	}
-    }
-    if(nodeptr->type == NODE_NUMBER)
-    {   printf("%d\n", nodeptr->val);
-    }
-    printf(")");
-}
-
-char *display_node_type(int i)
-{   if(i == 0)
-    {   return "Operator Node";
-    }
-    else
-    {   return "Number Node";
-    }
-}
+/* All other user functions are defined in parser_support.c */

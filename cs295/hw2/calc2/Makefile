@@ -9,8 +9,8 @@
 
 
 
-all:    clean flex_scanner.o bison_parser.o calc_tokens.c calc_scanner.c calc_tokens.h
-	gcc flex_scanner.o bison_parser.o -o calc_parser -lfl
+all:    clean flex_scanner.o bison_parser.o calc_tokens.c calc_scanner.c calc_tokens.h parser_support.h parser_support.c
+	gcc parser_support.c flex_scanner.o bison_parser.o -o calc_parser -lfl
 	ln -s calc_parser parser
 
 
