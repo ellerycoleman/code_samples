@@ -48,10 +48,10 @@ int num_of_tokens_processed=0;
 ";"     { ++num_of_tokens_processed; return SEPARATOR_SEMICOLON; }
 
 
--?[0-9]+ { ++num_of_tokens_processed; yylval= atoi(yytext); return INTEGER_CONSTANT;   }
+-?[0-9]+ { ++num_of_tokens_processed;return INTEGER_CONSTANT;    }
 
 
-\n     { ++num_of_tokens_processed; return END_OF_LINE;        }
+\n     { ++num_of_tokens_processed; return END_OF_LINE;          }
 
 
 [ \t]  { /* Ignore the following whitespace chars:

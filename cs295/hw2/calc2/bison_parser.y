@@ -18,11 +18,19 @@
 #include "parser_support.h"
 
 int answer = 0;
+
 %}
 
 
-/* declare tokens; these should align with the definitions
- | in the calc_tokens.h file.
+
+%union { struct node *n;
+         int   i;
+       }
+
+
+
+/* declare tokens; these should align with the token definitions
+ | that were previously kept in the calc_tokens.h file.
  */
 
 %token OP_ADDITION
@@ -34,13 +42,13 @@ int answer = 0;
 %token SEPARATOR_RPAREN;
 %token SEPARATOR_SEMICOLON;
 
-%token INTEGER_CONSTANT
+%token <i> INTEGER_CONSTANT
 
 %token END_OF_LINE
 
 %token UNDEFINED
 
-
+%type <n> expr term factor
 
 
 
