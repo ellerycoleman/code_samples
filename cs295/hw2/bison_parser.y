@@ -140,6 +140,7 @@ char *display_node_type(int i);
 %token    GREATER_THAN_SYMBOL
 
 %token    END_OF_LINE
+%token    END_OF_FILE 0
 %token    UNDEFINED
 
 
@@ -152,10 +153,9 @@ char *display_node_type(int i);
 
 
 
-translation_unit:   {  fprintf(stderr,"Entering translation_unit symbol with token '%s'\n", yytext);}
-                    top_level_decl END_OF_LINE
+translation_unit:   top_level_decl END_OF_LINE
 		    {  printf("made it back to Point A...\n");
-                       print_tree((node *)(long)$2);
+                       print_tree((node *)(long)$1);
 		       putchar('\n');
 	            }
 |                   translation_unit top_level_decl END_OF_LINE
@@ -168,17 +168,15 @@ translation_unit:   {  fprintf(stderr,"Entering translation_unit symbol with tok
 
 
 
-top_level_decl:  { fprintf(stderr,"Entering top_level_decl symbol with token '%s'\n", yytext);}
-                 decl { $$= $2; }
+top_level_decl:  decl { $$= $1; }
 ;
 
 
 
 
-decl:  { fprintf(stderr,"Entering decl symbol with token '%s'\n", yytext);}
-       declaration_specifier SEP_SEMICOLON
-       {  $$= $2;
-          node *tmpnode= (node *)(long)$2;
+decl:  declaration_specifier SEP_SEMICOLON
+       {  $$= $1;
+          node *tmpnode= (node *)(long)$1;
 	  printf("validating nodeptr from decl symbol in grammar: %d\n", tmpnode->val);
        }
 ;
@@ -186,48 +184,39 @@ decl:  { fprintf(stderr,"Entering decl symbol with token '%s'\n", yytext);}
 
 
 
-declaration_specifier:  { fprintf(stderr,"Entering declaration_specifier symbol with token '%s'\n", yytext);}
-                        type_specifier { $$= $2; }
+declaration_specifier:  type_specifier { $$= $1; }
 ;
 
 
 
 
-type_specifier:   { fprintf(stderr,"Entering type_specifier symbol with token '%s'\n", yytext);}
-                  integer_type_specifier { $$ = $2; }
+type_specifier:   integer_type_specifier { $$ = $1; }
 |                 void_type_specifier    { $$ = $1; }
 ;
 
 
 
 
-integer_type_specifier:  { fprintf(stderr,"Entering integer_type_specifier symbol with token '%s'\n", yytext);}
-                         signed_type_specifier { $$ = $2; }
-;
-
-
-
-signed_type_specifier:   { fprintf(stderr,"Entering signed_type_specifier symbol with token '%s'\n", yytext);}
-                         RESERVED_WORD_SHORT
-			 { $$ = (long)malloc_number_node($2); 
-			 }
-;
-
-
-
-
-void_type_specifier:  { fprintf(stderr,"Entering void_type_specifier symbol with token '%s'\n", yytext);}
-                         term2 { $$ = $2; }
+integer_type_specifier:  term1 { $$ = $1; }
 ;
 
 
 
 
 
+void_type_specifier:  term2 { $$ = $1; }
+;
 
 
-term2:  {fprintf(stderr,"Entering term2 symbol with token '%s'\n", yytext);}
-        CHARACTER_CONSTANT { $$= (long)malloc_number_node($2);}
+
+
+term1:  RESERVED_WORD_SHORT { $$= (long)malloc_number_node($1);}
+|       RESERVED_WORD_SHORT RESERVED_WORD_INT { $$= (long)malloc_number_node($1);}
+;
+
+
+
+term2:  CHARACTER_CONSTANT { $$= (long)malloc_number_node($1);}
 ;
 
 
