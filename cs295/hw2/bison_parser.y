@@ -149,11 +149,11 @@ char *display_node_type(int i);
  +---------------------------------------------------------*/
 %%
 
-translation_unit:   { fprintf(stderr,"Entering translation_unit symbol with token '%s'\n", yytext);} 
-   top_level_decl END_OF_LINE { printf("made it back to Point A...\n"); 
-                                                 print_tree((node *)$2);
-						 putchar('\n');
-					       }
+translation_unit:   { fprintf(stderr,"Entering translation_unit symbol with token '%s'\n", yytext);}
+   top_level_decl END_OF_LINE { printf("made it back to Point A...\n");
+                                print_tree((node *)$2);
+				putchar('\n');
+	                      }
 |  translation_unit top_level_decl END_OF_LINE { printf("made it back to Point B...\n");
                                                  print_tree((node *)$2);
 						 putchar('\n');
@@ -165,8 +165,8 @@ top_level_decl:  { fprintf(stderr,"Entering top_level_decl symbol with token '%s
 ;
 
 
-decl:  { fprintf(stderr,"Entering decl symbol with token '%s'\n", yytext);} 
-       term { $$= $2; 
+decl:  { fprintf(stderr,"Entering decl symbol with token '%s'\n", yytext);}
+       term { $$= $2;
               node *tmpnode= (node *)$2;
 	      printf("validating nodeptr from decl symbol in grammar: %d\n", tmpnode->val);
             }
@@ -236,10 +236,10 @@ node *malloc_number_node(int val)
 }
 
 void print_tree(node *nodeptr)
-{   printf("Entering print_tree()...\n");   
+{   printf("Entering print_tree()...\n");
     printf("(");
     if(nodeptr->type == NODE_OPERATOR)
-    {   
+    {
         /* print left branch of tree */
         if(nodeptr->left->type == NODE_OPERATOR)
         {   print_tree(nodeptr->left);
