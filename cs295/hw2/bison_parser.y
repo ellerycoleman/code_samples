@@ -149,18 +149,31 @@ char *display_node_type(int i);
  +---------------------------------------------------------*/
 %%
 
-translation_unit:  /* null statement */ {fprintf(stderr,"Entering the grammer.\nEntering translation_unit symbol with token '%s'\n\n", yytext); }
-|  top_level_decl END_OF_LINE { printf("made it back here...\n"); print_tree((node *)$1); putchar('\n');}
-|  translation_unit top_level_decl END_OF_LINE { printf("made it back here...\n"); print_tree((node *)$2); putchar('\n');}
+translation_unit:   { fprintf(stderr,"Entering translation_unit symbol with token '%s'\n", yytext);} 
+   top_level_decl END_OF_LINE { printf("made it back to Point A...\n"); 
+                                                 print_tree((node *)$2);
+						 putchar('\n');
+					       }
+|  translation_unit top_level_decl END_OF_LINE { printf("made it back to Point B...\n");
+                                                 print_tree((node *)$2);
+						 putchar('\n');
+					       }
 ;
 
-top_level_decl:  { fprintf(stderr,"Entering top_level_decl symbol with token '%s'\n", yytext);} term { $$= $2;
-                   node *tmpnode= (node *)$2;
-	           printf("validating nodeptr from top_level_decl symbol in grammar: %d\n", tmpnode->val);
-                 }
+top_level_decl:  { fprintf(stderr,"Entering top_level_decl symbol with token '%s'\n", yytext);}
+                 decl { $$= $2; }
 ;
 
-term:  {fprintf(stderr,"Entering term symbol with token '%s'\n", yytext);} INTEGER_CONSTANT { $$= (long)malloc_number_node($2);}
+
+decl:  { fprintf(stderr,"Entering decl symbol with token '%s'\n", yytext);} 
+       term { $$= $2; 
+              node *tmpnode= (node *)$2;
+	      printf("validating nodeptr from decl symbol in grammar: %d\n", tmpnode->val);
+            }
+
+
+term:  {fprintf(stderr,"Entering term symbol with token '%s'\n", yytext);}
+       INTEGER_CONSTANT { $$= (long)malloc_number_node($2);}
 
 
 
@@ -208,7 +221,7 @@ node *malloc_op_node(char *operator, node *child_left, node *child_right)
 }
 
 node *malloc_number_node(int val)
-{   printf("Entering malloc_number_node()...\n");
+{   printf("Entering malloc_number_node()... ");
     node *nodeptr= malloc(sizeof(node));
     if(nodeptr == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
@@ -218,7 +231,7 @@ node *malloc_number_node(int val)
         nodeptr->val= val;
     }
 
-    printf("validating nodeptr from malloc_number_node(): %d\n", nodeptr->val);
+    printf("returning.\n");
     return nodeptr;
 }
 
