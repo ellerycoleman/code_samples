@@ -2,9 +2,9 @@
 # File:		Makefile
 # Date:		Sun Sep 15 00:25:06 GMT 2013
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Makefile for hw1.
+# Abstract:	Makefile for hw2.
 #-----------------------------------------------------------------------------
-# Revision: $Id: Makefile 146 2013-09-23 04:07:32Z ellery $
+# Revision: $Id$
 #-----------------------------------------------------------------------------
 
 

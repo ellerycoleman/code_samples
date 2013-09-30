@@ -4,7 +4,7 @@
 | Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 | Abstract:	Implements the main method for the scanner.
 +-----------------------------------------------------------------------------
-| Revision: $Id: e95_scanner.c 150 2013-09-24 03:52:09Z ellery $
+| Revision: $Id$
 +===========================================================================*/
 
 

@@ -4,7 +4,7 @@
 | Author:	ellerycoleman@fas.harvard.edu
 | Abstract:	Token definitions for hw1 scanner.
 +-----------------------------------------------------------------------------
-| Revision: $Id: e95_tokens.h 150 2013-09-24 03:52:09Z ellery $
+| Revision: $Id$
 +===========================================================================*/
 
 

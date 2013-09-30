@@ -2,9 +2,10 @@
 | File:		bison_parser.y
 | Date:		Sat Sep 14 20:54:57 GMT 2013
 | Author:	ellerycoleman@fas.harvard.edu
-| Abstract:	A bison program to generate a parser for a simple calculator.
+| Abstract:	A bison program to generate a parser for the E95 subset of
+|               the C programming language.
 +-----------------------------------------------------------------------------
-| Revision: $Id: bison_parser.y 164 2013-09-29 19:35:48Z ellery $
+| Revision: $Id$
 +===========================================================================*/
 
 

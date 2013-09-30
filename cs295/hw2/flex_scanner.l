@@ -5,7 +5,7 @@
 | Abstract:	A flex program to generate a lexical analyzer for a subset
 |               of the C89 programming language.
 +-----------------------------------------------------------------------------
-| Revision: $Id: flex_scanner.l 157 2013-09-26 03:04:23Z ellery $
+| Revision: $Id$
 +===========================================================================*/
 
 

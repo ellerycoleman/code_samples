@@ -4,7 +4,7 @@
 | Author:	ellerycoleman@fas.harvard.edu
 | Abstract:	Implements the data structures used for classifying tokens.
 +-----------------------------------------------------------------------------
-| Revision: $Id: e95_tokens.c 141 2013-09-22 23:57:23Z ellery $
+| Revision: $Id$
 +===========================================================================*/
 
 
