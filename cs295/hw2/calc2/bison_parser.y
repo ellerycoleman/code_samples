@@ -48,8 +48,12 @@ int answer = 0;
 
 %token UNDEFINED
 
-%type <n> expr term factor
+%type <n> expr
 
+
+
+%left OP_ADDITION OP_SUBTRACTION
+%left OP_MULTIPLICATION OP_DIVISION
 
 
 
@@ -73,9 +77,7 @@ statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with
 ;
 
 
-expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} 
-       term { $$= $2}
-|      expr OP_ADDITION    term  { printf("Performing expr addition...\n"); 
+expr:  expr OP_ADDITION   expr  { printf("Performing expr addition...\n"); 
                                    node *tmp1= $1;
                                    node *tmp3= $3;
 				   printf("tmp1: %d\n", tmp1->val);
@@ -83,28 +85,24 @@ expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);}
                                    $$= malloc_op_node('+',$1,$3);
 				   printf("Completed assignment... leaving expr addition\n");
 				 }
-|      expr OP_SUBTRACTION term  { printf("Performing expr addition...\n"); 
+|      expr OP_SUBTRACTION expr  { printf("Performing expr addition...\n"); 
                                    /* $$= malloc_op_node('-', (node *)$1, (node *)$3); */
 				 }
-;
 
-
-term:  {fprintf(stderr,"Entering term symbol with token '%s'\n", yytext);} factor { $$= $2}
-|      term OP_MULTIPLICATION factor  { printf("Performing term multiplication...\n"); 
+       
+|      expr OP_MULTIPLICATION expr  { printf("Performing term multiplication...\n"); 
                                         /* $$= malloc_op_node('*', (node *)$1, (node *)$3); */
-				      }
-|      term OP_DIVISION       factor  { printf("Performing term multiplication...\n"); 
+				    }
+|      expr OP_DIVISION       expr  { printf("Performing term multiplication...\n"); 
                                         /* $$= malloc_op_node('/', (node *)$1, (node *)$3);  */
-				      }
-;
+				    }
 
 
-factor:  {fprintf(stderr,"Entering factor symbol with token '%s'\n", yytext);} 
-         INTEGER_CONSTANT { $$=  malloc_number_node($2);
+|      INTEGER_CONSTANT { $$=  malloc_number_node($1);
                             struct node *tmp= $$;
 			    printf("just created node for int constant '%d'\n", tmp->val);
 
-	                  }
+                        }
 ;
 
 
