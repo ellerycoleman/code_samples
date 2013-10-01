@@ -62,49 +62,49 @@ int answer = 0;
 statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with token '%s'\n"
                                                  "sizeof(node): %d\n\n", yytext,sizeof(node));
 				 }
-|  statement expr END_OF_LINE    { print_tree((node *)$2);
-                                   printf("\n\nanswer: %d\n", answer);
+|  statement expr END_OF_LINE    { printf("reduced to statement...\n");
+                                   printf("= %d\n", eval($2));
+
                                    fprintf(stderr,"\n\nNum_of_tokens: %d\n\n", num_of_tokens_processed);
-				   
                                    num_of_tokens_processed = 0;
-				   answer=0;
+
+				   printf("> ");
 				 }
 ;
 
 
-expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} term { $$= $2}
+expr:  {fprintf(stderr,"Entering expr symbol with token '%s'\n", yytext);} 
+       term { $$= $2}
 |      expr OP_ADDITION    term  { printf("Performing expr addition...\n"); 
-                                   $$= (long)malloc_op_node("+", (node *)$1, (node *)$3);
-				   node *tmpleft= (node *)$1;
-				   node *tmpright= (node *)$3;
-				   answer+= tmpleft->val + tmpright->val;
+                                   node *tmp1= $1;
+                                   node *tmp3= $3;
+				   printf("tmp1: %d\n", tmp1->val);
+				   printf("tmp3: %d\n", tmp3->val);
+                                   $$= malloc_op_node('+',$1,$3);
+				   printf("Completed assignment... leaving expr addition\n");
 				 }
 |      expr OP_SUBTRACTION term  { printf("Performing expr addition...\n"); 
-                                   $$= (long)malloc_op_node("-", (node *)$1, (node *)$3);
-				   node *tmpleft= (node *)$1;
-				   node *tmpright= (node *)$3;
-				   answer+= tmpleft->val - tmpright->val;
+                                   /* $$= malloc_op_node('-', (node *)$1, (node *)$3); */
 				 }
 ;
 
 
 term:  {fprintf(stderr,"Entering term symbol with token '%s'\n", yytext);} factor { $$= $2}
 |      term OP_MULTIPLICATION factor  { printf("Performing term multiplication...\n"); 
-                                        $$= (long)malloc_op_node("*", (node *)$1, (node *)$3);
-				        node *tmpleft= (node *)$1;
-				        node *tmpright= (node *)$3;
-				        answer+= tmpleft->val * tmpright->val;
+                                        /* $$= malloc_op_node('*', (node *)$1, (node *)$3); */
 				      }
 |      term OP_DIVISION       factor  { printf("Performing term multiplication...\n"); 
-                                        $$= (long)malloc_op_node("/", (node *)$1, (node *)$3);
-				        node *tmpleft= (node *)$1;
-				        node *tmpright= (node *)$3;
-				        answer+= tmpleft->val / tmpright->val;
+                                        /* $$= malloc_op_node('/', (node *)$1, (node *)$3);  */
 				      }
 ;
 
 
-factor:  {fprintf(stderr,"Entering factor symbol with token '%s'\n", yytext);} INTEGER_CONSTANT {$$= (long)malloc_number_node($2);}
+factor:  {fprintf(stderr,"Entering factor symbol with token '%s'\n", yytext);} 
+         INTEGER_CONSTANT { $$=  malloc_number_node($2);
+                            struct node *tmp= $$;
+			    printf("just created node for int constant '%d'\n", tmp->val);
+
+	                  }
 ;
 
 
@@ -118,7 +118,8 @@ factor:  {fprintf(stderr,"Entering factor symbol with token '%s'\n", yytext);} I
  |                    user functions
  +---------------------------------------------------------*/
 int main(void)
-{   yyparse();
+{   printf("> ");
+    yyparse();
     return 0;
 }
 
@@ -128,4 +129,8 @@ yyerror(char *s)
     fprintf(stderr, "error: %s\n", s);
 }
 
-/* All other user functions are defined in parser_support.c */
+
+/* All other user-defined parse functions are defined in parser_support.c */
+
+
+

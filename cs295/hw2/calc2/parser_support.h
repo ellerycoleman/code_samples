@@ -18,14 +18,15 @@ extern int num_of_tokens_processed;
 typedef enum node_type {NODE_OPERATOR,NODE_NUMBER} node_type;
 
 typedef struct node
-{   node_type type;
+{   int type;
     char *operator;
     struct node *left;
     struct node *right;
     int val;
 } node;
 
-node *malloc_op_node(char *operator, node *child_left, node *child_right);
+node *malloc_op_node(int type, node *left, node *right);
+/* node *malloc_op_node(int type); */
 node *malloc_number_node(int val);
 void print_tree(node *nodeptr);
 char *display_node_type(int i);

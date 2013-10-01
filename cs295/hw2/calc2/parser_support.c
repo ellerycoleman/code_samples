@@ -13,20 +13,26 @@
 
 
 
+
+
+
 /*====================================================================
  | Function: malloc_op_node
  | Abstract: Creates a node for an arithmetic operator.
  +====================================================================*/
-node *malloc_op_node(char *operator, node *child_left, node *child_right)
-{   printf("Entering malloc_op_node with op '%s', left child '%d', right child '%d'...\n", operator,child_left->val, child_right->val);
+struct node *malloc_op_node(int type, node *left, node *right)
+{   
+    printf("Entering malloc_op_node ");
+    printf("with op '%c', left child '%d', right child '%d'...\n", type,left->val, right->val);
+
 #ifdef DEBUG
     printf("Creating an op node with these args:\n"
-           "op: '%s'\n"
+           "type: '%c'\n"
 	   "left: '%d'\n"
 	   "right: '%d'\n",
-	   operator, child_left, child_right);
-    printf("   * left child access test  --> %d\n", child_left->val);
-    printf("   * right child access test --> %d\n", child_right->val);
+	   type, left, right);
+    printf("   * left child access test  --> %d\n", left->val);
+    printf("   * right child access test --> %d\n", right->val);
 #endif
 
     node *nodeptr= malloc(sizeof(node));
@@ -34,15 +40,18 @@ node *malloc_op_node(char *operator, node *child_left, node *child_right)
     {   printf("*** Parser ran out of memory! ***\n");
     }
     else
-    {   nodeptr->type= NODE_OPERATOR;
-        nodeptr->operator= operator;
-	nodeptr->left= child_left;
-	nodeptr->right= child_right;
+    {   nodeptr->type= type;
+        /* nodeptr->operator= operator; */
+	nodeptr->left= left;
+	nodeptr->right= right;
     }
 
     printf("Returning from malloc_op_node...\n");
     return nodeptr;
 }
+
+
+
 
 
 
@@ -57,12 +66,15 @@ node *malloc_number_node(int val)
     {   printf("*** Parser ran out of memory! ***\n");
     }
     else
-    {   nodeptr->type= NODE_NUMBER;
+    {   nodeptr->type= 'k';
         nodeptr->val= val;
     }
 
     return nodeptr;
 }
+
+
+
 
 
 
@@ -74,7 +86,7 @@ node *malloc_number_node(int val)
 void print_tree(node *nodeptr)
 {   
     printf("(");
-    if(nodeptr->type == NODE_OPERATOR)
+    if(nodeptr->type != 'k')
     {   
         /* print left branch of tree */
         if(nodeptr->left->type == NODE_OPERATOR)
@@ -96,11 +108,12 @@ void print_tree(node *nodeptr)
 	{   printf("%d ", nodeptr->right->val);
 	}
     }
-    if(nodeptr->type == NODE_NUMBER)
+    else if(nodeptr->type == 'k')
     {   printf("%d\n", nodeptr->val);
     }
     printf(")");
 }
+
 
 
 
@@ -122,6 +135,28 @@ char *display_node_type(int i)
 
 
 
+
+/*====================================================================
+ | Function: eval
+ | Abstract: traverses a tree and computes the value of the expression
+ |           represented by the tree.
+ +====================================================================*/
+int eval(node *nodeptr)
+{   printf("    eval() called with node type: '%c'\n", nodeptr->type);
+    int answer=0;
+
+    switch(nodeptr->type)
+    {   case 'k': answer= nodeptr->val;
+                  break;
+
+        case '+': printf("      - left node is : %d\n", nodeptr->left->val);
+                  printf("      - right node is: %d\n", nodeptr->right->val);
+                  answer= eval(nodeptr->left) + eval(nodeptr->right);
+	          break;
+    }
+
+    return answer;
+}
 
 
 

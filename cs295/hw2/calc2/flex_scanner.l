@@ -18,7 +18,7 @@
 %{
 #include "calc_tokens.h"
 int num_of_tokens_processed=0;
-
+extern YYSTYPE yylval;
 
 %}
 
@@ -48,7 +48,7 @@ int num_of_tokens_processed=0;
 ";"     { ++num_of_tokens_processed; return SEPARATOR_SEMICOLON; }
 
 
--?[0-9]+ { ++num_of_tokens_processed;return INTEGER_CONSTANT;    }
+-?[0-9]+ { ++num_of_tokens_processed; yylval.i= atoi(yytext); return INTEGER_CONSTANT;   }
 
 
 \n     { ++num_of_tokens_processed; return END_OF_LINE;          }
