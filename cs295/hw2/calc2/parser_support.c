@@ -21,10 +21,7 @@
  | Abstract: Creates a node for an arithmetic operator.
  +====================================================================*/
 struct node *malloc_op_node(int type, node *left, node *right)
-{   
-    printf("Entering malloc_op_node ");
-    printf("with op '%c', left child '%d', right child '%d'...\n", type,left->val, right->val);
-
+{
 #ifdef DEBUG
     printf("Creating an op node with these args:\n"
            "type: '%c'\n"
@@ -46,7 +43,6 @@ struct node *malloc_op_node(int type, node *left, node *right)
 	nodeptr->right= right;
     }
 
-    printf("Returning from malloc_op_node...\n");
     return nodeptr;
 }
 
@@ -84,12 +80,12 @@ node *malloc_number_node(int val)
  | Abstract: Writes parse tree to stdout.
  +====================================================================*/
 void print_tree(node *nodeptr)
-{   
+{
     printf("(");
     if(nodeptr->type != 'k')
-    {   
+    {
         /* print left branch of tree */
-        if(nodeptr->left->type == NODE_OPERATOR)
+        if(nodeptr->left->type != 'k')
         {   print_tree(nodeptr->left);
 	}
 	else
@@ -97,11 +93,11 @@ void print_tree(node *nodeptr)
 	}
 
         /* print root of tree */
-	printf("%s ", nodeptr->operator);
+	printf("%c ", nodeptr->type);
 
 
         /* print right branch of tree */
-	if(nodeptr->right->type == NODE_OPERATOR)
+	if(nodeptr->right->type != 'k')
         {   print_tree(nodeptr->right);
 	}
 	else
@@ -142,16 +138,22 @@ char *display_node_type(int i)
  |           represented by the tree.
  +====================================================================*/
 int eval(node *nodeptr)
-{   printf("    eval() called with node type: '%c'\n", nodeptr->type);
-    int answer=0;
+{   int answer=0;
 
     switch(nodeptr->type)
     {   case 'k': answer= nodeptr->val;
                   break;
 
-        case '+': printf("      - left node is : %d\n", nodeptr->left->val);
-                  printf("      - right node is: %d\n", nodeptr->right->val);
-                  answer= eval(nodeptr->left) + eval(nodeptr->right);
+        case '+': answer= eval(nodeptr->left) + eval(nodeptr->right);
+	          break;
+
+        case '-': answer= eval(nodeptr->left) - eval(nodeptr->right);
+	          break;
+
+        case '*': answer= eval(nodeptr->left) * eval(nodeptr->right);
+	          break;
+
+        case '/': answer= eval(nodeptr->left) / eval(nodeptr->right);
 	          break;
     }
 

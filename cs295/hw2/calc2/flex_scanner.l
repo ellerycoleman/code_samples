@@ -43,9 +43,9 @@ extern YYSTYPE yylval;
 "*"     { ++num_of_tokens_processed; return OP_MULTIPLICATION;   }
 "/"     { ++num_of_tokens_processed; return OP_DIVISION;         }
 "|"     { ++num_of_tokens_processed; return OP_ABSVALUE;         }
-"("     { ++num_of_tokens_processed; return SEPARATOR_LPAREN;    }
-")"     { ++num_of_tokens_processed; return SEPARATOR_RPAREN;    }
-";"     { ++num_of_tokens_processed; return SEPARATOR_SEMICOLON; }
+"("     { ++num_of_tokens_processed; return SEP_LPAREN;    }
+")"     { ++num_of_tokens_processed; return SEP_RPAREN;    }
+";"     { ++num_of_tokens_processed; return SEP_SEMICOLON; }
 
 
 -?[0-9]+ { ++num_of_tokens_processed; yylval.i= atoi(yytext); return INTEGER_CONSTANT;   }

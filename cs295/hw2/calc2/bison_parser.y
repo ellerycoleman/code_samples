@@ -38,9 +38,9 @@ int answer = 0;
 %token OP_MULTIPLICATION
 %token OP_DIVISION
 %token OP_ABSVALUE
-%token SEPARATOR_LPAREN;
-%token SEPARATOR_RPAREN;
-%token SEPARATOR_SEMICOLON;
+%token SEP_LPAREN;
+%token SEP_RPAREN;
+%token SEP_SEMICOLON;
 
 %token <i> INTEGER_CONSTANT
 
@@ -63,45 +63,40 @@ int answer = 0;
  +---------------------------------------------------------*/
 %%
 
-statement:  /* null statement */ {fprintf(stderr,"Entering statement symbol with token '%s'\n"
-                                                 "sizeof(node): %d\n\n", yytext,sizeof(node));
-				 }
-|  statement expr END_OF_LINE    { printf("reduced to statement...\n");
-                                   printf("= %d\n", eval($2));
+statement:  /* null statement */ 
 
-                                   fprintf(stderr,"\n\nNum_of_tokens: %d\n\n", num_of_tokens_processed);
+
+|  statement expr END_OF_LINE    { fprintf(stderr,"\nNum_of_tokens: %d\n\n", num_of_tokens_processed);
+                                   print_tree($2);
+                                   printf("\n= %d\n", eval($2));
+
                                    num_of_tokens_processed = 0;
-
-				   printf("> ");
-				 }
-;
-
-
-expr:  expr OP_ADDITION   expr  { printf("Performing expr addition...\n"); 
-                                   node *tmp1= $1;
-                                   node *tmp3= $3;
-				   printf("tmp1: %d\n", tmp1->val);
-				   printf("tmp3: %d\n", tmp3->val);
-                                   $$= malloc_op_node('+',$1,$3);
-				   printf("Completed assignment... leaving expr addition\n");
-				 }
-|      expr OP_SUBTRACTION expr  { printf("Performing expr addition...\n"); 
-                                   /* $$= malloc_op_node('-', (node *)$1, (node *)$3); */
+				   printf("\n> ");
 				 }
 
-       
-|      expr OP_MULTIPLICATION expr  { printf("Performing term multiplication...\n"); 
-                                        /* $$= malloc_op_node('*', (node *)$1, (node *)$3); */
+
+expr:  expr OP_ADDITION       expr  { $$= malloc_op_node('+',$1,$3);
 				    }
-|      expr OP_DIVISION       expr  { printf("Performing term multiplication...\n"); 
-                                        /* $$= malloc_op_node('/', (node *)$1, (node *)$3);  */
+
+
+|      expr OP_SUBTRACTION    expr  { $$= malloc_op_node('-',$1,$3);
 				    }
+
+
+|      expr OP_MULTIPLICATION expr  { $$= malloc_op_node('*',$1,$3);
+				    }
+
+
+|      expr OP_DIVISION       expr  { $$= malloc_op_node('/', (node *)$1, (node *)$3);
+				    }
+
+
+|      SEP_LPAREN expr SEP_RPAREN   { $$= $2;  }
+
 
 
 |      INTEGER_CONSTANT { $$=  malloc_number_node($1);
-                            struct node *tmp= $$;
-			    printf("just created node for int constant '%d'\n", tmp->val);
-
+                          struct node *tmp= $$;
                         }
 ;
 
@@ -129,6 +124,7 @@ yyerror(char *s)
 
 
 /* All other user-defined parse functions are defined in parser_support.c */
+
 
 
 
