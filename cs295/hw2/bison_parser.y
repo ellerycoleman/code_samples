@@ -102,22 +102,22 @@ char *display_node_type(int i);
 %token    SEP_COMMA
 
 
-%token    RESERVED_WORD_DO
-%token    RESERVED_WORD_FOR
-%token    RESERVED_WORD_RETURN
-%token    RESERVED_WORD_BREAK
-%token    RESERVED_WORD_SHORT
-%token    RESERVED_WORD_ELSE
-%token    RESERVED_WORD_GOTO
-%token    RESERVED_WORD_SIGNED
-%token    RESERVED_WORD_UNSIGNED
-%token    RESERVED_WORD_CHAR
-%token    RESERVED_WORD_IF
-%token    RESERVED_WORD_VOID
-%token    RESERVED_WORD_INT
-%token    RESERVED_WORD_CONTINUE
-%token    RESERVED_WORD_LONG
-%token    RESERVED_WORD_WHILE
+%token    RW_DO
+%token    RW_FOR
+%token    RW_RETURN
+%token    RW_BREAK
+%token    RW_SHORT
+%token    RW_ELSE
+%token    RW_GOTO
+%token    RW_SIGNED
+%token    RW_UNSIGNED
+%token    RW_CHAR
+%token    RW_IF
+%token    RW_VOID
+%token    RW_INT
+%token    RW_CONTINUE
+%token    RW_LONG
+%token    RW_WHILE
 
 
 %token    IDENTIFIER
@@ -153,14 +153,12 @@ char *display_node_type(int i);
 
 
 
-translation_unit:   top_level_decl END_OF_LINE
+translation_unit:   top_level_decl 
 		    {  printf("made it back to Point A...\n");
-                       print_tree((node *)(long)$1);
 		       putchar('\n');
 	            }
-|                   translation_unit top_level_decl END_OF_LINE
+|                   translation_unit top_level_decl 
                     {  printf("made it back to Point B...\n");
-                       print_tree((node *)(long)$2);
 		       putchar('\n');
 	            }
 ;
@@ -168,57 +166,83 @@ translation_unit:   top_level_decl END_OF_LINE
 
 
 
-top_level_decl:  decl { $$= $1; }
+top_level_decl:  decl 
+;
+
+
+decl:  type_specifier initialized_declarator_list SEP_SEMICOLON  
+;
+
+
+type_specifier:  RW_INT
+|                RW_VOID
+;
+
+
+initialized_declarator_list:   declarator
+|                              initialized_declarator_list SEP_COMMA declarator
+;
+
+
+
+declarator:       pointer_declarator
+|                 direct_declarator
+;
+
+
+pointer_declarator:     pointer direct_declarator
+;
+
+
+pointer:    OP_ASTERISK
+|           OP_ASTERISK pointer
+;
+
+
+direct_declarator:    simple_declarator
+|                     SEP_LEFT_PAREN declarator SEP_RIGHT_PAREN
+|                     function_declarator
+|                     array_declarator
+;
+
+
+
+simple_declarator:    IDENTIFIER
+;
+
+
+function_declarator:  direct_declarator SEP_LEFT_PAREN parameter_list SEP_RIGHT_PAREN
+;
+
+
+parameter_list:   parameter_decl
+|                 parameter_list SEP_COMMA parameter_decl
 ;
 
 
 
 
-decl:  declaration_specifier SEP_SEMICOLON
-       {  $$= $1;
-          node *tmpnode= (node *)(long)$1;
-	  printf("validating nodeptr from decl symbol in grammar: %d\n", tmpnode->val);
-       }
+parameter_decl:  type_specifier declarator
+|                type_specifier
+|                type_specifier abstract_declarator
+;
+
+
+abstract_declarator:   pointer
+|                      direct_abstract_declarator
+|                      pointer direct_abstract_declarator
+;
+
+
+direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
+|                             SEP_LEFT_SQUARE_BRACKET INTEGER_CONSTANT SEP_RIGHT_SQUARE_BRACKET
+|                         direct_abstract_declarator SEP_LEFT_SQUARE_BRACKET INTEGER_CONSTANT  SEP_RIGHT_SQUARE_BRACKET
 ;
 
 
 
-
-declaration_specifier:  type_specifier { $$= $1; }
+array_declarator:  direct_declarator SEP_LEFT_SQUARE_BRACKET INTEGER_CONSTANT SEP_RIGHT_SQUARE_BRACKET
 ;
-
-
-
-
-type_specifier:   integer_type_specifier { $$ = $1; }
-|                 void_type_specifier    { $$ = $1; }
-;
-
-
-
-
-integer_type_specifier:  term1 { $$ = $1; }
-;
-
-
-
-
-
-void_type_specifier:  term2 { $$ = $1; }
-;
-
-
-
-
-term1:  RESERVED_WORD_SHORT { $$= (long)malloc_number_node($1);}
-|       RESERVED_WORD_SHORT RESERVED_WORD_INT { $$= (long)malloc_number_node($1);}
-;
-
-
-
-term2:  CHARACTER_CONSTANT { $$= (long)malloc_number_node($1);}
-;
-
 
 
 

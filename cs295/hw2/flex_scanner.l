@@ -55,22 +55,22 @@ extern YYSTYPE yylval;
 
 
 
-"do"        { return RESERVED_WORD_DO;       }
-"for"       { return RESERVED_WORD_FOR;      }
-"return"    { return RESERVED_WORD_RETURN;   }
-"break"     { return RESERVED_WORD_BREAK;    }
-"short"     { return RESERVED_WORD_SHORT;    }
-"else"      { return RESERVED_WORD_ELSE;     }
-"goto"      { return RESERVED_WORD_GOTO;     }
-"signed"    { return RESERVED_WORD_SIGNED;   }
-"unsigned"  { return RESERVED_WORD_UNSIGNED; }
-"char"      { return RESERVED_WORD_CHAR;     }
-"if"        { return RESERVED_WORD_IF;       }
-"void"      { return RESERVED_WORD_VOID;     }
-"int"       { return RESERVED_WORD_INT;      }
-"continue"  { return RESERVED_WORD_CONTINUE; }
-"long"      { return RESERVED_WORD_LONG;     }
-"while"     { return RESERVED_WORD_WHILE;    }
+"do"        { return RW_DO;       }
+"for"       { return RW_FOR;      }
+"return"    { return RW_RETURN;   }
+"break"     { return RW_BREAK;    }
+"short"     { return RW_SHORT;    }
+"else"      { return RW_ELSE;     }
+"goto"      { return RW_GOTO;     }
+"signed"    { return RW_SIGNED;   }
+"unsigned"  { return RW_UNSIGNED; }
+"char"      { return RW_CHAR;     }
+"if"        { return RW_IF;       }
+"void"      { return RW_VOID;     }
+"int"       { return RW_INT;      }
+"continue"  { return RW_CONTINUE; }
+"long"      { return RW_LONG;     }
+"while"     { return RW_WHILE;    }
 
 
 
@@ -211,7 +211,7 @@ extern YYSTYPE yylval;
 ">"                     { return GREATER_THAN_SYMBOL; }
 
 
-\n   { return END_OF_LINE;   }
+\n   { /* don't return NEWLINE, causes the parser to complain */   }
 
 
 [ \t\v\f]   { /* Ignore the following whitespace chars:
