@@ -121,15 +121,15 @@ extern YYSTYPE yylval;
 "?"     { return OP_QUESTION_MARK; }
 
 
-"("     { return SEP_LEFT_PAREN;           }
-")"     { return SEP_RIGHT_PAREN;          }
-"{"     { return SEP_LEFT_CURLY_BRACE;     }
-"}"     { return SEP_RIGHT_CURLY_BRACE;    }
-"["     { return SEP_LEFT_SQUARE_BRACKET;  }
-"]"     { return SEP_RIGHT_SQUARE_BRACKET; }
-";"     { return SEP_SEMICOLON;            }
-":"     { return SEP_COLON;                }
-","     { return SEP_COMMA;                }
+"("     { return SEP_LEFT_PAREN;    }
+")"     { return SEP_RIGHT_PAREN;   }
+"{"     { return SEP_LEFT_BRACE;    }
+"}"     { return SEP_RIGHT_BRACE;   }
+"["     { return SEP_LEFT_BRACKET;  }
+"]"     { return SEP_RIGHT_BRACKET; }
+";"     { return SEP_SEMICOLON;     }
+":"     { return SEP_COLON;         }
+","     { return SEP_COMMA;         }
 
 
 
@@ -203,7 +203,7 @@ extern YYSTYPE yylval;
 "\\"                    { return BACKSLASH;           }
 "`"                     { return BACKTICK;            }
 "."                     { return PERIOD;              }
-"&"                     { return AMPERSAND;           }
+"&"                     { return OP_AMPERSAND;        }
 "$"                     { return DOLLAR_SIGN;         }
 "@"                     { return AT_SIGN;             }
 "#"                     { return NUMBER_SIGN;         }

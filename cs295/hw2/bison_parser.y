@@ -93,10 +93,10 @@ char *display_node_type(int i);
 
 %token    SEP_LEFT_PAREN
 %token    SEP_RIGHT_PAREN
-%token    SEP_LEFT_CURLY_BRACE
-%token    SEP_RIGHT_CURLY_BRACE
-%token    SEP_LEFT_SQUARE_BRACKET
-%token    SEP_RIGHT_SQUARE_BRACKET
+%token    SEP_LEFT_BRACE
+%token    SEP_RIGHT_BRACE
+%token    SEP_LEFT_BRACKET
+%token    SEP_RIGHT_BRACKET
 %token    SEP_SEMICOLON
 %token    SEP_COLON
 %token    SEP_COMMA
@@ -132,7 +132,7 @@ char *display_node_type(int i);
 %token    BACKSLASH
 %token    BACKTICK
 %token    PERIOD
-%token    AMPERSAND
+%token    OP_AMPERSAND
 %token    DOLLAR_SIGN
 %token    AT_SIGN
 %token    NUMBER_SIGN
@@ -166,7 +166,8 @@ translation_unit:   top_level_decl
 
 
 
-top_level_decl:  decl 
+top_level_decl:  decl
+|                function_definition
 ;
 
 
@@ -220,8 +221,6 @@ parameter_list:   parameter_decl
 ;
 
 
-
-
 parameter_decl:  type_specifier declarator
 |                type_specifier
 |                type_specifier abstract_declarator
@@ -235,14 +234,164 @@ abstract_declarator:   pointer
 
 
 direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
-|                             SEP_LEFT_SQUARE_BRACKET INTEGER_CONSTANT SEP_RIGHT_SQUARE_BRACKET
-|                         direct_abstract_declarator SEP_LEFT_SQUARE_BRACKET INTEGER_CONSTANT  SEP_RIGHT_SQUARE_BRACKET
+|                             SEP_LEFT_BRACKET INTEGER_CONSTANT SEP_RIGHT_BRACKET
+|                         direct_abstract_declarator SEP_LEFT_BRACKET INTEGER_CONSTANT  SEP_RIGHT_BRACKET
 ;
 
 
 
-array_declarator:  direct_declarator SEP_LEFT_SQUARE_BRACKET INTEGER_CONSTANT SEP_RIGHT_SQUARE_BRACKET
+array_declarator:  direct_declarator SEP_LEFT_BRACKET INTEGER_CONSTANT SEP_RIGHT_BRACKET
 ;
+
+
+
+
+function_definition:  function_def_specifier compound_statement
+;
+
+
+function_def_specifier: type_specifier declarator
+;
+
+
+compound_statement: SEP_LEFT_BRACE SEP_RIGHT_BRACE
+|                   SEP_LEFT_BRACE declaration_or_statement_list SEP_RIGHT_BRACE
+;
+
+
+declaration_or_statement_list:   declaration_or_statement
+|                                declaration_or_statement_list declaration_or_statement
+;
+
+
+declaration_or_statement:   decl
+|                           statement
+;
+
+
+statement:  expression_statement
+;
+
+
+expression_statement:   comma_expr SEP_SEMICOLON
+;
+
+
+comma_expr:  assignment_expr
+|            comma_expr SEP_COMMA assignment_expr
+;
+
+
+assignment_expr:  conditional_expr
+|                 unary_expr OP_ASSIGNMENT assignment_expr
+;
+
+
+conditional_expr:  logical_or_expr
+|                  logical_or_expr OP_QUESTION_MARK comma_expr SEP_COLON conditional_expr
+;
+
+
+logical_or_expr:   logical_and_expr
+|                  logical_or_expr OP_LOGICAL_OR logical_and_expr
+;
+
+
+logical_and_expr:  bitwise_or_expr
+|                  logical_and_expr OP_LOGICAL_AND bitwise_or_expr
+;
+
+
+bitwise_or_expr:  bitwise_xor_expr
+|                 bitwise_or_expr OP_BITWISE_OR bitwise_xor_expr
+;
+
+
+bitwise_xor_expr:  bitwise_and_expr
+|                  bitwise_xor_expr OP_BITWISE_XOR bitwise_and_expr
+;
+
+
+bitwise_and_expr:  equality_expr
+|                  bitwise_and_expr OP_AMPERSAND equality_expr
+;
+
+
+equality_expr:  relational_expr
+|               equality_expr OP_EQUALITY relational_expr
+;
+
+
+
+relational_expr:  shift_expr
+|                 relational_expr relational_op shift_expr
+;
+
+
+relational_op:  OP_RELATIONAL_LT
+|               OP_RELATIONAL_LTE
+|               GREATER_THAN_SYMBOL
+|               OP_RELATIONAL_GTE
+;
+
+
+shift_expr:   additive_expr
+|             shift_expr shift_op additive_expr
+;
+
+
+shift_op:  OP_LEFT_BITSHIFT
+|          OP_RIGHT_BITSHIFT
+;
+
+
+additive_expr:  multiplicative_expr
+|               additive_expr OP_ADDITION multiplicative_expr
+;
+
+
+multiplicative_expr:  cast_expr
+|                     multiplicative_expr mult_op cast_expr
+;
+
+
+mult_op:  OP_ASTERISK
+|         OP_DIVISION
+|         OP_REMAINDER
+;
+
+
+cast_expr:  unary_expr
+|           SEP_LEFT_PAREN type_name SEP_RIGHT_PAREN cast_expr
+;
+
+
+unary_expr:  postfix_expr
+;
+
+
+postfix_expr:  primary_expr
+;
+
+
+primary_expr:  IDENTIFIER
+|              INTEGER_CONSTANT
+|              CHARACTER_CONSTANT
+|              STRING_CONSTANT
+|              parenthesized_expr
+;
+
+
+parenthesized_expr:  SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN
+;
+
+
+type_name:  type_specifier
+|           type_specifier abstract_declarator
+;
+
+
+
 
 
 
