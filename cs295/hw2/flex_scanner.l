@@ -74,7 +74,6 @@ extern YYSTYPE yylval;
 
 
 
-"+"     { return OP_ADDITION;  }
 "/"     { return OP_DIVISION;  }
 "%"     { return OP_REMAINDER; }
 
@@ -117,7 +116,6 @@ extern YYSTYPE yylval;
 
 
 "="     { return OP_ASSIGNMENT;    }
-"*"     { return OP_ASTERISK;      }
 "?"     { return OP_QUESTION_MARK; }
 
 
@@ -203,11 +201,13 @@ extern YYSTYPE yylval;
 "\\"                    { return BACKSLASH;           }
 "`"                     { return BACKTICK;            }
 "."                     { return PERIOD;              }
-"&"                     { return OP_AMPERSAND;        }
+"&"                     { return AMPERSAND;           }
+"*"                     { return ASTERISK;            }
 "$"                     { return DOLLAR_SIGN;         }
 "@"                     { return AT_SIGN;             }
 "#"                     { return NUMBER_SIGN;         }
 "-"                     { return MINUS_SIGN;          }
+"+"                     { return PLUS_SIGN;           }
 ">"                     { return GREATER_THAN_SYMBOL; }
 
 

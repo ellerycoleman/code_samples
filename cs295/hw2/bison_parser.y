@@ -44,7 +44,25 @@ char *display_node_type(int i);
  */
 
 
-%token    OP_ADDITION
+
+%token    RW_DO
+%token    RW_FOR
+%token    RW_RETURN
+%token    RW_BREAK
+%token    RW_SHORT
+%token    RW_ELSE
+%token    RW_GOTO
+%token    RW_SIGNED
+%token    RW_UNSIGNED
+%token    RW_CHAR
+%token    RW_IF
+%token    RW_VOID
+%token    RW_INT
+%token    RW_CONTINUE
+%token    RW_LONG
+%token    RW_WHILE
+
+
 %token    OP_DIVISION
 %token    OP_REMAINDER
 
@@ -87,7 +105,6 @@ char *display_node_type(int i);
 
 
 %token    OP_ASSIGNMENT
-%token    OP_ASTERISK
 %token    OP_QUESTION_MARK
 
 
@@ -102,24 +119,6 @@ char *display_node_type(int i);
 %token    SEP_COMMA
 
 
-%token    RW_DO
-%token    RW_FOR
-%token    RW_RETURN
-%token    RW_BREAK
-%token    RW_SHORT
-%token    RW_ELSE
-%token    RW_GOTO
-%token    RW_SIGNED
-%token    RW_UNSIGNED
-%token    RW_CHAR
-%token    RW_IF
-%token    RW_VOID
-%token    RW_INT
-%token    RW_CONTINUE
-%token    RW_LONG
-%token    RW_WHILE
-
-
 %token    IDENTIFIER
 %token    INTEGER_CONSTANT
 %token    CHARACTER_CONSTANT
@@ -132,11 +131,13 @@ char *display_node_type(int i);
 %token    BACKSLASH
 %token    BACKTICK
 %token    PERIOD
-%token    OP_AMPERSAND
+%token    AMPERSAND
+%token    ASTERISK
 %token    DOLLAR_SIGN
 %token    AT_SIGN
 %token    NUMBER_SIGN
 %token    MINUS_SIGN
+%token    PLUS_SIGN
 %token    GREATER_THAN_SYMBOL
 
 %token    END_OF_LINE
@@ -193,8 +194,8 @@ pointer_declarator:     pointer direct_declarator
 ;
 
 
-pointer:    OP_ASTERISK
-|           OP_ASTERISK pointer
+pointer:    ASTERISK
+|           ASTERISK pointer
 ;
 
 
@@ -311,7 +312,7 @@ bitwise_xor_expr:  bitwise_and_expr
 
 
 bitwise_and_expr:  equality_expr
-|                  bitwise_and_expr OP_AMPERSAND equality_expr
+|                  bitwise_and_expr AMPERSAND equality_expr
 ;
 
 
@@ -344,7 +345,7 @@ shift_op:  OP_LEFT_BITSHIFT
 
 
 additive_expr:  multiplicative_expr
-|               additive_expr OP_ADDITION multiplicative_expr
+|               additive_expr PLUS_SIGN multiplicative_expr
 ;
 
 
@@ -353,7 +354,7 @@ multiplicative_expr:  cast_expr
 ;
 
 
-mult_op:  OP_ASTERISK
+mult_op:  ASTERISK
 |         OP_DIVISION
 |         OP_REMAINDER
 ;
@@ -365,6 +366,14 @@ cast_expr:  unary_expr
 
 
 unary_expr:  postfix_expr
+|            unary_minus_expr
+|            unary_plus_expr
+|            logical_negation_expr
+|            bitwise_negation_expr
+|            address_expr
+|            indirection_expr
+|            preincrement_expr
+|            predecrement_expr
 ;
 
 
@@ -403,6 +412,38 @@ postincrement_expr:  postfix_expr OP_INCREMENT
 
 
 postdecrement_expr:  postfix_expr OP_DECREMENT
+;
+
+
+unary_minus_expr:  MINUS_SIGN cast_expr
+;
+
+
+unary_plus_expr:  PLUS_SIGN cast_expr
+;
+
+
+logical_negation_expr:  OP_LOGICAL_NOT cast_expr
+;
+
+
+bitwise_negation_expr:  OP_ONES_COMPLIMENT cast_expr
+;
+
+
+address_expr:  AMPERSAND cast_expr
+;
+
+
+indirection_expr:  ASTERISK cast_expr
+;
+
+
+preincrement_expr:  OP_INCREMENT unary_expr
+;
+
+
+predecrement_expr:  OP_DECREMENT unary_expr
 ;
 
 
