@@ -153,17 +153,15 @@ char *display_node_type(int i);
 
 
 
-translation_unit:   top_level_decl 
+translation_unit:   top_level_decl
 		    {  printf("made it back to Point A...\n");
 		       putchar('\n');
 	            }
-|                   translation_unit top_level_decl 
+|                   translation_unit top_level_decl
                     {  printf("made it back to Point B...\n");
 		       putchar('\n');
 	            }
 ;
-
-
 
 
 top_level_decl:  decl
@@ -171,7 +169,7 @@ top_level_decl:  decl
 ;
 
 
-decl:  type_specifier initialized_declarator_list SEP_SEMICOLON  
+decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
 ;
 
 
@@ -371,6 +369,10 @@ unary_expr:  postfix_expr
 
 
 postfix_expr:  primary_expr
+|              subscript_expr
+|              function_call
+|              postincrement_expr
+|              postdecrement_expr
 ;
 
 
@@ -379,6 +381,28 @@ primary_expr:  IDENTIFIER
 |              CHARACTER_CONSTANT
 |              STRING_CONSTANT
 |              parenthesized_expr
+;
+
+
+subscript_expr:  postfix_expr SEP_LEFT_BRACKET comma_expr SEP_RIGHT_BRACKET
+;
+
+
+function_call:   postfix_expr SEP_LEFT_PAREN SEP_RIGHT_PAREN
+|                postfix_expr SEP_LEFT_PAREN expression_list SEP_RIGHT_PAREN
+;
+
+
+expression_list:   assignment_expr
+|                  expression_list SEP_COMMA assignment_expr
+;
+
+
+postincrement_expr:  postfix_expr OP_INCREMENT
+;
+
+
+postdecrement_expr:  postfix_expr OP_DECREMENT
 ;
 
 
