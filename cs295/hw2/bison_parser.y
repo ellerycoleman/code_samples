@@ -320,7 +320,7 @@ comma_expr:  assignment_expr
 
 
 assignment_expr:  conditional_expr
-|                 unary_expr OP_ASSIGNMENT assignment_expr
+|                 unary_expr assignment_op assignment_expr
 ;
 
 
@@ -392,6 +392,20 @@ multiplicative_expr:  cast_expr
 ;
 
 
+assignment_op:  OP_ASSIGNMENT
+|               OP_ASSIGNMENT_ADD
+|               OP_ASSIGNMENT_SUBTRACT
+|               OP_ASSIGNMENT_MULTIPLY
+|               OP_ASSIGNMENT_DIVIDE
+|               OP_ASSIGNMENT_REMAINDER
+|               OP_ASSIGNMENT_LEFT_BITSHIFT
+|               OP_ASSIGNMENT_RIGHT_BITSHIFT
+|               OP_ASSIGNMENT_BITWISE_AND
+|               OP_ASSIGNMENT_BITWISE_XOR
+|               OP_ASSIGNMENT_BITWISE_OR
+;
+
+
 add_op:   PLUS_SIGN
 |         MINUS_SIGN
 ;
@@ -430,10 +444,14 @@ postfix_expr:  primary_expr
 
 
 primary_expr:  IDENTIFIER
-|              INTEGER_CONSTANT
-|              CHARACTER_CONSTANT
-|              STRING_CONSTANT
+|              constant
 |              parenthesized_expr
+;
+
+
+constant:  INTEGER_CONSTANT
+|          CHARACTER_CONSTANT
+|          STRING_CONSTANT
 ;
 
 
