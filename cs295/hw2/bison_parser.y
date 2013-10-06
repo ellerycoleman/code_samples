@@ -185,6 +185,7 @@ type_specifier:  integer_type_specifier
 
 
 integer_type_specifier:  signed_type_specifier
+|                        unsigned_type_specifier
 ;
 
 
@@ -199,6 +200,15 @@ signed_type_specifier:   RW_SHORT
 |                        RW_LONG RW_INT
 |                        RW_SIGNED RW_LONG
 |                        RW_SIGNED RW_LONG RW_INT
+;
+
+
+unsigned_type_specifier:  RW_UNSIGNED RW_SHORT RW_INT
+|                         RW_UNSIGNED RW_SHORT
+|                         RW_UNSIGNED RW_INT
+|                         RW_UNSIGNED
+|                         RW_UNSIGNED RW_LONG RW_INT
+|                         RW_UNSIGNED RW_LONG
 ;
 
 
