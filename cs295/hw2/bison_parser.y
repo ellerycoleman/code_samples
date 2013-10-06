@@ -17,11 +17,14 @@
 
 #include "e95_tokens.h"
 
+
 extern char *yytext;
 extern int num_of_tokens_processed;
 int answer=0;
 
+
 typedef enum node_type {NODE_OPERATOR,NODE_NUMBER} node_type;
+
 
 typedef struct node
 {   node_type type;
@@ -31,10 +34,12 @@ typedef struct node
     int val;
 } node;
 
+
 node *malloc_op_node(char *operator, node *child_left, node *child_right);
 node *malloc_number_node(int val);
 void print_tree(node *nodeptr);
 char *display_node_type(int i);
+
 
 %}
 
@@ -174,8 +179,26 @@ decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
 ;
 
 
-type_specifier:  RW_INT
+type_specifier:  integer_type_specifier
 |                RW_VOID
+;
+
+
+integer_type_specifier:  signed_type_specifier
+;
+
+
+signed_type_specifier:   RW_SHORT
+|                        RW_SHORT RW_INT
+|                        RW_SIGNED RW_SHORT
+|                        RW_SIGNED RW_SHORT RW_INT
+|                        RW_INT
+|                        RW_SIGNED RW_INT
+|                        RW_SIGNED
+|                        RW_LONG
+|                        RW_LONG RW_INT
+|                        RW_SIGNED RW_LONG
+|                        RW_SIGNED RW_LONG RW_INT
 ;
 
 
@@ -233,16 +256,14 @@ abstract_declarator:   pointer
 
 
 direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
-|                             SEP_LEFT_BRACKET INTEGER_CONSTANT SEP_RIGHT_BRACKET
-|                         direct_abstract_declarator SEP_LEFT_BRACKET INTEGER_CONSTANT  SEP_RIGHT_BRACKET
+|                             SEP_LEFT_BRACKET SEP_RIGHT_BRACKET
+|                             SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
+|                             direct_abstract_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
 ;
-
 
 
 array_declarator:  direct_declarator SEP_LEFT_BRACKET INTEGER_CONSTANT SEP_RIGHT_BRACKET
 ;
-
-
 
 
 function_definition:  function_def_specifier compound_statement
@@ -345,12 +366,17 @@ shift_op:  OP_LEFT_BITSHIFT
 
 
 additive_expr:  multiplicative_expr
-|               additive_expr PLUS_SIGN multiplicative_expr
+|               additive_expr add_op multiplicative_expr
 ;
 
 
 multiplicative_expr:  cast_expr
 |                     multiplicative_expr mult_op cast_expr
+;
+
+
+add_op:   PLUS_SIGN
+|         MINUS_SIGN
 ;
 
 
@@ -383,6 +409,7 @@ postfix_expr:  primary_expr
 |              postincrement_expr
 |              postdecrement_expr
 ;
+
 
 
 primary_expr:  IDENTIFIER
@@ -456,6 +483,8 @@ type_name:  type_specifier
 ;
 
 
+constant_expr:   conditional_expr
+;
 
 
 
