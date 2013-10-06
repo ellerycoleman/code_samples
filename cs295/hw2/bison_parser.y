@@ -355,7 +355,7 @@ bitwise_and_expr:  equality_expr
 
 
 equality_expr:  relational_expr
-|               equality_expr OP_EQUALITY relational_expr
+|               equality_expr equality_op relational_expr
 ;
 
 
@@ -417,6 +417,11 @@ mult_op:  ASTERISK
 ;
 
 
+equality_op:  OP_EQUALITY
+|             OP_NON_EQUALITY
+;
+
+
 cast_expr:  unary_expr
 |           SEP_LEFT_PAREN type_name SEP_RIGHT_PAREN cast_expr
 ;
@@ -440,7 +445,6 @@ postfix_expr:  primary_expr
 |              postincrement_expr
 |              postdecrement_expr
 ;
-
 
 
 primary_expr:  IDENTIFIER
