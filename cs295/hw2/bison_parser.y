@@ -310,8 +310,7 @@ declaration_or_statement:   decl
 statement:  expression_statement
 |           labeled_statement
 |           compound_statement
-|           if_statement
-|           if_else_statement
+|           conditional_statement
 ;
 
 
@@ -522,6 +521,10 @@ predecrement_expr:  OP_DECREMENT unary_expr
 
 
 labeled_statement:  label SEP_COLON statement
+;
+
+conditional_statement:  if_statement
+|                       if_else_statement
 ;
 
 
