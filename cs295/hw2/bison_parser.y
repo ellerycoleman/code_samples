@@ -307,6 +307,8 @@ declaration_or_statement:   decl
 
 
 statement:  expression_statement
+|           labeled_statement
+|           compound_statement
 ;
 
 
@@ -321,6 +323,20 @@ comma_expr:  assignment_expr
 
 assignment_expr:  conditional_expr
 |                 unary_expr assignment_op assignment_expr
+;
+
+
+assignment_op:  OP_ASSIGNMENT
+|               OP_ASSIGNMENT_ADD
+|               OP_ASSIGNMENT_SUBTRACT
+|               OP_ASSIGNMENT_MULTIPLY
+|               OP_ASSIGNMENT_DIVIDE
+|               OP_ASSIGNMENT_REMAINDER
+|               OP_ASSIGNMENT_LEFT_BITSHIFT
+|               OP_ASSIGNMENT_RIGHT_BITSHIFT
+|               OP_ASSIGNMENT_BITWISE_AND
+|               OP_ASSIGNMENT_BITWISE_XOR
+|               OP_ASSIGNMENT_BITWISE_OR
 ;
 
 
@@ -359,6 +375,10 @@ equality_expr:  relational_expr
 ;
 
 
+equality_op:  OP_EQUALITY
+|             OP_NON_EQUALITY
+;
+
 
 relational_expr:  shift_expr
 |                 relational_expr relational_op shift_expr
@@ -387,38 +407,19 @@ additive_expr:  multiplicative_expr
 ;
 
 
-multiplicative_expr:  cast_expr
-|                     multiplicative_expr mult_op cast_expr
-;
-
-
-assignment_op:  OP_ASSIGNMENT
-|               OP_ASSIGNMENT_ADD
-|               OP_ASSIGNMENT_SUBTRACT
-|               OP_ASSIGNMENT_MULTIPLY
-|               OP_ASSIGNMENT_DIVIDE
-|               OP_ASSIGNMENT_REMAINDER
-|               OP_ASSIGNMENT_LEFT_BITSHIFT
-|               OP_ASSIGNMENT_RIGHT_BITSHIFT
-|               OP_ASSIGNMENT_BITWISE_AND
-|               OP_ASSIGNMENT_BITWISE_XOR
-|               OP_ASSIGNMENT_BITWISE_OR
-;
-
-
 add_op:   PLUS_SIGN
 |         MINUS_SIGN
+;
+
+
+multiplicative_expr:  cast_expr
+|                     multiplicative_expr mult_op cast_expr
 ;
 
 
 mult_op:  ASTERISK
 |         OP_DIVISION
 |         OP_REMAINDER
-;
-
-
-equality_op:  OP_EQUALITY
-|             OP_NON_EQUALITY
 ;
 
 
@@ -456,6 +457,10 @@ primary_expr:  IDENTIFIER
 constant:  INTEGER_CONSTANT
 |          CHARACTER_CONSTANT
 |          STRING_CONSTANT
+;
+
+
+parenthesized_expr:  SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN
 ;
 
 
@@ -513,8 +518,14 @@ predecrement_expr:  OP_DECREMENT unary_expr
 ;
 
 
-parenthesized_expr:  SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN
+labeled_statement:  label SEP_COLON statement
 ;
+
+
+
+
+
+
 
 
 type_name:  type_specifier
@@ -523,6 +534,10 @@ type_name:  type_specifier
 
 
 constant_expr:   conditional_expr
+;
+
+
+label:  IDENTIFIER
 ;
 
 
