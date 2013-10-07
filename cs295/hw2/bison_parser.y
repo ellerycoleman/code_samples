@@ -312,6 +312,11 @@ statement:  expression_statement
 |           compound_statement
 |           conditional_statement
 |           iterative_statement
+|           break_statement
+|           continue_statement
+|           return_statement
+|           goto_statement
+|           null_statement
 ;
 
 
@@ -564,6 +569,28 @@ for_expr:  SEP_LEFT_PAREN SEP_SEMICOLON SEP_SEMICOLON SEP_RIGHT_PAREN
 |          SEP_LEFT_PAREN SEP_SEMICOLON comma_expr SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
 |          SEP_LEFT_PAREN comma_expr SEP_SEMICOLON comma_expr SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
 ;
+
+
+break_statement:  RW_BREAK SEP_SEMICOLON
+;
+
+
+continue_statement:  RW_CONTINUE SEP_SEMICOLON
+;
+
+
+return_statement:  RW_RETURN SEP_SEMICOLON
+|                  RW_RETURN comma_expr SEP_SEMICOLON
+;
+
+
+goto_statement:  RW_GOTO label SEP_SEMICOLON
+;
+
+
+null_statement:  SEP_SEMICOLON
+;
+
 
 
 
