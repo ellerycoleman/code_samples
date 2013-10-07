@@ -150,6 +150,7 @@ char *display_node_type(int i);
 %token    UNDEFINED
 
 
+%right "then" RW_ELSE
 
 
 /*-----------------------------------------------------------
@@ -310,6 +311,7 @@ statement:  expression_statement
 |           labeled_statement
 |           compound_statement
 |           if_statement
+|           if_else_statement
 ;
 
 
@@ -523,7 +525,11 @@ labeled_statement:  label SEP_COLON statement
 ;
 
 
-if_statement:       RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement
+if_statement:       RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement %prec "then"
+; /* this symbol uses %prec to resolve the shift/reduce error, per advice on stackoverflow.com */
+
+
+if_else_statement:  RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement RW_ELSE statement
 ;
 
 
