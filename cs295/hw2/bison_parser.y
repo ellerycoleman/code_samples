@@ -309,6 +309,7 @@ declaration_or_statement:   decl
 statement:  expression_statement
 |           labeled_statement
 |           compound_statement
+|           if_statement
 ;
 
 
@@ -519,6 +520,10 @@ predecrement_expr:  OP_DECREMENT unary_expr
 
 
 labeled_statement:  label SEP_COLON statement
+;
+
+
+if_statement:       RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement
 ;
 
 
