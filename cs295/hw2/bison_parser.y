@@ -311,6 +311,7 @@ statement:  expression_statement
 |           labeled_statement
 |           compound_statement
 |           conditional_statement
+|           iterative_statement
 ;
 
 
@@ -534,6 +535,37 @@ if_statement:       RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement %p
 
 if_else_statement:  RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement RW_ELSE statement
 ;
+
+
+iterative_statement:  while_statement
+|                     do_statement
+|                     for_statement
+;
+
+
+while_statement:  RW_WHILE SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement
+;
+
+
+do_statement:  RW_DO statement RW_WHILE SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN SEP_SEMICOLON
+;
+
+
+for_statement: RW_FOR for_expr statement
+;
+
+
+for_expr:  SEP_LEFT_PAREN SEP_SEMICOLON SEP_SEMICOLON SEP_RIGHT_PAREN
+|          SEP_LEFT_PAREN comma_expr SEP_SEMICOLON SEP_SEMICOLON SEP_RIGHT_PAREN
+|          SEP_LEFT_PAREN SEP_SEMICOLON comma_expr SEP_SEMICOLON SEP_RIGHT_PAREN
+|          SEP_LEFT_PAREN SEP_SEMICOLON SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
+|          SEP_LEFT_PAREN comma_expr SEP_SEMICOLON comma_expr SEP_SEMICOLON SEP_RIGHT_PAREN
+|          SEP_LEFT_PAREN comma_expr SEP_SEMICOLON SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
+|          SEP_LEFT_PAREN SEP_SEMICOLON comma_expr SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
+|          SEP_LEFT_PAREN comma_expr SEP_SEMICOLON comma_expr SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
+;
+
+
 
 
 
