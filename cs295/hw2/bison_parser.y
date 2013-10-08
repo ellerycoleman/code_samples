@@ -22,26 +22,67 @@ extern char *yytext;
 extern int num_of_tokens_processed;
 int answer=0;
 
+typedef enum ntype {NODE_OPERATOR,NODE_NUMBER,DECL,DECLARATOR} ntype;
 
-typedef enum node_type {NODE_OPERATOR,NODE_NUMBER} node_type;
+typedef enum tspec {   SIGNED_SHORT_INT,
+		       SIGNED_LONG_INT,
+                       SIGNED_INT,
+		       SIGNED_CHAR,
+		       UNSIGNED_SHORT_INT,
+		       UNSIGNED_LONG_INT,
+		       UNSIGNED_INT,
+		       UNSIGNED_CHAR,
+		       VOID
+                   } tspec;
 
 
-typedef struct node
-{   node_type type;
-    char *operator;
-    struct node *left;
-    struct node *right;
+typedef struct ast
+{   ntype nodetype;
+    struct ast *left;
+    struct ast *right;
+} ast;
+
+
+typedef struct numval
+{   ntype nodetype;
     int val;
-} node;
+} numval;
 
 
-node *malloc_op_node(char *operator, node *child_left, node *child_right);
-node *malloc_number_node(int val);
-void print_tree(node *nodeptr);
+typedef struct sdeclarator
+{   ntype nodetype;
+    struct declarator *next;
+    char *id;
+} declarator;
+
+
+typedef struct decl
+{   ntype nodetype;
+    tspec typespecifier;
+    declarator *d;
+} decl;
+
+ast *malloc_op_node(char *operator, ast *child_left, ast *child_right);
+ast *malloc_number_node(int val);
+void print_tree(ast *nodeptr);
 char *display_node_type(int i);
 
-
 %}
+
+
+
+%union 
+{   struct ast *a;
+    struct decl *decl;
+    struct declarator *declarator;
+}
+
+
+%type <a> type_specifier signed_type_specifier unsigned_type_specifier character_type_specifier integer_type_specifier
+
+
+
+
 
 
 /* Declare tokens. All the tokens formerly declared in
@@ -177,11 +218,14 @@ top_level_decl:  decl
 
 
 decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
+       {   printf ("i encountered a decl...\n");
+           printf ("type specifier: %d\n", (long)$1);
+       }
 ;
 
 
-type_specifier:  integer_type_specifier
-|                RW_VOID
+type_specifier:  integer_type_specifier  
+|                RW_VOID                 {$$= (ast *)(long) VOID;             }
 ;
 
 
@@ -191,32 +235,32 @@ integer_type_specifier:  signed_type_specifier
 ;
 
 
-signed_type_specifier:   RW_SHORT
-|                        RW_SHORT RW_INT
-|                        RW_SIGNED RW_SHORT
-|                        RW_SIGNED RW_SHORT RW_INT
-|                        RW_INT
-|                        RW_SIGNED RW_INT
-|                        RW_SIGNED
-|                        RW_LONG
-|                        RW_LONG RW_INT
-|                        RW_SIGNED RW_LONG
-|                        RW_SIGNED RW_LONG RW_INT
+signed_type_specifier:   RW_SHORT                    {$$= (ast *) SIGNED_SHORT_INT; }
+|                        RW_SHORT RW_INT             {$$= (ast *) SIGNED_SHORT_INT; }
+|                        RW_SIGNED RW_SHORT          {$$= (ast *) SIGNED_SHORT_INT; }
+|                        RW_SIGNED RW_SHORT RW_INT   {$$= (ast *) SIGNED_SHORT_INT; }
+|                        RW_INT                      {$$= (ast *) SIGNED_INT;       }
+|                        RW_SIGNED RW_INT            {$$= (ast *) SIGNED_INT;       }
+|                        RW_SIGNED                   {$$= (ast *) SIGNED_INT;       }
+|                        RW_LONG                     {$$= (ast *) SIGNED_LONG_INT;  }
+|                        RW_LONG RW_INT              {$$= (ast *) SIGNED_LONG_INT;  }
+|                        RW_SIGNED RW_LONG           {$$= (ast *) SIGNED_LONG_INT;  }
+|                        RW_SIGNED RW_LONG RW_INT    {$$= (ast *) SIGNED_LONG_INT;  }
 ;
 
 
-unsigned_type_specifier:  RW_UNSIGNED RW_SHORT RW_INT
-|                         RW_UNSIGNED RW_SHORT
-|                         RW_UNSIGNED RW_INT
-|                         RW_UNSIGNED
-|                         RW_UNSIGNED RW_LONG RW_INT
-|                         RW_UNSIGNED RW_LONG
+unsigned_type_specifier:  RW_UNSIGNED RW_SHORT RW_INT  {$$= (ast *) UNSIGNED_SHORT_INT; }
+|                         RW_UNSIGNED RW_SHORT         {$$= (ast *) UNSIGNED_SHORT_INT; }
+|                         RW_UNSIGNED RW_INT           {$$= (ast *) UNSIGNED_INT;       }
+|                         RW_UNSIGNED                  {$$= (ast *) UNSIGNED_INT;       }
+|                         RW_UNSIGNED RW_LONG RW_INT   {$$= (ast *) UNSIGNED_LONG_INT;  }
+|                         RW_UNSIGNED RW_LONG          {$$= (ast *) UNSIGNED_LONG_INT;  }
 ;
 
 
-character_type_specifier:  RW_CHAR
-|                          RW_SIGNED RW_CHAR
-|                          RW_UNSIGNED RW_CHAR
+character_type_specifier:  RW_CHAR                     {$$= (ast *) SIGNED_CHAR;   }
+|                          RW_SIGNED RW_CHAR           {$$= (ast *) SIGNED_CHAR;   }
+|                          RW_UNSIGNED RW_CHAR         {$$= (ast *) UNSIGNED_CHAR; }
 ;
 
 
@@ -628,25 +672,13 @@ yyerror(char *s)
 
 
 
-node *malloc_op_node(char *operator, node *child_left, node *child_right)
-{   printf("Entering malloc_op_node with op '%s', left child '%d', right child '%d'...\n", operator,child_left->val, child_right->val);
-#ifdef DEBUG
-    printf("Creating an op node with these args:\n"
-           "op: '%s'\n"
-	   "left: '%d'\n"
-	   "right: '%d'\n",
-	   operator, child_left, child_right);
-    printf("   * left child access test  --> %d\n", child_left->val);
-    printf("   * right child access test --> %d\n", child_right->val);
-#endif
-
-    node *nodeptr= malloc(sizeof(node));
+ast *malloc_op_node(char *operator, ast *child_left, ast *child_right)
+{   ast *nodeptr= malloc(sizeof(ast));
     if(nodeptr == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
     else
-    {   nodeptr->type= NODE_OPERATOR;
-        nodeptr->operator= operator;
+    {   nodeptr->nodetype= NODE_OPERATOR;
 	nodeptr->left= child_left;
 	nodeptr->right= child_right;
     }
@@ -655,49 +687,24 @@ node *malloc_op_node(char *operator, node *child_left, node *child_right)
     return nodeptr;
 }
 
-node *malloc_number_node(int val)
+ast *malloc_number_node(int val)
 {   printf("Entering malloc_number_node()... ");
-    node *nodeptr= malloc(sizeof(node));
+    ast *nodeptr= malloc(sizeof(numval));
     if(nodeptr == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
     else
-    {   nodeptr->type= NODE_NUMBER;
-        nodeptr->val= val;
+    {   nodeptr->nodetype= NODE_NUMBER;
+        ((struct numval *)nodeptr)->val= val;
     }
 
     printf("returning.\n");
-    return nodeptr;
+    return (ast *) nodeptr;
 }
 
-void print_tree(node *nodeptr)
+void print_tree(ast *nodeptr)
 {   printf("Entering print_tree()...\n");
     printf("(");
-    if(nodeptr->type == NODE_OPERATOR)
-    {
-        /* print left branch of tree */
-        if(nodeptr->left->type == NODE_OPERATOR)
-        {   print_tree(nodeptr->left);
-	}
-	else
-	{   printf("%d ", nodeptr->left->val);
-	}
-
-        /* print root of tree */
-	printf("%s ", nodeptr->operator);
-
-
-        /* print right branch of tree */
-	if(nodeptr->right->type == NODE_OPERATOR)
-        {   print_tree(nodeptr->right);
-	}
-	else
-	{   printf("%d ", nodeptr->right->val);
-	}
-    }
-    if(nodeptr->type == NODE_NUMBER)
-    {   printf("%d", nodeptr->val);
-    }
     printf(")");
 }
 
