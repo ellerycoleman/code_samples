@@ -78,7 +78,7 @@ char *display_node_type(int i);
 }
 
 
-%type <a> type_specifier signed_type_specifier unsigned_type_specifier character_type_specifier integer_type_specifier
+%type <a> type_specifier signed_type_specifier unsigned_type_specifier character_type_specifier integer_type_specifier translation_unit top_level_decl decl function_definition function_def_specifier compound_statement
 
 
 
@@ -203,10 +203,12 @@ char *display_node_type(int i);
 
 translation_unit:   top_level_decl
 		    {  printf("made it back to Point A...\n");
+		       print_tree($1);
 		       putchar('\n');
 	            }
 |                   translation_unit top_level_decl
                     {  printf("made it back to Point B...\n");
+		       print_tree($1);
 		       putchar('\n');
 	            }
 ;
@@ -324,7 +326,7 @@ direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
 ;
 
 
-array_declarator:  direct_declarator SEP_LEFT_BRACKET INTEGER_CONSTANT SEP_RIGHT_BRACKET
+array_declarator:  direct_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
 ;
 
 
@@ -687,6 +689,8 @@ ast *malloc_op_node(char *operator, ast *child_left, ast *child_right)
     return nodeptr;
 }
 
+
+
 ast *malloc_number_node(int val)
 {   printf("Entering malloc_number_node()... ");
     ast *nodeptr= malloc(sizeof(numval));
@@ -702,11 +706,18 @@ ast *malloc_number_node(int val)
     return (ast *) nodeptr;
 }
 
+
+
 void print_tree(ast *nodeptr)
 {   printf("Entering print_tree()...\n");
     printf("(");
-    printf(")");
+    printf("node type: %d", nodeptr);
+    printf(")\n");
 }
+
+
+
+
 
 char *display_node_type(int i)
 {   if(i == 0)
