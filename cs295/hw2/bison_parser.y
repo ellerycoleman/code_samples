@@ -731,57 +731,52 @@ void print_tree(ast *nodeptr)
      | a decl or a funcdef.  AT this point, we only handle decls.
      +-----------------------------------------------------------------*/
     do
-    {
-
-    struct decl *de= (struct decl *)tldlist->tld->d;
-    switch(de->nodetype)
-    {   case DECL:
-           printf("this tldlist node is a DECL...\n");
-	   printf("  - type of decl is '%d'\n", de->typespecifier);
-           switch( de->typespecifier)
-	   {   case SIGNED_SHORT_INT:
-	          printf("signed short int ");
-		  break;
-               case SIGNED_LONG_INT:
-	          printf("signed long int ");
-		  break;
-               case SIGNED_INT:
-	          printf("signed int ");
-		  break;
-               case SIGNED_CHAR:
-	          printf("signed char ");
-		  break;
-               case UNSIGNED_SHORT_INT:
-	          printf("unsigned short int ");
-		  break;
-               case UNSIGNED_LONG_INT:
-	          printf("unsigned long int ");
-		  break;
-               case UNSIGNED_INT:
-	          printf("unsigned int ");
-		  break;
-               case UNSIGNED_CHAR:
-	          printf("unsigned char ");
-		  break;
-               case VOID:
-	          printf("void ");
-		  break;
-	   }
-	   declarator_list *dl= de->dl;
-	   dl= reverse_declarator_list(dl);
-	   do
-	   {   printf(" %s", dl->d->id);
-	       if(dl->next != NULL)
-	       {  printf(",");
-               }
-	   }while( (dl= dl->next) != NULL);
-	   printf(";\n");
-	   break;
-    }
-
+    {   struct decl *de= (struct decl *)tldlist->tld->d;
+        switch(de->nodetype)
+        {   case DECL:
+               printf("this tldlist node is a DECL...\n");
+	       printf("  - type of decl is '%d'\n", de->typespecifier);
+               switch( de->typespecifier)
+	       {   case SIGNED_SHORT_INT:
+	              printf("signed short int ");
+		      break;
+                   case SIGNED_LONG_INT:
+	              printf("signed long int ");
+		      break;
+                   case SIGNED_INT:
+	              printf("signed int ");
+		      break;
+                   case SIGNED_CHAR:
+	              printf("signed char ");
+		      break;
+                   case UNSIGNED_SHORT_INT:
+	              printf("unsigned short int ");
+		      break;
+                   case UNSIGNED_LONG_INT:
+	              printf("unsigned long int ");
+		      break;
+                   case UNSIGNED_INT:
+	              printf("unsigned int ");
+		      break;
+                   case UNSIGNED_CHAR:
+	              printf("unsigned char ");
+		      break;
+                   case VOID:
+	              printf("void ");
+		      break;
+	       }
+	       declarator_list *dl= de->dl;
+	       dl= reverse_declarator_list(dl);
+	       do
+	       {   printf(" %s", dl->d->id);
+	           if(dl->next != NULL)
+	           {  printf(",");
+                   }
+	       }while( (dl= dl->next) != NULL);
+	       printf(";\n");
+	       break;
+        }
     }while( (tldlist= tldlist->next) != NULL );
-
-
     printf(")\n");
 }
 
