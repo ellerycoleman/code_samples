@@ -51,38 +51,56 @@ typedef struct numval
 
 typedef struct sdeclarator
 {   ntype nodetype;
-    struct declarator *next;
     char *id;
+} sdeclarator;
+
+
+typedef struct declarator
+{   char *id;
 } declarator;
+
+
+typedef struct declarator_list
+{   declarator *d;
+    struct declarator_list *next;
+} declarator_list;
 
 
 typedef struct decl
 {   ntype nodetype;
     tspec typespecifier;
-    declarator *d;
+    struct declarator_list *dl;
 } decl;
+
 
 ast *malloc_op_node(char *operator, ast *child_left, ast *child_right);
 ast *malloc_number_node(int val);
+declarator *new_simple_declarator(char *id);
+declarator_list *new_declarator_list(declarator *d, declarator_list *next);
+ast *new_decl(int typespecifier, declarator_list *dl);
 void print_tree(ast *nodeptr);
 char *display_node_type(int i);
+declarator_list *reverse_declarator_list(declarator_list *dl);
 
 %}
 
 
 
-%union 
+%union
 {   struct ast *a;
     struct decl *decl;
+    struct sdeclarator *sdeclarator;
+    struct declarator_list *dlist;
     struct declarator *declarator;
+    char *id;
 }
 
 
 %type <a> type_specifier signed_type_specifier unsigned_type_specifier character_type_specifier integer_type_specifier translation_unit top_level_decl decl function_definition function_def_specifier compound_statement
 
 
-
-
+%type <dlist> initialized_declarator_list
+%type <declarator> declarator pointer_declarator direct_declarator simple_declarator
 
 
 /* Declare tokens. All the tokens formerly declared in
@@ -165,7 +183,7 @@ char *display_node_type(int i);
 %token    SEP_COMMA
 
 
-%token    IDENTIFIER
+%token    <id> IDENTIFIER
 %token    INTEGER_CONSTANT
 %token    CHARACTER_CONSTANT
 %token    CHARACTER_CONSTANT_OCTAL
@@ -208,7 +226,7 @@ translation_unit:   top_level_decl
 	            }
 |                   translation_unit top_level_decl
                     {  printf("made it back to Point B...\n");
-		       print_tree($1);
+		       print_tree($2);
 		       putchar('\n');
 	            }
 ;
@@ -222,6 +240,7 @@ top_level_decl:  decl
 decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
        {   printf ("i encountered a decl...\n");
            printf ("type specifier: %d\n", (long)$1);
+           $$= new_decl((long)$1, $2);
        }
 ;
 
@@ -266,10 +285,9 @@ character_type_specifier:  RW_CHAR                     {$$= (ast *) SIGNED_CHAR;
 ;
 
 
-initialized_declarator_list:   declarator
-|                              initialized_declarator_list SEP_COMMA declarator
+initialized_declarator_list:   declarator                                       {$$= new_declarator_list($1,NULL); }
+|                              initialized_declarator_list SEP_COMMA declarator {$$= new_declarator_list($3,$1);   }
 ;
-
 
 
 declarator:       pointer_declarator
@@ -293,8 +311,7 @@ direct_declarator:    simple_declarator
 ;
 
 
-
-simple_declarator:    IDENTIFIER
+simple_declarator:    IDENTIFIER   {  $$= new_simple_declarator($1); }
 ;
 
 
@@ -711,7 +728,52 @@ ast *malloc_number_node(int val)
 void print_tree(ast *nodeptr)
 {   printf("Entering print_tree()...\n");
     printf("(");
-    printf("node type: %d", nodeptr);
+
+    switch(nodeptr->nodetype)
+    {   case DECL:
+           printf("We were asked to print a DECL node...\n");
+	   switch( ((struct decl *)nodeptr)->typespecifier)
+	   {   case SIGNED_SHORT_INT:
+	          printf("type: signed short int\n");
+		  break;
+               case SIGNED_LONG_INT:
+	          printf("type: signed long int\n");
+		  break;
+               case SIGNED_INT:
+	          printf("type: signed int\n");
+		  break;
+               case SIGNED_CHAR:
+	          printf("type: signed char\n");
+		  break;
+               case UNSIGNED_SHORT_INT:
+	          printf("type: unsigned short int\n");
+		  break;
+               case UNSIGNED_LONG_INT:
+	          printf("type: unsigned long int\n");
+		  break;
+               case UNSIGNED_INT:
+	          printf("type: unsigned int\n");
+		  break;
+               case UNSIGNED_CHAR:
+	          printf("type: unsigned char\n");
+		  break;
+               case VOID:
+	          printf("type: void\n");
+		  break;
+	   }
+
+
+	   printf("list of vars: ");
+	   declarator_list *dl= ((struct decl *)nodeptr)->dl;
+	   dl= reverse_declarator_list(dl);
+	   do
+	   {   printf("%s ", dl->d->id);
+	   }while( (dl= dl->next) != NULL);
+	   printf("\n");
+	   break;
+    }
+
+
     printf(")\n");
 }
 
@@ -727,5 +789,72 @@ char *display_node_type(int i)
     {   return "Number Node";
     }
 }
+
+
+declarator *new_simple_declarator(char *id)
+{   printf("new_simple_declarator() was called with string '%s'\n", id);
+    declarator *d= malloc(sizeof(declarator));
+    if(d == NULL)
+    {   printf("*** Parser ran out of memory! ***\n");
+    }
+    else
+    {   d->id= strdup(id);
+    }
+
+    return d;
+}
+
+
+declarator_list *new_declarator_list(declarator *d, declarator_list *next)
+{   printf("new_declarator_list() was called...\n");
+    declarator_list *dl= malloc(sizeof(struct declarator_list));
+    if(dl == NULL)
+    {   printf("*** Parser ran out of memory! ***\n");
+    }
+    else
+    {   dl->d= d;
+        dl->next= next;
+    }
+    return dl;
+}
+
+
+/*
+ | The declarator list is defined using left recursion.
+ | For this reason, the linked list is created in the
+ | reverse order of the way that it was entered.  This
+ | method reverses the linked list, and is based on the
+ | linked list reversal method posted on stackoverflow.com.
+ +---------------------------------------------------------*/
+declarator_list *reverse_declarator_list(declarator_list *dl)
+{   declarator_list *newroot= NULL;   
+    while(dl)
+    {   declarator_list *next= dl->next;
+        dl->next= newroot;
+	newroot= dl;
+	dl= next;
+    }
+    return newroot;
+}
+
+
+
+
+ast *new_decl(int typespecifier, declarator_list *dl)
+{   printf("new_decl() was called...\n");
+    decl *d= malloc(sizeof(struct decl));
+    if(d == NULL)
+    {   printf("*** Parser ran out of memory! ***\n");
+    }
+    else
+    {   d->nodetype= DECL;
+        d->typespecifier= typespecifier;
+        d->dl=  dl;
+    }
+
+    return  (struct ast *)d;
+}
+
+
 
 
