@@ -94,14 +94,11 @@ typedef struct tld_list
 
 
 
-ast *malloc_op_node(char *operator, ast *child_left, ast *child_right);
-ast *malloc_number_node(int val);
 declarator *new_simple_declarator(char *id);
 ast *new_tld_list(tld *t, ast *next);
 tld *new_tld(int datatype, ast *t);
 ast *new_decl(int typespecifier, declarator_list *dl);
 void print_tree(ast *nodeptr);
-char *display_node_type(int i);
 declarator_list *new_declarator_list(declarator *d, declarator_list *next);
 declarator_list *reverse_declarator_list(declarator_list *dl);
 
@@ -679,7 +676,7 @@ goto_statement:  RW_GOTO label SEP_SEMICOLON
 ;
 
 
-null_statement:  SEP_SEMICOLON
+null_statement:  SEP_SEMICOLON {}
 ;
 
 
@@ -719,39 +716,6 @@ yyerror(char *s)
 
 
 
-ast *malloc_op_node(char *operator, ast *child_left, ast *child_right)
-{   ast *nodeptr= malloc(sizeof(ast));
-    if(nodeptr == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   nodeptr->nodetype= NODE_OPERATOR;
-	nodeptr->left= child_left;
-	nodeptr->right= child_right;
-    }
-
-    printf("Returning from malloc_op_node...\n");
-    return nodeptr;
-}
-
-
-
-ast *malloc_number_node(int val)
-{   printf("Entering malloc_number_node()... ");
-    ast *nodeptr= malloc(sizeof(numval));
-    if(nodeptr == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   nodeptr->nodetype= NODE_NUMBER;
-        ((struct numval *)nodeptr)->val= val;
-    }
-
-    printf("returning.\n");
-    return (ast *) nodeptr;
-}
-
-
 
 void print_tree(ast *nodeptr)
 {   printf("Entering print_tree()...\n");
@@ -774,7 +738,6 @@ void print_tree(ast *nodeptr)
     {   case DECL:
            printf("this tldlist node is a DECL...\n");
 	   printf("  - type of decl is '%d'\n", de->typespecifier);
-	   /*
            switch( de->typespecifier)
 	   {   case SIGNED_SHORT_INT:
 	          printf("signed short int ");
@@ -804,7 +767,7 @@ void print_tree(ast *nodeptr)
 	          printf("void ");
 		  break;
 	   }
-	   declarator_list *dl= ((struct decl *)nodeptr)->dl;
+	   declarator_list *dl= de->dl;
 	   dl= reverse_declarator_list(dl);
 	   do
 	   {   printf(" %s", dl->d->id);
@@ -813,9 +776,6 @@ void print_tree(ast *nodeptr)
                }
 	   }while( (dl= dl->next) != NULL);
 	   printf(";\n");
-	   */
-
-
 	   break;
     }
 
@@ -827,15 +787,6 @@ void print_tree(ast *nodeptr)
 
 
 
-
-char *display_node_type(int i)
-{   if(i == 0)
-    {   return "Operator Node";
-    }
-    else
-    {   return "Number Node";
-    }
-}
 
 
 declarator *new_simple_declarator(char *id)
