@@ -22,7 +22,7 @@ extern char *yytext;
 extern int num_of_tokens_processed;
 int answer=0;
 
-typedef enum ntype {NODE_OPERATOR,NODE_NUMBER,DECL,DECLARATOR} ntype;
+typedef enum ntype {NODE_OPERATOR,NODE_NUMBER,DECL,DECLARATOR,TLD,TLD_LIST,FUNCDEF} ntype;
 
 typedef enum tspec {   SIGNED_SHORT_INT,
 		       SIGNED_LONG_INT,
@@ -66,6 +66,11 @@ typedef struct declarator_list
 } declarator_list;
 
 
+typedef struct funcdef
+{   ntype nodetype;
+} funcdef;
+
+
 typedef struct decl
 {   ntype nodetype;
     tspec typespecifier;
@@ -73,13 +78,31 @@ typedef struct decl
 } decl;
 
 
+typedef struct tld
+{   ntype nodetype;
+    int datatype; /* 1 is decl, 2 is funcdef */
+    struct decl    *d;
+    struct funcdef *f;
+} tld;
+
+
+typedef struct tld_list
+{   ntype nodetype;
+    struct tld *tld;
+    struct tld_list *next;
+} tld_list;
+
+
+
 ast *malloc_op_node(char *operator, ast *child_left, ast *child_right);
 ast *malloc_number_node(int val);
 declarator *new_simple_declarator(char *id);
-declarator_list *new_declarator_list(declarator *d, declarator_list *next);
+ast *new_tld_list(tld *t, ast *next);
+tld *new_tld(int datatype, ast *t);
 ast *new_decl(int typespecifier, declarator_list *dl);
 void print_tree(ast *nodeptr);
 char *display_node_type(int i);
+declarator_list *new_declarator_list(declarator *d, declarator_list *next);
 declarator_list *reverse_declarator_list(declarator_list *dl);
 
 %}
@@ -92,14 +115,18 @@ declarator_list *reverse_declarator_list(declarator_list *dl);
     struct sdeclarator *sdeclarator;
     struct declarator_list *dlist;
     struct declarator *declarator;
+    struct tld_list *tlist;
+    struct tld *tld;
     char *id;
 }
 
 
-%type <a> type_specifier signed_type_specifier unsigned_type_specifier character_type_specifier integer_type_specifier translation_unit top_level_decl decl function_definition function_def_specifier compound_statement
+%type <a> type_specifier signed_type_specifier unsigned_type_specifier character_type_specifier integer_type_specifier decl function_definition function_def_specifier compound_statement translation_unit 
 
+%type <tld> top_level_decl
 
 %type <dlist> initialized_declarator_list
+
 %type <declarator> declarator pointer_declarator direct_declarator simple_declarator
 
 
@@ -219,28 +246,29 @@ declarator_list *reverse_declarator_list(declarator_list *dl);
 
 
 
-translation_unit:   top_level_decl
+translation_unit:   top_level_decl 
 		    {  printf("made it back to Point A...\n");
-		       print_tree($1);
+		       $$= new_tld_list($1,NULL);
+		       print_tree($$);
 		       putchar('\n');
 	            }
 |                   translation_unit top_level_decl
                     {  printf("made it back to Point B...\n");
-		       print_tree($2);
+		       $$= new_tld_list($2,$1);
+		       print_tree($$);
 		       putchar('\n');
 	            }
 ;
 
 
-top_level_decl:  decl
-|                function_definition
+top_level_decl:  decl                  {$$= new_tld(DECL,$1); }
+|                function_definition 
 ;
 
 
 decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
-       {   printf ("i encountered a decl...\n");
-           printf ("type specifier: %d\n", (long)$1);
-           $$= new_decl((long)$1, $2);
+       {   printf ("encountered a decl...\n");
+           $$= new_decl((int)$1, $2);
        }
 ;
 
@@ -729,54 +757,73 @@ void print_tree(ast *nodeptr)
 {   printf("Entering print_tree()...\n");
     printf("(");
 
-    switch(nodeptr->nodetype)
+    /* The only type of AST that is passed to print_tree is a *tld_list.
+     | we will cast the AST into a *tld_list.
+     +-----------------------------------------------------------------*/
+    struct tld_list *tldlist= (struct tld_list *)nodeptr;
+
+
+    /* A tld_list has a series of tld nodes; each one pointing to either
+     | a decl or a funcdef.  AT this point, we only handle decls.
+     +-----------------------------------------------------------------*/
+    do
+    {
+
+    struct decl *de= (struct decl *)tldlist->tld->d;
+    switch(de->nodetype)
     {   case DECL:
-           printf("We were asked to print a DECL node...\n");
-	   switch( ((struct decl *)nodeptr)->typespecifier)
+           printf("this tldlist node is a DECL...\n");
+	   printf("  - type of decl is '%d'\n", de->typespecifier);
+	   /*
+           switch( de->typespecifier)
 	   {   case SIGNED_SHORT_INT:
-	          printf("type: signed short int\n");
+	          printf("signed short int ");
 		  break;
                case SIGNED_LONG_INT:
-	          printf("type: signed long int\n");
+	          printf("signed long int ");
 		  break;
                case SIGNED_INT:
-	          printf("type: signed int\n");
+	          printf("signed int ");
 		  break;
                case SIGNED_CHAR:
-	          printf("type: signed char\n");
+	          printf("signed char ");
 		  break;
                case UNSIGNED_SHORT_INT:
-	          printf("type: unsigned short int\n");
+	          printf("unsigned short int ");
 		  break;
                case UNSIGNED_LONG_INT:
-	          printf("type: unsigned long int\n");
+	          printf("unsigned long int ");
 		  break;
                case UNSIGNED_INT:
-	          printf("type: unsigned int\n");
+	          printf("unsigned int ");
 		  break;
                case UNSIGNED_CHAR:
-	          printf("type: unsigned char\n");
+	          printf("unsigned char ");
 		  break;
                case VOID:
-	          printf("type: void\n");
+	          printf("void ");
 		  break;
 	   }
-
-
-	   printf("list of vars: ");
 	   declarator_list *dl= ((struct decl *)nodeptr)->dl;
 	   dl= reverse_declarator_list(dl);
 	   do
-	   {   printf("%s ", dl->d->id);
+	   {   printf(" %s", dl->d->id);
+	       if(dl->next != NULL)
+	       {  printf(",");
+               }
 	   }while( (dl= dl->next) != NULL);
-	   printf("\n");
+	   printf(";\n");
+	   */
+
+
 	   break;
     }
+
+    }while( (tldlist= tldlist->next) != NULL );
 
 
     printf(")\n");
 }
-
 
 
 
@@ -792,7 +839,7 @@ char *display_node_type(int i)
 
 
 declarator *new_simple_declarator(char *id)
-{   printf("new_simple_declarator() was called with string '%s'\n", id);
+{   printf("new_simple_declarator() was called with id '%s'\n", id);
     declarator *d= malloc(sizeof(declarator));
     if(d == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
@@ -816,6 +863,20 @@ declarator_list *new_declarator_list(declarator *d, declarator_list *next)
         dl->next= next;
     }
     return dl;
+}
+
+
+ast *new_tld_list(tld *t, ast *next)
+{   printf("new_tld_list() was called...\n");
+    tld_list *tl= malloc(sizeof(struct tld_list));
+    if(tl == NULL)
+    {   printf("*** Parser ran out of memory! ***\n");
+    }
+    else
+    {   tl->tld= t;
+        tl->next= (struct tld_list *)next;
+    }
+    return (struct ast *)tl;
 }
 
 
@@ -854,6 +915,28 @@ ast *new_decl(int typespecifier, declarator_list *dl)
 
     return  (struct ast *)d;
 }
+
+tld *new_tld(int datatype, ast *tld)
+{   printf("new_tld() was called...\n");
+    struct tld *t= malloc(sizeof(struct tld));
+    if(t == NULL)
+    {   printf("*** Parser ran out of memory! ***\n");
+    }
+    else
+    {   t->nodetype= TLD;
+        t->datatype= datatype;
+        if(datatype == DECL)
+	{   t->d= (struct decl *)tld;
+	}
+	if(datatype == FUNCDEF)
+	{   t->f= (struct funcdef *)tld;
+	}
+    }    
+    return t;
+}
+
+
+
 
 
 
