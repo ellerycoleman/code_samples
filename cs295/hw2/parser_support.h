@@ -90,3 +90,8 @@ declarator_list *new_declarator_list(declarator *d, declarator_list *next);
 declarator_list *reverse_declarator_list(declarator_list *dl);
 
 
+struct ast *parse_tree;
+
+
+
+

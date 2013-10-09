@@ -9,6 +9,7 @@
 
 
 #include "e95_tokens.h"
+#include "parser_support.h"
 #define INT_MAX       2147483647
 #define LONG_MAX      2147483647
 #define ULONG_MAX     4294967295
@@ -24,8 +25,9 @@ extern char *yytext;
 extern int yyleng;
 extern FILE *yyin;
 extern int yylineno;
-extern int cvalue;            /* for converting char constants */
-extern long long ivalue_tmp;  /* for converting int constants  */
+extern int cvalue;              /* for converting char constants */
+extern long long ivalue_tmp;    /* for converting int constants  */
+extern struct ast *parse_tree;  /* root of completed parse tree  */
 FILE *input, *output;
 
 
@@ -52,7 +54,7 @@ int main(int argc, char **argv)
 
     /* Parse Input */
     yyparse();
-
+    print_tree(parse_tree);
 
     return 0;
 

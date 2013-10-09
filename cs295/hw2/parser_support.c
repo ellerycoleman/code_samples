@@ -19,15 +19,16 @@ void print_tree(ast *nodeptr)
     struct tld_list *tldlist= (struct tld_list *)nodeptr;
 
 
-    /* A tld_list has a series of tld nodes; each one pointing to either
+    /* A tld_list has a series of tld nodes; each node pointing to either
      | a decl or a funcdef.  AT this point, we only handle decls.
      +-----------------------------------------------------------------*/
+    struct decl *de; 
     do
-    {   struct decl *de= (struct decl *)tldlist->tld->d;
+    {   
+        de= (struct decl *)tldlist->tld->d;
         switch(de->nodetype)
         {   case DECL:
-               printf("this tldlist node is a DECL...\n");
-	       printf("  - type of decl is '%d'\n", de->typespecifier);
+	       /* print type */
                switch( de->typespecifier)
 	       {   case SIGNED_SHORT_INT:
 	              printf("signed short int ");
@@ -57,6 +58,9 @@ void print_tree(ast *nodeptr)
 	              printf("void ");
 		      break;
 	       }
+
+
+               /* print list */
 	       declarator_list *dl= de->dl;
 	       dl= reverse_declarator_list(dl);
 	       do

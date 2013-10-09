@@ -161,15 +161,11 @@
 
 translation_unit:   top_level_decl 
 		    {  printf("made it back to Point A...\n");
-		       $$= new_tld_list($1,NULL);
-		       print_tree($$);
-		       putchar('\n');
+		       parse_tree= new_tld_list($1,NULL);
 	            }
 |                   translation_unit top_level_decl
                     {  printf("made it back to Point B...\n");
-		       $$= new_tld_list($2,$1);
-		       print_tree($$);
-		       putchar('\n');
+		       parse_tree= new_tld_list($2,parse_tree);
 	            }
 ;
 
@@ -181,7 +177,7 @@ top_level_decl:  decl                  {$$= new_tld(DECL,$1); }
 
 decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
        {   printf ("encountered a decl...\n");
-           $$= new_decl((int)$1, $2);
+           $$= new_decl((int)(long)$1, $2);
        }
 ;
 
