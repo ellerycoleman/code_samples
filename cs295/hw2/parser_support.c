@@ -1,7 +1,7 @@
 #include "parser_support.h"
 
 
-yyerror(char *s)
+yyerror(char *s,...)
 {   fprintf(stderr, "Problem in Parseville!\n\t");
     fprintf(stderr, "error: %s\n", s);
 }
@@ -122,13 +122,15 @@ declarator *new_simple_declarator(char *id)
 }
 
 
-declarator *new_pointer_declarator1(declarator *current, declarator *next)
-{   
-    /* allocate a new declarator */
-    declarator *pd= malloc(sizeof(declarator));
-    pd->nodetype= POINTER_DECLARATOR;
-    pd->next= next;
-
+declarator *new_pointer_declarator(declarator *next)
+{   declarator *pd= malloc(sizeof(declarator));
+    if(pd == NULL)
+    {   printf("*** Parser ran out of memory! ***\n");
+    }
+    else
+    {   pd->nodetype= POINTER_DECLARATOR;
+        pd->next= next;
+    }
     return pd;
 }
 

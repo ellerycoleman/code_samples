@@ -93,7 +93,7 @@ void print_tree(ast *nodeptr);
 declarator_list *new_declarator_list(declarator *d, declarator_list *next);
 declarator_list *reverse_declarator_list(declarator_list *dl);
 tld_list *reverse_tld_list(struct tld_list *tl);
-declarator *new_pointer_declarator1(declarator *current, declarator *next);
+declarator *new_pointer_declarator(declarator *next);
 declarator *reverse_declarators(declarator *dp);
 
 

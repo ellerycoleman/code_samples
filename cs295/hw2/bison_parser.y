@@ -153,11 +153,13 @@
 %right "then" RW_ELSE
 
 
+
+
+
 /*-----------------------------------------------------------
  |                 patterns and actions
  +---------------------------------------------------------*/
 %%
-
 
 
 translation_unit:   top_level_decl
@@ -242,23 +244,16 @@ pointer_declarator:     pointer direct_declarator
 
 
 pointer:    ASTERISK          
-            {   declarator *d= malloc(sizeof(struct declarator));
-	        d->nodetype= POINTER_DECLARATOR;
-		d->next= NULL;
-		$$= d;
+            {   $$= new_pointer_declarator(NULL);
             }
 |           ASTERISK pointer 
-            {   declarator *d= malloc(sizeof(struct declarator));
-	        d->nodetype= POINTER_DECLARATOR;
-		d->next= $2;
-		$$= d;
+            {   $$= new_pointer_declarator($2);
             }
-
 ;
 
 
 direct_declarator:    simple_declarator
-|                     SEP_LEFT_PAREN declarator SEP_RIGHT_PAREN
+|                     SEP_LEFT_PAREN declarator SEP_RIGHT_PAREN  { $$= $2; }
 |                     function_declarator
 |                     array_declarator
 ;
