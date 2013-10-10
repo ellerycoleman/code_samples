@@ -142,6 +142,19 @@ declarator_list *reverse_declarator_list(declarator_list *dl)
 
 
 
+tld_list *reverse_tld_list(struct tld_list *tl)
+{   tld_list *newroot= NULL;
+    while(tl)
+    {   tld_list *next= tl->next;
+        tl->next= newroot;
+	newroot= tl;
+	tl= next;
+    }
+    return newroot;
+}
+
+
+
 
 ast *new_decl(int typespecifier, declarator_list *dl)
 {   printf("new_decl() was called...\n");

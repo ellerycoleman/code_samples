@@ -54,6 +54,7 @@ int main(int argc, char **argv)
 
     /* Parse Input */
     yyparse();
+    parse_tree= (struct ast *) reverse_tld_list((struct tld_list *)parse_tree);
     print_tree(parse_tree);
 
     return 0;

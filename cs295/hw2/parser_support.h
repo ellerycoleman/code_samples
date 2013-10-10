@@ -88,6 +88,7 @@ ast *new_decl(int typespecifier, declarator_list *dl);
 void print_tree(ast *nodeptr);
 declarator_list *new_declarator_list(declarator *d, declarator_list *next);
 declarator_list *reverse_declarator_list(declarator_list *dl);
+tld_list *reverse_tld_list(struct tld_list *tl);
 
 
 struct ast *parse_tree;
