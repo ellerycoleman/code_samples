@@ -10,8 +10,13 @@ yyerror(char *s)
 
 
 void print_tree(ast *nodeptr)
-{   printf("Entering print_tree()...\n");
-    printf("(");
+{   printf("\n\n\n\n");
+    printf("#----------------------------------------------------------\n");
+    printf("#           Parse Tree for E95 C Language                  \n");
+    printf("#----------------------------------------------------------\n");
+    printf("(\n");
+
+
 
     /* The only type of AST that is passed to print_tree is a *tld_list.
      | we will cast the AST into a *tld_list.
@@ -20,11 +25,11 @@ void print_tree(ast *nodeptr)
 
 
     /* A tld_list has a series of tld nodes; each node pointing to either
-     | a decl or a funcdef.  AT this point, we only handle decls.
+     | a decl or a funcdef.
      +-----------------------------------------------------------------*/
-    struct decl *de; 
+    struct decl *de;
     do
-    {   
+    {
         de= (struct decl *)tldlist->tld->d;
         switch(de->nodetype)
         {   case DECL:
@@ -73,7 +78,7 @@ void print_tree(ast *nodeptr)
 	       break;
         }
     }while( (tldlist= tldlist->next) != NULL );
-    printf(")\n");
+    printf(")\n\n\n\n");
 }
 
 
@@ -81,8 +86,7 @@ void print_tree(ast *nodeptr)
 
 
 declarator *new_simple_declarator(char *id)
-{   printf("new_simple_declarator() was called with id '%s'\n", id);
-    declarator *d= malloc(sizeof(declarator));
+{   declarator *d= malloc(sizeof(declarator));
     if(d == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
@@ -95,8 +99,7 @@ declarator *new_simple_declarator(char *id)
 
 
 declarator_list *new_declarator_list(declarator *d, declarator_list *next)
-{   printf("new_declarator_list() was called...\n");
-    declarator_list *dl= malloc(sizeof(struct declarator_list));
+{   declarator_list *dl= malloc(sizeof(struct declarator_list));
     if(dl == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
@@ -109,8 +112,7 @@ declarator_list *new_declarator_list(declarator *d, declarator_list *next)
 
 
 ast *new_tld_list(tld *t, ast *next)
-{   printf("new_tld_list() was called...\n");
-    tld_list *tl= malloc(sizeof(struct tld_list));
+{   tld_list *tl= malloc(sizeof(struct tld_list));
     if(tl == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
@@ -130,7 +132,7 @@ ast *new_tld_list(tld *t, ast *next)
  | linked list reversal method posted on stackoverflow.com.
  +---------------------------------------------------------*/
 declarator_list *reverse_declarator_list(declarator_list *dl)
-{   declarator_list *newroot= NULL;   
+{   declarator_list *newroot= NULL;
     while(dl)
     {   declarator_list *next= dl->next;
         dl->next= newroot;
@@ -157,8 +159,7 @@ tld_list *reverse_tld_list(struct tld_list *tl)
 
 
 ast *new_decl(int typespecifier, declarator_list *dl)
-{   printf("new_decl() was called...\n");
-    decl *d= malloc(sizeof(struct decl));
+{   decl *d= malloc(sizeof(struct decl));
     if(d == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
@@ -172,8 +173,7 @@ ast *new_decl(int typespecifier, declarator_list *dl)
 }
 
 tld *new_tld(int datatype, ast *tld)
-{   printf("new_tld() was called...\n");
-    struct tld *t= malloc(sizeof(struct tld));
+{   struct tld *t= malloc(sizeof(struct tld));
     if(t == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
@@ -186,7 +186,7 @@ tld *new_tld(int datatype, ast *tld)
 	if(datatype == FUNCDEF)
 	{   t->f= (struct funcdef *)tld;
 	}
-    }    
+    }
     return t;
 }
 

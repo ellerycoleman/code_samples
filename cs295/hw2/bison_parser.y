@@ -160,12 +160,10 @@
 
 
 translation_unit:   top_level_decl 
-		    {  printf("made it back to Point A...\n");
-		       parse_tree= new_tld_list($1,NULL);
+		    {  parse_tree= new_tld_list($1,NULL);
 	            }
 |                   translation_unit top_level_decl
-                    {  printf("made it back to Point B...\n");
-		       parse_tree= new_tld_list($2,parse_tree);
+                    {  parse_tree= new_tld_list($2,parse_tree);
 	            }
 ;
 
@@ -176,8 +174,7 @@ top_level_decl:  decl                  {$$= new_tld(DECL,$1); }
 
 
 decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
-       {   printf ("encountered a decl...\n");
-           $$= new_decl((int)(long)$1, $2);
+       {   $$= new_decl((int)(long)$1, $2);
        }
 ;
 
