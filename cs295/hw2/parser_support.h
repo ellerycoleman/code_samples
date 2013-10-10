@@ -9,7 +9,15 @@
 extern char *yytext;
 extern int num_of_tokens_processed;
 
-typedef enum ntype {NODE_OPERATOR,NODE_NUMBER,DECL,DECLARATOR,TLD,TLD_LIST,FUNCDEF} ntype;
+typedef enum ntype {   DECL,
+                       DECLARATOR,
+		       TLD,
+		       TLD_LIST,
+		       FUNCDEF,
+		       DIRECT_DECLARATOR,
+		       POINTER_DECLARATOR,
+		       SIMPLE_DECLARATOR,
+		   } ntype;
 
 typedef enum tspec {   SIGNED_SHORT_INT,
 		       SIGNED_LONG_INT,
@@ -37,7 +45,9 @@ typedef struct numval
 
 
 typedef struct declarator
-{   char *id;
+{ ntype nodetype;
+  char *id;
+  struct declarator *next;
 } declarator;
 
 
@@ -76,13 +86,15 @@ typedef struct tld_list
 
 
 declarator *new_simple_declarator(char *id);
-ast *new_tld_list(tld *t, ast *next);
+tld_list *new_tld_list(tld *t, ast *next);
 tld *new_tld(int datatype, ast *t);
 ast *new_decl(int typespecifier, declarator_list *dl);
 void print_tree(ast *nodeptr);
 declarator_list *new_declarator_list(declarator *d, declarator_list *next);
 declarator_list *reverse_declarator_list(declarator_list *dl);
 tld_list *reverse_tld_list(struct tld_list *tl);
+declarator *new_pointer_declarator1(declarator *current, declarator *next);
+declarator *reverse_declarators(declarator *dp);
 
 
 struct ast *parse_tree;

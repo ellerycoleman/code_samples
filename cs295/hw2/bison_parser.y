@@ -26,20 +26,20 @@
 {   struct ast *a;
     struct decl *decl;
     struct declarator_list *dlist;
-    struct declarator *declarator;
+    struct declarator *dp;
     struct tld_list *tlist;
     struct tld *tld;
     char *id;
 }
 
 
-%type <a> type_specifier signed_type_specifier unsigned_type_specifier character_type_specifier integer_type_specifier decl function_definition function_def_specifier compound_statement translation_unit 
+%type <a> type_specifier signed_type_specifier unsigned_type_specifier character_type_specifier integer_type_specifier decl function_definition function_def_specifier compound_statement translation_unit
 
 %type <tld> top_level_decl
 
-%type <dlist> initialized_declarator_list
+%type <dlist> initialized_declarator_list 
 
-%type <declarator> declarator pointer_declarator direct_declarator simple_declarator
+%type <dp> declarator direct_declarator simple_declarator pointer pointer_declarator
 
 
 /* All the tokens formerly declared in e95_tokens.h
@@ -158,17 +158,18 @@
 
 
 
-translation_unit:   top_level_decl 
-		    {  parse_tree= new_tld_list($1,NULL);
+translation_unit:   top_level_decl
+		    {  parse_tree= (struct ast *)new_tld_list($1,NULL);
 	            }
+
 |                   translation_unit top_level_decl
-                    {  parse_tree= new_tld_list($2,parse_tree);
+                    {  parse_tree= (struct ast *)new_tld_list($2,parse_tree);
 	            }
 ;
 
 
 top_level_decl:  decl                  {$$= new_tld(DECL,$1); }
-|                function_definition 
+|                function_definition
 ;
 
 
@@ -178,7 +179,7 @@ decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
 ;
 
 
-type_specifier:  integer_type_specifier  
+type_specifier:  integer_type_specifier
 |                RW_VOID    {$$= (ast *)(long) VOID;}
 ;
 
@@ -231,12 +232,26 @@ declarator:       pointer_declarator
 ;
 
 
-pointer_declarator:     pointer direct_declarator
+pointer_declarator:     pointer direct_declarator 
+                        {   ($2)->next= $1;
+			    $$= reverse_declarators($2);
+			}
 ;
 
 
-pointer:    ASTERISK
-|           ASTERISK pointer
+pointer:    ASTERISK          
+            {   declarator *d= malloc(sizeof(struct declarator));
+	        d->nodetype= POINTER_DECLARATOR;
+		d->next= NULL;
+		$$= d;
+            }
+|           ASTERISK pointer 
+            {   declarator *d= malloc(sizeof(struct declarator));
+	        d->nodetype= POINTER_DECLARATOR;
+		d->next= $2;
+		$$= d;
+            }
+
 ;
 
 

@@ -14,7 +14,7 @@ void print_tree(ast *nodeptr)
     printf("#----------------------------------------------------------\n");
     printf("#           Parse Tree for E95 C Language                  \n");
     printf("#----------------------------------------------------------\n");
-    printf("(\n");
+    printf("(\n\n\n");
 
 
 
@@ -67,18 +67,42 @@ void print_tree(ast *nodeptr)
 
                /* print list */
 	       declarator_list *dl= de->dl;
+	       declarator *pd;
 	       dl= reverse_declarator_list(dl);
 	       do
-	       {   printf(" %s", dl->d->id);
-	           if(dl->next != NULL)
-	           {  printf(",");
+	       {   switch( dl->d->nodetype )
+		   {   case SIMPLE_DECLARATOR:
+		          printf(" %s", dl->d->id);
+	                  if(dl->next != NULL)
+	                  {  printf(",");
+                          }
+			  break;
+
+
+		       case POINTER_DECLARATOR:
+		          pd= dl->d;
+		          do
+			  {   if( pd->nodetype == POINTER_DECLARATOR )
+			      {   printf("*");
+			      }
+			      else if( pd->nodetype == SIMPLE_DECLARATOR )
+			      {   printf("%s", pd->id);
+	                         if(dl->next != NULL)
+	                         {  printf(",");
+                                 }
+			      }
+
+                          }while( (pd= pd->next) != NULL);
+			  break;
+
+
                    }
 	       }while( (dl= dl->next) != NULL);
 	       printf(";\n");
 	       break;
         }
     }while( (tldlist= tldlist->next) != NULL );
-    printf(")\n\n\n\n");
+    printf("\n\n\n)\n\n\n\n");
 }
 
 
@@ -91,11 +115,26 @@ declarator *new_simple_declarator(char *id)
     {   printf("*** Parser ran out of memory! ***\n");
     }
     else
-    {   d->id= strdup(id);
+    {   d->nodetype= SIMPLE_DECLARATOR;
+        d->id= strdup(id);
     }
-
     return d;
 }
+
+
+declarator *new_pointer_declarator1(declarator *current, declarator *next)
+{   
+    /* allocate a new declarator */
+    declarator *pd= malloc(sizeof(declarator));
+    pd->nodetype= POINTER_DECLARATOR;
+    pd->next= next;
+
+    return pd;
+}
+
+
+
+
 
 
 declarator_list *new_declarator_list(declarator *d, declarator_list *next)
@@ -111,7 +150,7 @@ declarator_list *new_declarator_list(declarator *d, declarator_list *next)
 }
 
 
-ast *new_tld_list(tld *t, ast *next)
+tld_list *new_tld_list(tld *t, ast *next)
 {   tld_list *tl= malloc(sizeof(struct tld_list));
     if(tl == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
@@ -120,7 +159,7 @@ ast *new_tld_list(tld *t, ast *next)
     {   tl->tld= t;
         tl->next= (struct tld_list *)next;
     }
-    return (struct ast *)tl;
+    return tl;
 }
 
 
@@ -155,6 +194,17 @@ tld_list *reverse_tld_list(struct tld_list *tl)
     return newroot;
 }
 
+
+declarator *reverse_declarators(declarator *dp)
+{   declarator *newroot= NULL;
+    while(dp)
+    {   declarator *next= dp->next;
+        dp->next= newroot;
+	newroot= dp;
+	dp= next;
+    }
+    return newroot;
+}
 
 
 
