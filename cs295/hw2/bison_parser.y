@@ -24,16 +24,15 @@
 
 %union
 {   struct ast *a;
-    struct decl *decl;
     struct declarator_list *dlist;
     struct declarator *dp;
-    struct tld_list *tlist;
     struct tld *tld;
     char *id;
+    int i;
 }
 
 
-%type <a> type_specifier signed_type_specifier unsigned_type_specifier character_type_specifier integer_type_specifier decl function_definition function_def_specifier compound_statement translation_unit
+%type <a> type_specifier decl function_definition function_def_specifier compound_statement translation_unit
 
 %type <tld> top_level_decl
 
@@ -41,11 +40,14 @@
 
 %type <dp> declarator direct_declarator simple_declarator pointer pointer_declarator
 
+%type <i> signed_type_specifier unsigned_type_specifier integer_type_specifier character_type_specifier
+
+
+
 
 /* All the tokens formerly declared in e95_tokens.h
  | will now be declared here.
  +-------------------------------------------------*/
-
 
 
 %token    RW_DO
@@ -190,32 +192,32 @@ integer_type_specifier:  signed_type_specifier
 ;
 
 
-signed_type_specifier:   RW_SHORT                    {$$= (ast *) SIGNED_SHORT_INT; }
-|                        RW_SHORT RW_INT             {$$= (ast *) SIGNED_SHORT_INT; }
-|                        RW_SIGNED RW_SHORT          {$$= (ast *) SIGNED_SHORT_INT; }
-|                        RW_SIGNED RW_SHORT RW_INT   {$$= (ast *) SIGNED_SHORT_INT; }
-|                        RW_INT                      {$$= (ast *) SIGNED_INT;       }
-|                        RW_SIGNED RW_INT            {$$= (ast *) SIGNED_INT;       }
-|                        RW_SIGNED                   {$$= (ast *) SIGNED_INT;       }
-|                        RW_LONG                     {$$= (ast *) SIGNED_LONG_INT;  }
-|                        RW_LONG RW_INT              {$$= (ast *) SIGNED_LONG_INT;  }
-|                        RW_SIGNED RW_LONG           {$$= (ast *) SIGNED_LONG_INT;  }
-|                        RW_SIGNED RW_LONG RW_INT    {$$= (ast *) SIGNED_LONG_INT;  }
+signed_type_specifier:   RW_SHORT                    {$$=  SIGNED_SHORT_INT; }
+|                        RW_SHORT RW_INT             {$$=  SIGNED_SHORT_INT; }
+|                        RW_SIGNED RW_SHORT          {$$=  SIGNED_SHORT_INT; }
+|                        RW_SIGNED RW_SHORT RW_INT   {$$=  SIGNED_SHORT_INT; }
+|                        RW_INT                      {$$=  SIGNED_INT;       }
+|                        RW_SIGNED RW_INT            {$$=  SIGNED_INT;       }
+|                        RW_SIGNED                   {$$=  SIGNED_INT;       }
+|                        RW_LONG                     {$$=  SIGNED_LONG_INT;  }
+|                        RW_LONG RW_INT              {$$=  SIGNED_LONG_INT;  }
+|                        RW_SIGNED RW_LONG           {$$=  SIGNED_LONG_INT;  }
+|                        RW_SIGNED RW_LONG RW_INT    {$$=  SIGNED_LONG_INT;  }
 ;
 
 
-unsigned_type_specifier:  RW_UNSIGNED RW_SHORT RW_INT  {$$= (ast *) UNSIGNED_SHORT_INT; }
-|                         RW_UNSIGNED RW_SHORT         {$$= (ast *) UNSIGNED_SHORT_INT; }
-|                         RW_UNSIGNED RW_INT           {$$= (ast *) UNSIGNED_INT;       }
-|                         RW_UNSIGNED                  {$$= (ast *) UNSIGNED_INT;       }
-|                         RW_UNSIGNED RW_LONG RW_INT   {$$= (ast *) UNSIGNED_LONG_INT;  }
-|                         RW_UNSIGNED RW_LONG          {$$= (ast *) UNSIGNED_LONG_INT;  }
+unsigned_type_specifier:  RW_UNSIGNED RW_SHORT RW_INT  {$$=  UNSIGNED_SHORT_INT; }
+|                         RW_UNSIGNED RW_SHORT         {$$=  UNSIGNED_SHORT_INT; }
+|                         RW_UNSIGNED RW_INT           {$$=  UNSIGNED_INT;       }
+|                         RW_UNSIGNED                  {$$=  UNSIGNED_INT;       }
+|                         RW_UNSIGNED RW_LONG RW_INT   {$$=  UNSIGNED_LONG_INT;  }
+|                         RW_UNSIGNED RW_LONG          {$$=  UNSIGNED_LONG_INT;  }
 ;
 
 
-character_type_specifier:  RW_CHAR                     {$$= (ast *) SIGNED_CHAR;   }
-|                          RW_SIGNED RW_CHAR           {$$= (ast *) SIGNED_CHAR;   }
-|                          RW_UNSIGNED RW_CHAR         {$$= (ast *) UNSIGNED_CHAR; }
+character_type_specifier:  RW_CHAR                     {$$= SIGNED_CHAR;   }
+|                          RW_SIGNED RW_CHAR           {$$= SIGNED_CHAR;   }
+|                          RW_UNSIGNED RW_CHAR         {$$= UNSIGNED_CHAR; }
 ;
 
 
