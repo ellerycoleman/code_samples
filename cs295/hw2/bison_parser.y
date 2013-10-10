@@ -25,7 +25,6 @@
 %union
 {   struct ast *a;
     struct decl *decl;
-    struct sdeclarator *sdeclarator;
     struct declarator_list *dlist;
     struct declarator *declarator;
     struct tld_list *tlist;
@@ -180,7 +179,7 @@ decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
 
 
 type_specifier:  integer_type_specifier  
-|                RW_VOID                 {$$= (ast *)(long) VOID;             }
+|                RW_VOID    {$$= (ast *)(long) VOID;}
 ;
 
 
@@ -219,8 +218,11 @@ character_type_specifier:  RW_CHAR                     {$$= (ast *) SIGNED_CHAR;
 ;
 
 
-initialized_declarator_list:   declarator                                       {$$= new_declarator_list($1,NULL); }
-|                              initialized_declarator_list SEP_COMMA declarator {$$= new_declarator_list($3,$1);   }
+initialized_declarator_list:   declarator
+                               {$$= new_declarator_list($1,NULL); }
+
+|                              initialized_declarator_list SEP_COMMA declarator
+                               {$$= new_declarator_list($3,$1);   }
 ;
 
 

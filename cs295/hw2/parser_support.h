@@ -36,12 +36,6 @@ typedef struct numval
 } numval;
 
 
-typedef struct sdeclarator
-{   ntype nodetype;
-    char *id;
-} sdeclarator;
-
-
 typedef struct declarator
 {   char *id;
 } declarator;
