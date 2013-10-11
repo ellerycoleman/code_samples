@@ -34,36 +34,7 @@ void print_tree(ast *nodeptr)
         switch(de->nodetype)
         {   case DECL:
 	       /* print type */
-               switch( de->typespecifier)
-	       {   case SIGNED_SHORT_INT:
-	              printf("signed short int ");
-		      break;
-                   case SIGNED_LONG_INT:
-	              printf("signed long int ");
-		      break;
-                   case SIGNED_INT:
-	              printf("signed int ");
-		      break;
-                   case SIGNED_CHAR:
-	              printf("signed char ");
-		      break;
-                   case UNSIGNED_SHORT_INT:
-	              printf("unsigned short int ");
-		      break;
-                   case UNSIGNED_LONG_INT:
-	              printf("unsigned long int ");
-		      break;
-                   case UNSIGNED_INT:
-	              printf("unsigned int ");
-		      break;
-                   case UNSIGNED_CHAR:
-	              printf("unsigned char ");
-		      break;
-                   case VOID:
-	              printf("void ");
-		      break;
-	       }
-
+	       print_type(de->typespecifier);
 
                /* print list */
 	       declarator_list *dl= de->dl;
@@ -96,6 +67,11 @@ void print_tree(ast *nodeptr)
 			  break;
 
 
+		       case FUNCTION_DECLARATOR:
+		          pd= dl->d->fdeclarator;
+			  printf("%s(", pd->id);
+                          break;
+
                    }
 	       }while( (dl= dl->next) != NULL);
 	       printf(";\n");
@@ -123,18 +99,26 @@ declarator *new_simple_declarator(char *id)
 
 
 declarator *new_pointer_declarator(declarator *next)
-{   declarator *pd= malloc(sizeof(declarator));
-    if(pd == NULL)
+{   declarator *d= malloc(sizeof(declarator));
+    if(d == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
     else
-    {   pd->nodetype= POINTER_DECLARATOR;
-        pd->next= next;
+    {   d->nodetype= POINTER_DECLARATOR;
+        d->next= next;
     }
-    return pd;
+    return d;
 }
 
 
+declarator *new_function_declarator(declarator *fdecl, parameter_list *plist)
+{   declarator *d= malloc(sizeof(declarator));
+    {   d->nodetype= FUNCTION_DECLARATOR;
+        d->fdeclarator= fdecl;
+        d->plist= plist;
+    }
+    return d;
+}
 
 
 
@@ -151,6 +135,13 @@ declarator_list *new_declarator_list(declarator *d, declarator_list *next)
     return dl;
 }
 
+
+parameter_list *new_parameter_list(pdecl *pd, parameter_list *next)
+{   parameter_list *pl= malloc(sizeof(struct parameter_list));
+    pl->pd= pd;
+    pl->next= next;
+    return pl;
+}
 
 tld_list *new_tld_list(ast *t, ast *next)
 {   tld_list *tl= malloc(sizeof(struct tld_list));
@@ -244,7 +235,44 @@ ast *new_tld(int datatype, ast *tld)
 
 
 
+pdecl *new_parameter_decl(int typespec, declarator *d)
+{   pdecl *pd= malloc(sizeof(struct pdecl));
+    pd->typespecifier= typespec;
+    pd->d= d;
+    return pd;
+}   
 
 
+void print_type(int type)
+{   switch( type)
+    {   case SIGNED_SHORT_INT:
+           printf("signed short int ");
+           break;
+        case SIGNED_LONG_INT:
+	   printf("signed long int ");
+	   break;
+        case SIGNED_INT:
+	   printf("signed int ");
+	   break;
+        case SIGNED_CHAR:
+	   printf("signed char ");
+	   break;
+        case UNSIGNED_SHORT_INT:
+	   printf("unsigned short int ");
+	   break;
+        case UNSIGNED_LONG_INT:
+	   printf("unsigned long int ");
+	   break;
+        case UNSIGNED_INT:
+	   printf("unsigned int ");
+	   break;
+        case UNSIGNED_CHAR:
+	   printf("unsigned char ");
+	   break;
+        case VOID:
+	   printf("void ");
+	   break;
+    }
+}
 
 

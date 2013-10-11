@@ -122,3 +122,4 @@ cs295/hw2/e95_tokens.h -text
 cs295/hw2/flex_scanner.l -text
 cs295/hw2/parser_support.c -text
 cs295/hw2/parser_support.h -text
+cs295/hw2/test.sh -text

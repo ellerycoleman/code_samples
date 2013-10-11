@@ -17,6 +17,7 @@ typedef enum ntype {   DECL,
 		       DIRECT_DECLARATOR,
 		       POINTER_DECLARATOR,
 		       SIMPLE_DECLARATOR,
+		       FUNCTION_DECLARATOR
 		   } ntype;
 
 typedef enum tspec {   SIGNED_SHORT_INT,
@@ -48,13 +49,10 @@ typedef struct declarator
 { ntype nodetype;
   char *id;
   struct declarator *next;
+  struct declarator *fdeclarator;
+  void *plist;
 } declarator;
 
-
-typedef struct declarator_list
-{   declarator *d;
-    struct declarator_list *next;
-} declarator_list;
 
 
 typedef struct pdecl
@@ -66,14 +64,21 @@ typedef struct pdecl
 
 
 typedef struct parameter_list
-{   pdecl *p;
-    struct declarator_list *next;
+{   pdecl *pd;
+    struct parameter_list *next;
 } parameter_list;
 
 
 typedef struct funcdef
 {   ntype nodetype;
 } funcdef;
+
+
+typedef struct declarator_list
+{   declarator *d;
+    struct declarator_list *next;
+} declarator_list;
+
 
 
 typedef struct decl
@@ -111,6 +116,12 @@ declarator *new_pointer_declarator(declarator *next);
 declarator *reverse_declarators(declarator *dp);
 
 
+pdecl *new_parameter_decl(int typespec, declarator *d);
+parameter_list *new_parameter_list(pdecl *pd, parameter_list *next);
+declarator *new_function_declarator(declarator *fdecl, parameter_list *plist);
+
+
+void print_type(int type);
 struct ast *parse_tree;
 
 

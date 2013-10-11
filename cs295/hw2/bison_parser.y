@@ -25,21 +25,26 @@
 %union
 {   struct ast *a;
     struct declarator_list *dlist;
+    struct parameter_list *plist;
     struct declarator *dp;
     struct tld *tld;
+    struct pdecl *pdecl;
     char *id;
     int i;
 }
 
 
-%type <a> type_specifier decl function_definition function_def_specifier compound_statement translation_unit top_level_decl
+%type <a> decl function_definition function_def_specifier compound_statement translation_unit top_level_decl
 
 %type <dlist> initialized_declarator_list
 
-%type <dp> declarator direct_declarator simple_declarator pointer pointer_declarator
+%type <dp> declarator direct_declarator simple_declarator pointer pointer_declarator function_declarator
 
-%type <i> signed_type_specifier unsigned_type_specifier integer_type_specifier character_type_specifier
+%type <i> type_specifier signed_type_specifier unsigned_type_specifier integer_type_specifier character_type_specifier
 
+%type <pdecl> parameter_decl
+
+%type <plist> parameter_list
 
 
 
@@ -182,7 +187,7 @@ decl:  type_specifier initialized_declarator_list SEP_SEMICOLON
 
 
 type_specifier:  integer_type_specifier
-|                RW_VOID    {$$= (ast *)(long) VOID;}
+|                RW_VOID    {$$= VOID;}
 ;
 
 
@@ -257,21 +262,30 @@ direct_declarator:    simple_declarator
 ;
 
 
-simple_declarator:    IDENTIFIER   {  $$= new_simple_declarator($1); }
+simple_declarator:    IDENTIFIER
+                      {   $$= new_simple_declarator($1);
+		      }
 ;
 
 
 function_declarator:  direct_declarator SEP_LEFT_PAREN parameter_list SEP_RIGHT_PAREN
+                      {   $$= new_function_declarator($1,$3);
+		      }
 ;
 
 
 parameter_list:   parameter_decl
+                  {   $$= new_parameter_list($1,NULL);
+		  }
+
 |                 parameter_list SEP_COMMA parameter_decl
+                  {   $$= new_parameter_list($3,$1);
+		  }
 ;
 
 
-parameter_decl:  type_specifier declarator                {  /* $$= new_parameter_decl($1,$2);    */  }
-|                type_specifier                           {  /* $$= new_parameter_decl($1,NULL);  */  }
+parameter_decl:  type_specifier declarator                {  $$= new_parameter_decl($1,$2);    }
+|                type_specifier                           {  $$= new_parameter_decl($1,NULL);  }
 |                type_specifier abstract_declarator       {  /* $$= new_parameter_decl($1,$2);    */  }
 ;
 
