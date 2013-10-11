@@ -57,6 +57,20 @@ typedef struct declarator_list
 } declarator_list;
 
 
+typedef struct pdecl
+{ ntype nodetype;
+  tspec typespecifier;
+  char *id;
+  struct declarator *d;
+} pdecl;
+
+
+typedef struct parameter_list
+{   pdecl *p;
+    struct declarator_list *next;
+} parameter_list;
+
+
 typedef struct funcdef
 {   ntype nodetype;
 } funcdef;

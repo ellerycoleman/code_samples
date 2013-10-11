@@ -34,7 +34,7 @@
 
 %type <a> type_specifier decl function_definition function_def_specifier compound_statement translation_unit top_level_decl
 
-%type <dlist> initialized_declarator_list 
+%type <dlist> initialized_declarator_list
 
 %type <dp> declarator direct_declarator simple_declarator pointer pointer_declarator
 
@@ -234,17 +234,17 @@ declarator:       pointer_declarator
 ;
 
 
-pointer_declarator:     pointer direct_declarator 
+pointer_declarator:     pointer direct_declarator
                         {   ($2)->next= $1;
 			    $$= reverse_declarators($2);
 			}
 ;
 
 
-pointer:    ASTERISK          
+pointer:    ASTERISK
             {   $$= new_pointer_declarator(NULL);
             }
-|           ASTERISK pointer 
+|           ASTERISK pointer
             {   $$= new_pointer_declarator($2);
             }
 ;
@@ -270,9 +270,9 @@ parameter_list:   parameter_decl
 ;
 
 
-parameter_decl:  type_specifier declarator
-|                type_specifier
-|                type_specifier abstract_declarator
+parameter_decl:  type_specifier declarator                {  /* $$= new_parameter_decl($1,$2);    */  }
+|                type_specifier                           {  /* $$= new_parameter_decl($1,NULL);  */  }
+|                type_specifier abstract_declarator       {  /* $$= new_parameter_decl($1,$2);    */  }
 ;
 
 
