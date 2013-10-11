@@ -47,6 +47,7 @@ typedef struct numval
 
 typedef struct declarator
 { ntype nodetype;
+  tspec typespecifier;  /* for parameter_decl's */
   char *id;
   struct declarator *next;
   struct declarator *fdeclarator;
@@ -54,17 +55,8 @@ typedef struct declarator
 } declarator;
 
 
-
-typedef struct parameter_decl
-{ ntype nodetype;
-  tspec typespecifier;
-  char *id;
-  struct declarator *d;
-} parameter_decl;
-
-
 typedef struct parameter_list
-{   parameter_decl *pd;
+{   declarator *pd;
     struct parameter_list *next;
 } parameter_list;
 
@@ -116,8 +108,8 @@ declarator *new_pointer_declarator(declarator *next);
 declarator *reverse_declarators(declarator *dp);
 
 
-parameter_decl *new_parameter_decl(int typespec, declarator *d);
-parameter_list *new_parameter_list(parameter_decl *pd, parameter_list *next);
+declarator *new_parameter_decl(int typespec, declarator *d);
+parameter_list *new_parameter_list(declarator *pd, parameter_list *next);
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist);
 void print_parameter_list(parameter_list *plist);
 parameter_list *reverse_parameter_list(parameter_list *plist);

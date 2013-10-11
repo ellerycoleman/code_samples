@@ -148,7 +148,7 @@ declarator_list *new_declarator_list(declarator *d, declarator_list *next)
 
 
 
-parameter_list *new_parameter_list(parameter_decl *pd, parameter_list *next)
+parameter_list *new_parameter_list(declarator *pd, parameter_list *next)
 {   parameter_list *pl= malloc(sizeof(struct parameter_list));
     pl->pd= pd;
     pl->next= next;
@@ -261,10 +261,12 @@ ast *new_tld(int datatype, ast *tld)
 
 
 
-parameter_decl *new_parameter_decl(int typespec, declarator *d)
-{   parameter_decl *pd= malloc(sizeof(struct parameter_decl));
+declarator *new_parameter_decl(int typespec, declarator *d)
+{   declarator *pd= malloc(sizeof(struct declarator));
+    pd->nodetype= d->nodetype;
+    pd->next= d->next;
     pd->typespecifier= typespec;
-    pd->d= d;
+    pd->id= d->id;
     return pd;
 }
 
@@ -318,18 +320,18 @@ void print_simple_declarator(declarator *d)
 void print_parameter_list(parameter_list *plist)
 {   declarator *d;
     do
-    {   switch(plist->pd->d->nodetype)
+    {   switch(plist->pd->nodetype)
         {   
 	
 	    case SIMPLE_DECLARATOR:
-               printf("%s %s", print_type(plist->pd->typespecifier),plist->pd->d->id);
+               printf("%s %s", print_type(plist->pd->typespecifier),plist->pd->id);
 	       break;
 
 
 
 	    case POINTER_DECLARATOR:
                printf("%s ", print_type(plist->pd->typespecifier));
-	       d= plist->pd->d;
+	       d= plist->pd;
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
 	           {   printf("*");
