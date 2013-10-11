@@ -50,7 +50,7 @@ typedef struct declarator
   char *id;
   struct declarator *next;
   struct declarator *fdeclarator;
-  void *plist;
+  struct parameter_list *plist;
 } declarator;
 
 
@@ -121,7 +121,7 @@ parameter_list *new_parameter_list(parameter_decl *pd, parameter_list *next);
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist);
 
 
-void print_type(int type);
+char *print_type(int type);
 struct ast *parse_tree;
 
 

@@ -20,6 +20,7 @@ char *a, *b;
 
 int/* this is a test of the comments */a;
 int add(int i, int j);
+char sub(int **p, int ***r);
 
 DATA
 

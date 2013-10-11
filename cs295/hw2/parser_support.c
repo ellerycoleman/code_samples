@@ -29,17 +29,16 @@ void print_tree(ast *nodeptr)
      +-----------------------------------------------------------------*/
     struct decl *de;
     do
-    {
-        de= (struct decl *)tldlist->tld->d;
+    {   de= (struct decl *)tldlist->tld->d;
         switch(de->nodetype)
         {   case DECL:
 	       /* print type */
-	       print_type(de->typespecifier);
+	       printf("%s ", print_type(de->typespecifier));
 
                /* print list */
 	       declarator_list *dl= de->dl;
 	       declarator *d;
-	       parameter_decl *pd;
+	       parameter_list *plist;
 	       dl= reverse_declarator_list(dl);
 	       do
 	       {   switch( dl->d->nodetype )
@@ -69,15 +68,25 @@ void print_tree(ast *nodeptr)
 
 
 		       case FUNCTION_DECLARATOR:
-		          d= dl->d->fdeclarator;
+		          /* print function name */ 
+			  d= dl->d->fdeclarator;
 			  printf("%s(", d->id);
 
+                          /* print parameter list */
+			  plist= dl->d->plist;
+			  do
+			  {   printf("%s %s", print_type(plist->pd->typespecifier),plist->pd->d->id);
+			      if(plist->next != NULL)
+			      {   printf(", ");
+			      }
+			  }while((plist= plist->next) != NULL);
+			  printf(")");
                           break;
 
                    }
 	       }while( (dl= dl->next) != NULL);
-	       printf(";\n");
-	       break;
+	    printf(";\n");
+	    break;
         }
     }while( (tldlist= tldlist->next) != NULL );
     printf("\n\n\n)\n\n\n\n");
@@ -118,6 +127,11 @@ declarator *new_function_declarator(declarator *fdecl, parameter_list *plist)
     {   d->nodetype= FUNCTION_DECLARATOR;
         d->fdeclarator= fdecl;
         d->plist= plist;
+	if(plist == NULL)
+	{   printf("Warning: new_function_decl: plist is null!\n");
+	}
+	printf("function declarator addr: %d\n", d);
+	printf("list was set to: %d\n", plist);
     }
     return d;
 }
@@ -248,34 +262,34 @@ parameter_decl *new_parameter_decl(int typespec, declarator *d)
 }   
 
 
-void print_type(int type)
-{   switch( type)
+char * print_type(int type)
+{   switch(type)
     {   case SIGNED_SHORT_INT:
-           printf("signed short int ");
+           return "signed short int";
            break;
         case SIGNED_LONG_INT:
-	   printf("signed long int ");
+	   return "signed long int";
 	   break;
         case SIGNED_INT:
-	   printf("signed int ");
+	   return "signed int";
 	   break;
         case SIGNED_CHAR:
-	   printf("signed char ");
+	   return "signed char";
 	   break;
         case UNSIGNED_SHORT_INT:
-	   printf("unsigned short int ");
+	   return "unsigned short int";
 	   break;
         case UNSIGNED_LONG_INT:
-	   printf("unsigned long int ");
+	   return "unsigned long int";
 	   break;
         case UNSIGNED_INT:
-	   printf("unsigned int ");
+	   return "unsigned int";
 	   break;
         case UNSIGNED_CHAR:
-	   printf("unsigned char ");
+	   return "unsigned char";
 	   break;
         case VOID:
-	   printf("void ");
+	   return "void";
 	   break;
     }
 }
