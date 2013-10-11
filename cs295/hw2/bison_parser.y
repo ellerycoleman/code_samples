@@ -272,7 +272,8 @@ simple_declarator:    IDENTIFIER
 
 
 function_declarator:  direct_declarator SEP_LEFT_PAREN parameter_list SEP_RIGHT_PAREN
-                      {   $$= new_function_declarator($1,$3);
+                      {   $3= reverse_parameter_list($3);
+		          $$= new_function_declarator($1,$3);
 		      }
 ;
 

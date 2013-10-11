@@ -1,7 +1,11 @@
 #!/usr/local/bin/bash
 
 
-cat <<DATA | ./parser
+cat <<DATA > testprog.c 
+
+/*---------------------------------------------------*/
+/* This is the progam input, see parser output below */
+/*---------------------------------------------------*/
 short q,r,s,t;
 int  i, j;
 char  a, b;
@@ -22,6 +26,18 @@ int/* this is a test of the comments */a;
 int add(int i, int j);
 char sub(int **p, int ***r);
 
+
+/*---------------------------------------------------*/
+/*             END test program code                */
+/*---------------------------------------------------*/
+
+
+
 DATA
 
 
+cat testprog.c
+echo "Preparing to parse the above input program..."
+sleep 3;
+./parser testprog.c -
+rm -f testprog.c

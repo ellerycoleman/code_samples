@@ -19,7 +19,7 @@ void print_tree(ast *nodeptr)
 
 
     /* The only type of AST that is passed to print_tree is a *tld_list.
-     | we will cast the AST into a *tld_list.
+     | We will cast the AST into a *tld_list.
      +-----------------------------------------------------------------*/
     struct tld_list *tldlist= (struct tld_list *)nodeptr;
 
@@ -35,7 +35,8 @@ void print_tree(ast *nodeptr)
 	       /* print type */
 	       printf("%s ", print_type(de->typespecifier));
 
-               /* print list */
+
+               /* print declarator list */
 	       declarator_list *dl= de->dl;
 	       declarator *d;
 	       parameter_list *plist;
@@ -43,9 +44,9 @@ void print_tree(ast *nodeptr)
 	       do
 	       {   switch( dl->d->nodetype )
 		   {   case SIMPLE_DECLARATOR:
-		          printf(" %s", dl->d->id);
-	                  if(dl->next != NULL)
-	                  {  printf(",");
+                          printf(" %s", dl->d->id);
+                          if(dl->next != NULL)
+                          {  printf(",");
                           }
 			  break;
 
@@ -68,18 +69,12 @@ void print_tree(ast *nodeptr)
 
 
 		       case FUNCTION_DECLARATOR:
-		          /* print function name */ 
+		          /* print function name */
 			  d= dl->d->fdeclarator;
 			  printf("%s(", d->id);
 
                           /* print parameter list */
-			  plist= dl->d->plist;
-			  do
-			  {   printf("%s %s", print_type(plist->pd->typespecifier),plist->pd->d->id);
-			      if(plist->next != NULL)
-			      {   printf(", ");
-			      }
-			  }while((plist= plist->next) != NULL);
+			  print_parameter_list(dl->d->plist);
 			  printf(")");
                           break;
 
@@ -207,6 +202,19 @@ tld_list *reverse_tld_list(struct tld_list *tl)
 }
 
 
+parameter_list *reverse_parameter_list(parameter_list *plist)
+{   parameter_list *newroot= NULL;
+    while(plist)
+    {   parameter_list *next= plist->next;
+        plist->next= newroot;
+	newroot= plist;
+	plist= next;
+    }
+    return newroot;
+}
+
+
+
 declarator *reverse_declarators(declarator *dp)
 {   declarator *newroot= NULL;
     while(dp)
@@ -217,7 +225,6 @@ declarator *reverse_declarators(declarator *dp)
     }
     return newroot;
 }
-
 
 
 ast *new_decl(int typespecifier, declarator_list *dl)
@@ -259,39 +266,93 @@ parameter_decl *new_parameter_decl(int typespec, declarator *d)
     pd->typespecifier= typespec;
     pd->d= d;
     return pd;
-}   
+}
 
 
 char * print_type(int type)
-{   switch(type)
+{   char *p;
+    switch(type)
     {   case SIGNED_SHORT_INT:
-           return "signed short int";
+           p= "signed short int";
            break;
         case SIGNED_LONG_INT:
-	   return "signed long int";
+	   p= "signed long int";
 	   break;
         case SIGNED_INT:
-	   return "signed int";
+	   p= "signed int";
 	   break;
         case SIGNED_CHAR:
-	   return "signed char";
+	   p= "signed char";
 	   break;
         case UNSIGNED_SHORT_INT:
-	   return "unsigned short int";
+	   p= "unsigned short int";
 	   break;
         case UNSIGNED_LONG_INT:
-	   return "unsigned long int";
+	   p= "unsigned long int";
 	   break;
         case UNSIGNED_INT:
-	   return "unsigned int";
+	   p= "unsigned int";
 	   break;
         case UNSIGNED_CHAR:
-	   return "unsigned char";
+	   p= "unsigned char";
 	   break;
         case VOID:
-	   return "void";
+	   p= "void";
 	   break;
     }
+
+
+    return p;
 }
+
+
+void print_simple_declarator(declarator *d)
+{
+    printf(" %s", d->id);
+    /* if(dl->next != NULL) */
+    {  printf(",");
+    }
+}
+
+
+void print_parameter_list(parameter_list *plist)
+{   declarator *d;
+    do
+    {   switch(plist->pd->d->nodetype)
+        {   
+	
+	    case SIMPLE_DECLARATOR:
+               printf("%s %s", print_type(plist->pd->typespecifier),plist->pd->d->id);
+	       break;
+
+
+
+	    case POINTER_DECLARATOR:
+               printf("%s ", print_type(plist->pd->typespecifier));
+	       d= plist->pd->d;
+	       do
+	       {   if( d->nodetype == POINTER_DECLARATOR )
+	           {   printf("*");
+		   }
+		   else if( d->nodetype == SIMPLE_DECLARATOR )
+		   {   printf("%s", d->id);
+		   }
+               }while( (d= d->next) != NULL);
+	       break;
+        }
+
+
+        if(plist->next != NULL)
+        {   printf(", ");
+        }
+    }while((plist= plist->next) != NULL);
+}
+
+
+
+
+
+
+
 
 

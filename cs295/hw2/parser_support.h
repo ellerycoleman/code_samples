@@ -119,6 +119,8 @@ declarator *reverse_declarators(declarator *dp);
 parameter_decl *new_parameter_decl(int typespec, declarator *d);
 parameter_list *new_parameter_list(parameter_decl *pd, parameter_list *next);
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist);
+void print_parameter_list(parameter_list *plist);
+parameter_list *reverse_parameter_list(parameter_list *plist);
 
 
 char *print_type(int type);
