@@ -86,8 +86,8 @@ typedef struct tld_list
 
 
 declarator *new_simple_declarator(char *id);
-tld_list *new_tld_list(tld *t, ast *next);
-tld *new_tld(int datatype, ast *t);
+tld_list *new_tld_list(ast *t, ast *next);
+ast *new_tld(int datatype, ast *t);
 ast *new_decl(int typespecifier, declarator_list *dl);
 void print_tree(ast *nodeptr);
 declarator_list *new_declarator_list(declarator *d, declarator_list *next);

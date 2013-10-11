@@ -32,9 +32,7 @@
 }
 
 
-%type <a> type_specifier decl function_definition function_def_specifier compound_statement translation_unit
-
-%type <tld> top_level_decl
+%type <a> type_specifier decl function_definition function_def_specifier compound_statement translation_unit top_level_decl
 
 %type <dlist> initialized_declarator_list 
 

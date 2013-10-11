@@ -152,13 +152,13 @@ declarator_list *new_declarator_list(declarator *d, declarator_list *next)
 }
 
 
-tld_list *new_tld_list(tld *t, ast *next)
+tld_list *new_tld_list(ast *t, ast *next)
 {   tld_list *tl= malloc(sizeof(struct tld_list));
     if(tl == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
     }
     else
-    {   tl->tld= t;
+    {   tl->tld= (struct tld *)t;
         tl->next= (struct tld_list *)next;
     }
     return tl;
@@ -224,7 +224,7 @@ ast *new_decl(int typespecifier, declarator_list *dl)
     return  (struct ast *)d;
 }
 
-tld *new_tld(int datatype, ast *tld)
+ast *new_tld(int datatype, ast *tld)
 {   struct tld *t= malloc(sizeof(struct tld));
     if(t == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
@@ -239,7 +239,7 @@ tld *new_tld(int datatype, ast *tld)
 	{   t->f= (struct funcdef *)tld;
 	}
     }
-    return t;
+    return (struct ast *)t;
 }
 
 
