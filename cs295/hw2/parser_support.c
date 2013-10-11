@@ -38,7 +38,8 @@ void print_tree(ast *nodeptr)
 
                /* print list */
 	       declarator_list *dl= de->dl;
-	       declarator *pd;
+	       declarator *d;
+	       parameter_decl *pd;
 	       dl= reverse_declarator_list(dl);
 	       do
 	       {   switch( dl->d->nodetype )
@@ -51,25 +52,26 @@ void print_tree(ast *nodeptr)
 
 
 		       case POINTER_DECLARATOR:
-		          pd= dl->d;
+		          d= dl->d;
 		          do
-			  {   if( pd->nodetype == POINTER_DECLARATOR )
+			  {   if( d->nodetype == POINTER_DECLARATOR )
 			      {   printf("*");
 			      }
-			      else if( pd->nodetype == SIMPLE_DECLARATOR )
-			      {   printf("%s", pd->id);
+			      else if( d->nodetype == SIMPLE_DECLARATOR )
+			      {   printf("%s", d->id);
 	                         if(dl->next != NULL)
 	                         {  printf(",");
                                  }
 			      }
 
-                          }while( (pd= pd->next) != NULL);
+                          }while( (d= d->next) != NULL);
 			  break;
 
 
 		       case FUNCTION_DECLARATOR:
-		          pd= dl->d->fdeclarator;
-			  printf("%s(", pd->id);
+		          d= dl->d->fdeclarator;
+			  printf("%s(", d->id);
+
                           break;
 
                    }
@@ -136,12 +138,15 @@ declarator_list *new_declarator_list(declarator *d, declarator_list *next)
 }
 
 
-parameter_list *new_parameter_list(pdecl *pd, parameter_list *next)
+
+parameter_list *new_parameter_list(parameter_decl *pd, parameter_list *next)
 {   parameter_list *pl= malloc(sizeof(struct parameter_list));
     pl->pd= pd;
     pl->next= next;
     return pl;
 }
+
+
 
 tld_list *new_tld_list(ast *t, ast *next)
 {   tld_list *tl= malloc(sizeof(struct tld_list));
@@ -235,8 +240,8 @@ ast *new_tld(int datatype, ast *tld)
 
 
 
-pdecl *new_parameter_decl(int typespec, declarator *d)
-{   pdecl *pd= malloc(sizeof(struct pdecl));
+parameter_decl *new_parameter_decl(int typespec, declarator *d)
+{   parameter_decl *pd= malloc(sizeof(struct parameter_decl));
     pd->typespecifier= typespec;
     pd->d= d;
     return pd;

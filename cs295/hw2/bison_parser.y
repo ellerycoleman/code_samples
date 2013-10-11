@@ -28,10 +28,11 @@
     struct parameter_list *plist;
     struct declarator *dp;
     struct tld *tld;
-    struct pdecl *pdecl;
+    struct parameter_decl *pdecl;
     char *id;
     int i;
 }
+
 
 
 %type <a> decl function_definition function_def_specifier compound_statement translation_unit top_level_decl
@@ -45,6 +46,8 @@
 %type <pdecl> parameter_decl
 
 %type <plist> parameter_list
+
+
 
 
 
