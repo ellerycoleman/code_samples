@@ -4,7 +4,7 @@
 # Author:	Ellery Coleman <ellery.coleman@fas.harvard.edu>
 # Abstract:	README file for hw2.
 #-----------------------------------------------------------------------------
-# Revision: $Id: README.txt 146 2013-09-23 04:07:32Z ellery $
+# Revision: $Id$
 #-----------------------------------------------------------------------------
 
 
