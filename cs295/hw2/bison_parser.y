@@ -39,7 +39,7 @@
 
 %type <dlist> initialized_declarator_list
 
-%type <dp> declarator direct_declarator simple_declarator pointer pointer_declarator function_declarator parameter_decl
+%type <dp> declarator direct_declarator simple_declarator pointer pointer_declarator function_declarator parameter_decl abstract_declarator direct_abstract_declarator
 
 %type <i> type_specifier signed_type_specifier unsigned_type_specifier integer_type_specifier character_type_specifier
 
@@ -298,9 +298,15 @@ abstract_declarator:   pointer
 ;
 
 
-direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN    /*  int ()  */
+direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN    
+                              {   $$= $2;
+			      }
 |                             SEP_LEFT_BRACKET SEP_RIGHT_BRACKET                    /*  int []  */
+                              {
+			      }
 |                             SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET      /*  int [4] */
+                              {
+			      }
 |                             direct_abstract_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
 ;
 

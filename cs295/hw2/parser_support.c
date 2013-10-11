@@ -70,7 +70,7 @@ void print_tree(ast *nodeptr)
 
 		       case FUNCTION_DECLARATOR:
 		          /* print function name */
-			  d= dl->d->fdeclarator;
+			  d= dl->d->adeclarator;
 			  printf("%s(", d->id);
 
                           /* print parameter list */
@@ -120,7 +120,7 @@ declarator *new_pointer_declarator(declarator *next)
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist)
 {   declarator *d= malloc(sizeof(declarator));
     {   d->nodetype= FUNCTION_DECLARATOR;
-        d->fdeclarator= fdecl;
+        d->adeclarator= fdecl;
         d->plist= plist;
 	if(plist == NULL)
 	{   printf("Warning: new_function_decl: plist is null!\n");

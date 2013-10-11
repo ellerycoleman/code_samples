@@ -45,12 +45,19 @@ typedef struct numval
 } numval;
 
 
+typedef struct expr
+{   ntype nodetype;
+    struct ast *l;
+    struct ast *r;
+} expr;
+
 typedef struct declarator
 { ntype nodetype;
   tspec typespecifier;  /* for parameter_decl's */
   char *id;
   struct declarator *next;
-  struct declarator *fdeclarator;
+  struct declarator *adeclarator; /* for use with function/abstract declarators */
+  struct expr *exp;
   struct parameter_list *plist;
 } declarator;
 
