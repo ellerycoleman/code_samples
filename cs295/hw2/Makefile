@@ -50,4 +50,5 @@ clean:
 
 
 test:	all
+	chmod 755 test.sh
 	./test.sh
