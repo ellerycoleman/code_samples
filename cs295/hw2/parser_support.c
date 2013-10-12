@@ -125,8 +125,6 @@ declarator *new_function_declarator(declarator *fdecl, parameter_list *plist)
 	if(plist == NULL)
 	{   printf("Warning: new_function_decl: plist is null!\n");
 	}
-	printf("function declarator addr: %d\n", d);
-	printf("list was set to: %d\n", plist);
     }
     return d;
 }
@@ -168,6 +166,18 @@ tld_list *new_tld_list(ast *t, ast *next)
     }
     return tl;
 }
+
+
+struct ast *new_decostat_list(struct ast *decostat, struct ast *next)
+{   decostat_list *dl= malloc(sizeof(struct decostat_list));
+    {   dl->nodetype= DECOSTAT_LIST;
+        dl->decostat= decostat;
+	dl->next= (struct decostat_list *)next;
+    }
+
+    return (struct ast *)dl;
+}
+
 
 
 /*
@@ -260,17 +270,6 @@ ast *new_tld(int datatype, ast *tld)
 }
 
 
-
-declarator *new_parameter_decl(int typespec, declarator *d)
-{   declarator *pd= malloc(sizeof(struct declarator));
-    pd->nodetype= d->nodetype;
-    pd->next= d->next;
-    pd->typespecifier= typespec;
-    pd->id= d->id;
-    return pd;
-}
-
-
 char * print_type(int type)
 {   char *p;
     switch(type)
@@ -317,6 +316,23 @@ void print_simple_declarator(declarator *d)
 }
 
 
+
+declarator *new_parameter_decl(int typespec, declarator *d)
+{   declarator *pd= malloc(sizeof(struct declarator));
+    pd->typespecifier= typespec;
+    if(d != NULL)
+    {   pd->nodetype= d->nodetype;
+        pd->next= d->next;
+        pd->id= d->id;
+    }
+    else
+    {   pd->nodetype= (enum ntype) -1;  /* specified type only */
+    }
+    return pd;
+}
+
+
+
 void print_parameter_list(parameter_list *plist)
 {   declarator *d;
     do
@@ -324,7 +340,10 @@ void print_parameter_list(parameter_list *plist)
         {   
 	
 	    case SIMPLE_DECLARATOR:
-               printf("%s %s", print_type(plist->pd->typespecifier),plist->pd->id);
+               printf("%s ", print_type(plist->pd->typespecifier));
+	       if(plist->pd->id != NULL)
+	       {   printf("%s", plist->pd->id);
+	       }
 	       break;
 
 
@@ -340,6 +359,11 @@ void print_parameter_list(parameter_list *plist)
 		   {   printf("%s", d->id);
 		   }
                }while( (d= d->next) != NULL);
+	       break;
+
+
+            case -1:  /* print type only */
+               printf("%s ", print_type(plist->pd->typespecifier));
 	       break;
         }
 
@@ -371,5 +395,37 @@ struct ast *new_constant(int type, void *value)
     k->value= value;
     return (struct ast *)k;
 }
+
+
+
+struct ast *new_function_def_specifier(int type, struct declarator *d)
+{   struct ast *fdefspec= malloc(sizeof(struct ast));
+    fdefspec->nodetype= FUNCTION_DEF_SPECIFIER;
+    fdefspec->l= (struct ast *)(long)type;
+    fdefspec->r= (struct ast *)d;
+    return fdefspec;
+}
+
+
+
+struct ast *new_function_definition(struct ast *fdefspec, struct ast *compound_stmt)
+{   struct ast *fdef= malloc(sizeof(struct ast));
+    fdef->nodetype= FUNCTION_DEFINITION;
+    fdef->l= fdefspec;
+    fdef->r= compound_stmt;
+    return fdef;
+}
+
+
+struct ast *new_compound_statement(struct ast *decstmtlist)
+{   struct ast *cstmt= malloc(sizeof(struct ast));
+    cstmt->nodetype= COMPOUND_STATEMENT;
+    cstmt->l= decstmtlist;
+
+    return cstmt;
+
+}
+
+
 
 

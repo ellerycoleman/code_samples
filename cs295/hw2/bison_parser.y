@@ -35,12 +35,12 @@
 
 
 
-%type <a> decl 
+%type <a> decl
           function_definition
-	  function_def_specifier          
+	  function_def_specifier
           compound_statement
 	  translation_unit
-	  top_level_decl       
+	  top_level_decl
 	  statement
 	  comma_expr
 	  expression_statement
@@ -48,6 +48,8 @@
 	  constant
 	  conditional_expr
 	  unary_expr
+	  declaration_or_statement_list
+	  declaration_or_statement
 
 
 
@@ -191,7 +193,7 @@ translation_unit:   top_level_decl
 
 
 top_level_decl:  decl                  {$$= new_tld(DECL,$1); }
-|                function_definition
+|                function_definition   {printf("tld function_def...\n");}
 ;
 
 
@@ -300,8 +302,8 @@ parameter_list:   parameter_decl
 ;
 
 
-parameter_decl:  type_specifier declarator                {  $$= new_parameter_decl($1,$2);    }
-|                type_specifier                           {  $$= new_parameter_decl($1,NULL);  }
+parameter_decl:  type_specifier declarator                { $$= new_parameter_decl($1,$2);    }
+|                type_specifier                           { $$= new_parameter_decl($1,NULL);  }
 |                type_specifier abstract_declarator       {  /* $$= new_parameter_decl($1,$2);    */  }
 ;
 
@@ -312,7 +314,7 @@ abstract_declarator:   pointer
 ;
 
 
-direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN    
+direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
                               {   $$= $2;
 			      }
 |                             SEP_LEFT_BRACKET SEP_RIGHT_BRACKET                    /*  int []  */
@@ -330,20 +332,33 @@ array_declarator:  direct_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BR
 
 
 function_definition:  function_def_specifier compound_statement
+                      {    $$= new_function_definition($1,$2);
+		      }
 ;
 
 
 function_def_specifier: type_specifier declarator
+                        {   printf("function declarator...\n");
+			    $$= new_function_def_specifier($1,$2);
+			}
 ;
 
 
 compound_statement: SEP_LEFT_BRACE SEP_RIGHT_BRACE
+                    {   new_compound_statement(NULL);
+		    }
 |                   SEP_LEFT_BRACE declaration_or_statement_list SEP_RIGHT_BRACE
+                    {   new_compound_statement($2);
+		    }
 ;
 
 
 declaration_or_statement_list:   declaration_or_statement
+                                 {   $$= new_decostat_list($1,NULL);
+				 }
 |                                declaration_or_statement_list declaration_or_statement
+                                 {   $$= new_decostat_list($2,$1);
+				 }
 ;
 
 
@@ -371,7 +386,7 @@ expression_statement:   comma_expr SEP_SEMICOLON
 
 comma_expr:  assignment_expr
 |            comma_expr SEP_COMMA assignment_expr
-             {   $$= new_expr(COMMA_EXPR,$1,$3); 
+             {   $$= new_expr(COMMA_EXPR,$1,$3);
 	     }
 ;
 
@@ -509,7 +524,7 @@ primary_expr:  IDENTIFIER
 ;
 
 
-constant:  INTEGER_CONSTANT     
+constant:  INTEGER_CONSTANT
            {   $$= new_constant(INTEGER_CONSTANT,$1);
 	   }
 |          CHARACTER_CONSTANT

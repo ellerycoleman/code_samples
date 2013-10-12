@@ -10,7 +10,7 @@
 
 
 all:    clean bison_parser.o flex_scanner.o e95_parser.c parser_support.h parser_support.c
-	gcc parser_support.c e95_parser.c flex_scanner.o bison_parser.o -o e95_parser -lfl
+	gcc -g parser_support.c e95_parser.c flex_scanner.o bison_parser.o -o e95_parser -lfl
 	ln -s e95_parser parser
 
 

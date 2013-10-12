@@ -35,6 +35,12 @@ typedef enum ntype {   DECL,
 		       COMMA_EXPR,
 
 
+
+		       FUNCTION_DEFINITION,
+		       FUNCTION_DEF_SPECIFIER,
+		       DECOSTAT_LIST
+
+
 		   } ntype;
 
 typedef enum tspec {   SIGNED_SHORT_INT,
@@ -51,8 +57,8 @@ typedef enum tspec {   SIGNED_SHORT_INT,
 
 typedef struct ast
 {   ntype nodetype;
-    struct ast *left;
-    struct ast *right;
+    struct ast *l;
+    struct ast *r;
 } ast;
 
 
@@ -125,6 +131,12 @@ typedef struct tld_list
 } tld_list;
 
 
+typedef struct decostat_list
+{   ntype nodetype;
+    struct ast *decostat;
+    struct decostat_list *next;
+} decostat_list;
+
 
 declarator *new_simple_declarator(char *id);
 tld_list *new_tld_list(ast *t, ast *next);
@@ -153,4 +165,9 @@ struct ast *parse_tree;
 
 
 
+struct ast *new_function_def_specifier(int type, struct declarator *d);
+struct ast *new_function_definition(struct ast *fdefspec, struct ast *compound_stmt);
+
+struct ast *new_compound_statement(struct ast *decstmtlist);
+struct ast *new_decostat_list(struct ast *decostat, struct ast *next);
 
