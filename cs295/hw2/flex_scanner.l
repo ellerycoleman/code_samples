@@ -132,7 +132,7 @@ extern YYSTYPE yylval;
 
 
 
-[0-9]+                  { yylval.a= (struct ast *) atol(yytext); return INTEGER_CONSTANT;  }
+[0-9]+                  { yylval.i= atol(yytext); return INTEGER_CONSTANT;  }
 
 
 '\\[ntbrfv\\\'\"a?]' { /* Handle non-octal escape char constants */
@@ -153,7 +153,7 @@ extern YYSTYPE yylval;
                   return CHARACTER_CONSTANT_OCTAL; 
                }
 
-'[0-9A-Za-z]'  {  cvalue= yytext[1]; return CHARACTER_CONSTANT; }
+'[0-9A-Za-z]'  {  cvalue= yytext[1]; yylval.i= yytext[1]; return CHARACTER_CONSTANT; }
 
 
 "\""                    {   /* Beginning of string constant has been detected  */
@@ -192,6 +192,7 @@ extern YYSTYPE yylval;
 
 <e95_string>"\""        {   /* End of string has been detected */
 			    yytext= e95_strbuf;
+			    yylval.id= yytext;
                             BEGIN(INITIAL);
 			    return STRING_CONSTANT;
 		        }

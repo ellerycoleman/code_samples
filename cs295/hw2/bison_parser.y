@@ -529,7 +529,12 @@ constant:  INTEGER_CONSTANT
            {   $$= new_constant(INTEGER_CONSTANT,$1);
 	   }
 |          CHARACTER_CONSTANT
+           {   $$= new_constant(CHARACTER_CONSTANT,$1);
+	   }
 |          STRING_CONSTANT
+           {   $$= new_constant(STRING_CONSTANT,$1);
+	   }
+          
 ;
 
 
