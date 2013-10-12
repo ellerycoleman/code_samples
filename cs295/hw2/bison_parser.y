@@ -51,6 +51,7 @@
 	  declaration_or_statement
           compound_statement
 	  null_statement
+	  goto_statement
 
 
 
@@ -59,6 +60,8 @@
 %type <dp> declarator direct_declarator simple_declarator pointer pointer_declarator function_declarator parameter_decl abstract_declarator direct_abstract_declarator
 
 %type <i> type_specifier signed_type_specifier unsigned_type_specifier integer_type_specifier character_type_specifier
+
+%type <id> label
 
 %type <plist> parameter_list
 
@@ -348,7 +351,7 @@ compound_statement: SEP_LEFT_BRACE SEP_RIGHT_BRACE
                     {   $$= new_compound_statement(NULL);
 		    }
 |                   SEP_LEFT_BRACE declaration_or_statement_list SEP_RIGHT_BRACE
-                    {   $2= (struct ast *)reverse_decostat_list($2);
+                    {   $2= (struct ast *)(long)reverse_decostat_list($2);
 		        $$= new_compound_statement($2);
 		    }
 ;
@@ -657,7 +660,7 @@ return_statement:  RW_RETURN SEP_SEMICOLON
 ;
 
 
-goto_statement:  RW_GOTO label SEP_SEMICOLON
+goto_statement:  RW_GOTO label SEP_SEMICOLON { $$= new_expr(RW_GOTO, (struct ast *)$2,NULL); };
 ;
 
 
