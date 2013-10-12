@@ -105,6 +105,7 @@ void print_tree(ast *nodeptr)
         {   struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
 	    struct function_defspec *fdspec= funcdef->fdspec;
 	    struct ast *cstmt= funcdef->cstmt;
+	    struct decostat_list *dlist;
 
 	    /* print function return type */
 	    printf("%s ", print_type(fdspec->typespec));
@@ -114,7 +115,7 @@ void print_tree(ast *nodeptr)
 	    printf("\n{");
 
             /* display compound statement block */
-	    struct decostat_list *dlist= cstmt->l;
+	    dlist= (struct decostat_list *) cstmt->l;
 	    do
 	    {   print_expr(dlist->decostat);
 	    } while( (dlist= dlist->next) != NULL);
@@ -132,14 +133,15 @@ void print_tree(ast *nodeptr)
 
 
 void print_expr(struct ast *expr)
-{   switch(expr->nodetype)
+{   struct constant *k;
+
+    switch(expr->nodetype)
     {   case SEP_SEMICOLON:
-           printf("DEBUG: null_statement\n");
+           ;
 	   break;
 
         case INTEGER_CONSTANT:
-           printf("DEBUG: INTEGER_CONSTANT\n");
-	   struct constant *k= (struct constant *)expr;
+	   k= (struct constant *)expr;
 	   printf("%d", k->value);
 	   break;
     }
@@ -293,10 +295,10 @@ declarator *reverse_declarators(declarator *dp)
 }
 
 
-declarator *reverse_decostat_list(struct decostat_list *dlist)
-{   parameter_list *newroot= NULL;
+struct decostat_list *reverse_decostat_list(struct decostat_list *dlist)
+{   struct decostat_list *newroot= NULL;
     while(dlist)
-    {   parameter_list *next= dlist->next;
+    {   struct decostat_list *next= dlist->next;
         dlist->next= newroot;
 	newroot= dlist;
 	dlist= next;

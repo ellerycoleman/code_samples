@@ -185,3 +185,4 @@ struct ast *new_function_definition(struct ast *fdefspec, struct ast *compound_s
 struct ast *new_compound_statement(struct ast *decstmtlist);
 struct ast *new_decostat_list(struct ast *decostat, struct ast *next);
 
+void print_expr(struct ast *expr);

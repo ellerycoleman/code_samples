@@ -38,7 +38,6 @@
 %type <a> decl
           function_definition
 	  function_def_specifier
-          compound_statement
 	  translation_unit
 	  top_level_decl
 	  statement
@@ -50,6 +49,7 @@
 	  unary_expr
 	  declaration_or_statement_list
 	  declaration_or_statement
+          compound_statement
 	  null_statement
 
 
@@ -348,7 +348,7 @@ compound_statement: SEP_LEFT_BRACE SEP_RIGHT_BRACE
                     {   $$= new_compound_statement(NULL);
 		    }
 |                   SEP_LEFT_BRACE declaration_or_statement_list SEP_RIGHT_BRACE
-                    {   $2= (struct ast *) reverse_decostat_list((struct decostat_list *)$2);
+                    {   $2= (struct ast *)reverse_decostat_list($2);
 		        $$= new_compound_statement($2);
 		    }
 ;
