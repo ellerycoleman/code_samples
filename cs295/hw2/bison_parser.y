@@ -148,7 +148,7 @@
 %token    <id> IDENTIFIER
 %token    <a>INTEGER_CONSTANT
 %token    <a>CHARACTER_CONSTANT
-%token    CHARACTER_CONSTANT_OCTAL
+%token    <a>CHARACTER_CONSTANT_OCTAL
 %token    <a>STRING_CONSTANT
 
 
@@ -530,6 +530,9 @@ constant:  INTEGER_CONSTANT
 	   }
 |          CHARACTER_CONSTANT
            {   $$= new_constant(CHARACTER_CONSTANT,$1);
+	   }
+|          CHARACTER_CONSTANT_OCTAL
+           {   $$= new_constant(CHARACTER_CONSTANT_OCTAL,$1);
 	   }
 |          STRING_CONSTANT
            {   $$= new_constant(STRING_CONSTANT,$1);

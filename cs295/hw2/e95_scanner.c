@@ -27,7 +27,6 @@ extern int yylineno;
 extern int cvalue;            /* for converting char constants */
 extern long long ivalue_tmp;  /* for converting int constants  */
 FILE *input, *output;
-extern yylval;
 
 
 int num_of_tokens_processed=0;

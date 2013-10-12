@@ -14,8 +14,8 @@ all:    clean bison_parser.o flex_scanner.o e95_parser.c parser_support.h parser
 	ln -s e95_parser parser
 
 
-scanner:  clean bison_parser.tab.h flex_scanner.o e95_tokens.c e95_scanner.c bison_parser.o
-	gcc -g e95_scanner.c flex_scanner.o e95_tokens.c -o e95_scanner bison_parser.o -lfl
+scanner:  clean bison_parser.tab.h flex_scanner.o e95_tokens.c e95_scanner.c bison_parser.o parser_support.h parser_support.c
+	gcc -g e95_scanner.c flex_scanner.o e95_tokens.c -o e95_scanner bison_parser.o parser_support.c -lfl
 	ln -s e95_scanner scanner
 
 

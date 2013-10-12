@@ -148,6 +148,11 @@ void print_expr(struct ast *expr)
 	   k= (struct constant *)expr;
 	   printf("'%c'", k->value);
 	   break;
+        case CHARACTER_CONSTANT_OCTAL:
+	   printf("DEBUG: octal charconst..\n");
+	   k= (struct constant *)expr;
+	   printf("%s", k->value);
+	   break;
         case STRING_CONSTANT:
 	   k= (struct constant *)expr;
 	   printf("\"%s\"", k->value);

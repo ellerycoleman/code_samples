@@ -149,7 +149,8 @@ extern YYSTYPE yylval;
 
 
 '\\[0-7]{1,3}' {  /* Handle octal character constants */
-                  cvalue= get_octal_value(yytext);
+		  yylval.a= yytext;
+		  cvalue= get_octal_value(yytext);
                   return CHARACTER_CONSTANT_OCTAL; 
                }
 
@@ -192,7 +193,7 @@ extern YYSTYPE yylval;
 
 <e95_string>"\""        {   /* End of string has been detected */
 			    yytext= e95_strbuf;
-			    yylval.id= yytext;
+			    yylval.a= yytext;
                             BEGIN(INITIAL);
 			    return STRING_CONSTANT;
 		        }

@@ -33,6 +33,7 @@ int main(void)
     3;
   'A';
   "ellery";
+  '\101';
 }
 
 

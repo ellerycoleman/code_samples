@@ -217,7 +217,7 @@ void init_token_definition_map()
       +---------------------------------------------------------------*/
      
 
-    token_def_map[OP_ADDITION]   = op_addition_t;
+    token_def_map[PLUS_SIGN]   = op_addition_t;
     token_def_map[OP_DIVISION]   = op_division_t;
     token_def_map[OP_REMAINDER]  = op_remainder_t;
 
@@ -260,37 +260,37 @@ void init_token_definition_map()
 
 
     token_def_map[OP_ASSIGNMENT]    = op_assignment_t;
-    token_def_map[OP_ASTERISK]      = op_asterisk_t;
+    token_def_map[ASTERISK]         = op_asterisk_t;
     token_def_map[OP_QUESTION_MARK] = op_question_mark_t;
 
 
     token_def_map[SEP_LEFT_PAREN]           = sep_left_paren_t;
     token_def_map[SEP_RIGHT_PAREN]          = sep_right_paren_t;
-    token_def_map[SEP_LEFT_CURLY_BRACE]     = sep_left_curly_brace_t;
-    token_def_map[SEP_RIGHT_CURLY_BRACE]    = sep_right_curly_brace_t;
-    token_def_map[SEP_LEFT_SQUARE_BRACKET]  = sep_left_square_bracket_t;
-    token_def_map[SEP_RIGHT_SQUARE_BRACKET] = sep_right_square_bracket_t;
+    token_def_map[SEP_LEFT_BRACE]           = sep_left_curly_brace_t;
+    token_def_map[SEP_RIGHT_BRACE]          = sep_right_curly_brace_t;
+    token_def_map[SEP_LEFT_BRACKET]         = sep_left_square_bracket_t;
+    token_def_map[SEP_RIGHT_BRACKET]        = sep_right_square_bracket_t;
     token_def_map[SEP_SEMICOLON]            = sep_semicolon_t;
     token_def_map[SEP_COLON]                = sep_colon_t;
     token_def_map[SEP_COMMA]                = sep_comma_t;
 
 
-    token_def_map[RESERVED_WORD_DO]       = resword_do_t;
-    token_def_map[RESERVED_WORD_FOR]      = resword_for_t;
-    token_def_map[RESERVED_WORD_RETURN]   = resword_return_t;
-    token_def_map[RESERVED_WORD_BREAK]    = resword_break_t;
-    token_def_map[RESERVED_WORD_SHORT]    = resword_short_t;
-    token_def_map[RESERVED_WORD_ELSE]     = resword_else_t;
-    token_def_map[RESERVED_WORD_GOTO]     = resword_goto_t;
-    token_def_map[RESERVED_WORD_SIGNED]   = resword_signed_t;
-    token_def_map[RESERVED_WORD_UNSIGNED] = resword_unsigned_t;
-    token_def_map[RESERVED_WORD_CHAR]     = resword_char_t;
-    token_def_map[RESERVED_WORD_IF]       = resword_if_t;
-    token_def_map[RESERVED_WORD_VOID]     = resword_void_t;
-    token_def_map[RESERVED_WORD_INT]      = resword_int_t;
-    token_def_map[RESERVED_WORD_CONTINUE] = resword_continue_t;
-    token_def_map[RESERVED_WORD_LONG]     = resword_long_t;
-    token_def_map[RESERVED_WORD_WHILE]    = resword_while_t;
+    token_def_map[RW_DO]       = resword_do_t;
+    token_def_map[RW_FOR]      = resword_for_t;
+    token_def_map[RW_RETURN]   = resword_return_t;
+    token_def_map[RW_BREAK]    = resword_break_t;
+    token_def_map[RW_SHORT]    = resword_short_t;
+    token_def_map[RW_ELSE]     = resword_else_t;
+    token_def_map[RW_GOTO]     = resword_goto_t;
+    token_def_map[RW_SIGNED]   = resword_signed_t;
+    token_def_map[RW_UNSIGNED] = resword_unsigned_t;
+    token_def_map[RW_CHAR]     = resword_char_t;
+    token_def_map[RW_IF]       = resword_if_t;
+    token_def_map[RW_VOID]     = resword_void_t;
+    token_def_map[RW_INT]      = resword_int_t;
+    token_def_map[RW_CONTINUE] = resword_continue_t;
+    token_def_map[RW_LONG]     = resword_long_t;
+    token_def_map[RW_WHILE]    = resword_while_t;
 
 
 
