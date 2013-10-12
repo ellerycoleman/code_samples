@@ -148,7 +148,7 @@ typedef struct function_defspec
 typedef struct function_def
 {   ntype nodetype;
     struct function_defspec *fdspec;
-    struct ast *cstmt;
+    struct ast *cstmt; /* decostat_list */
 } function_def;
 
 

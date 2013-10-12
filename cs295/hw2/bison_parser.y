@@ -50,6 +50,7 @@
 	  unary_expr
 	  declaration_or_statement_list
 	  declaration_or_statement
+	  null_statement
 
 
 
@@ -139,7 +140,7 @@
 %token    SEP_RIGHT_BRACE
 %token    SEP_LEFT_BRACKET
 %token    SEP_RIGHT_BRACKET
-%token    SEP_SEMICOLON
+%token    <i>SEP_SEMICOLON
 %token    SEP_COLON
 %token    SEP_COMMA
 
@@ -274,7 +275,7 @@ pointer:    ASTERISK
 
 direct_declarator:    simple_declarator
 |                     SEP_LEFT_PAREN declarator SEP_RIGHT_PAREN  { $$= $2; }
-|                     function_declarator {printf("fdecl...\n"); }
+|                     function_declarator
 |                     array_declarator
 ;
 
@@ -344,10 +345,11 @@ function_def_specifier: type_specifier declarator
 
 
 compound_statement: SEP_LEFT_BRACE SEP_RIGHT_BRACE
-                    {   new_compound_statement(NULL);
+                    {   $$= new_compound_statement(NULL);
 		    }
 |                   SEP_LEFT_BRACE declaration_or_statement_list SEP_RIGHT_BRACE
-                    {   new_compound_statement($2);
+                    {   $2= (struct ast *) reverse_decostat_list((struct decostat_list *)$2);
+		        $$= new_compound_statement($2);
 		    }
 ;
 
@@ -362,7 +364,7 @@ declaration_or_statement_list:   declaration_or_statement
 
 
 declaration_or_statement:   decl
-|                           statement
+|                           statement 
 ;
 
 
@@ -375,7 +377,7 @@ statement:  expression_statement
 |           continue_statement
 |           return_statement
 |           goto_statement
-|           null_statement
+|           null_statement  
 ;
 
 
@@ -651,7 +653,7 @@ goto_statement:  RW_GOTO label SEP_SEMICOLON
 ;
 
 
-null_statement:  SEP_SEMICOLON {}
+null_statement:  SEP_SEMICOLON { $$= new_expr(SEP_SEMICOLON,NULL,NULL); }
 ;
 
 

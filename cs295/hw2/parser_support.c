@@ -1,4 +1,5 @@
 #include "parser_support.h"
+#include "bison_parser.tab.h"
 
 
 yyerror(char *s,...)
@@ -101,13 +102,24 @@ void print_tree(ast *nodeptr)
 
 
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
-        {   funcdef= (struct function_def *)tldlist->tld->f;
+        {   struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
+	    struct function_defspec *fdspec= funcdef->fdspec;
+	    struct ast *cstmt= funcdef->cstmt;
+
 	    /* print function return type */
-	    printf("%s ", print_type(funcdef->fdspec->typespec));
-	    printf("%s(", funcdef->fdspec->d->adeclarator->id);
-	    print_parameter_list(funcdef->fdspec->d->plist);
+	    printf("%s ", print_type(fdspec->typespec));
+	    printf("%s(", fdspec->d->adeclarator->id);
+	    print_parameter_list(fdspec->d->plist);
 	    printf(")");
-	    printf("\n{   ");
+	    printf("\n{");
+
+            /* display compound statement block */
+	    struct decostat_list *dlist= cstmt->l;
+	    do
+	    {   print_expr(dlist->decostat);
+	    } while( (dlist= dlist->next) != NULL);
+
+
 	    printf("\n}   ");
 	}
 
@@ -119,6 +131,20 @@ void print_tree(ast *nodeptr)
 
 
 
+void print_expr(struct ast *expr)
+{   switch(expr->nodetype)
+    {   case SEP_SEMICOLON:
+           printf("DEBUG: null_statement\n");
+	   break;
+
+        case INTEGER_CONSTANT:
+           printf("DEBUG: INTEGER_CONSTANT\n");
+	   struct constant *k= (struct constant *)expr;
+	   printf("%d", k->value);
+	   break;
+    }
+    printf(";\n");
+}
 
 
 declarator *new_simple_declarator(char *id)
@@ -265,6 +291,19 @@ declarator *reverse_declarators(declarator *dp)
     }
     return newroot;
 }
+
+
+declarator *reverse_decostat_list(struct decostat_list *dlist)
+{   parameter_list *newroot= NULL;
+    while(dlist)
+    {   parameter_list *next= dlist->next;
+        dlist->next= newroot;
+	newroot= dlist;
+	dlist= next;
+    }
+    return newroot;
+}
+  
 
 
 ast *new_decl(int typespecifier, declarator_list *dl)

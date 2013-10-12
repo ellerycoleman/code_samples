@@ -26,6 +26,12 @@ int/* this is a test of the comments */a;
 int add(int i, int j);
 char sub(int **p, int ***r);
 int f1(char, int, void, long);
+int main(void)
+{   ;
+    ;
+    ;
+    3;
+}
 
 
 /*---------------------------------------------------*/
@@ -39,6 +45,4 @@ DATA
 
 cat testprog.c
 echo "Preparing to parse the above input program..."
-sleep 3;
-./parser testprog.c -
-rm -f testprog.c
+cat testprog.c | gdb -x gdb.cmd ./parser
