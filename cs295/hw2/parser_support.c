@@ -18,8 +18,8 @@ void print_tree(ast *nodeptr)
 
 
 
-    /* The only type of AST that is passed to print_tree is a *tld_list.
-     | We will cast the AST into a *tld_list.
+    /* The only type of AST that is passed to print_tree is a *tld_list,
+     | so we'll cast the AST into a *tld_list.
      +-----------------------------------------------------------------*/
     struct tld_list *tldlist= (struct tld_list *)nodeptr;
 
@@ -28,22 +28,35 @@ void print_tree(ast *nodeptr)
      | a decl or a funcdef.
      +-----------------------------------------------------------------*/
     struct decl *de;
-    do
-    {   de= (struct decl *)tldlist->tld->d;
+    struct ast *funcdef;
+    int i=1;
+
+
+    do  /* cycle through all of the TLD's */
+    {   if(tldlist->tld->datatype == DECL)
+        {   de= (struct decl *)tldlist->tld->d;
+        printf("tld %d: %s\n", i++, print_type(de->nodetype));
         switch(de->nodetype)
         {   case DECL:
 	       /* print type */
 	       printf("%s ", print_type(de->typespecifier));
 
 
-               /* print declarator list */
 	       declarator_list *dl= de->dl;
 	       declarator *d;
 	       parameter_list *plist;
 	       dl= reverse_declarator_list(dl);
+
+
+               /* print declarator list */
 	       do
-	       {   switch( dl->d->nodetype )
-		   {   case SIMPLE_DECLARATOR:
+	       {   
+	       
+	           switch( dl->d->nodetype )
+		   {   
+		   
+		   
+		       case SIMPLE_DECLARATOR:
                           printf(" %s", dl->d->id);
                           if(dl->next != NULL)
                           {  printf(",");
@@ -63,7 +76,6 @@ void print_tree(ast *nodeptr)
 	                         {  printf(",");
                                  }
 			      }
-
                           }while( (d= d->next) != NULL);
 			  break;
 
@@ -71,9 +83,9 @@ void print_tree(ast *nodeptr)
 		       case FUNCTION_DECLARATOR:
 		          /* print function name */
 			  d= dl->d->adeclarator;
-			  printf("%s(", d->id);
 
                           /* print parameter list */
+			  printf("%s(", d->id);
 			  print_parameter_list(dl->d->plist);
 			  printf(")");
                           break;
@@ -83,6 +95,19 @@ void print_tree(ast *nodeptr)
 	    printf(";\n");
 	    break;
         }
+	}/* end if DECL */
+
+
+
+
+        if(tldlist->tld->datatype == FUNCTION_DEFINITION)
+        {   funcdef= (struct ast *)tldlist->tld->f;
+	    /* print function return type */
+	    printf("%s fn();\n", print_type((long)funcdef->l->l));
+	}
+
+
+
     }while( (tldlist= tldlist->next) != NULL );
     printf("\n\n\n)\n\n\n\n");
 }
@@ -262,8 +287,8 @@ ast *new_tld(int datatype, ast *tld)
         if(datatype == DECL)
 	{   t->d= (struct decl *)tld;
 	}
-	if(datatype == FUNCDEF)
-	{   t->f= (struct funcdef *)tld;
+	if(datatype == FUNCTION_DEFINITION)
+	{   t->f= (struct ast *)tld;
 	}
     }
     return (struct ast *)t;
@@ -336,7 +361,8 @@ declarator *new_parameter_decl(int typespec, declarator *d)
 void print_parameter_list(parameter_list *plist)
 {   declarator *d;
     do
-    {   switch(plist->pd->nodetype)
+    {   
+        switch(plist->pd->nodetype)
         {   
 	
 	    case SIMPLE_DECLARATOR:
@@ -364,6 +390,15 @@ void print_parameter_list(parameter_list *plist)
 
             case -1:  /* print type only */
                printf("%s ", print_type(plist->pd->typespecifier));
+	       d= plist->pd;
+	       do
+	       {   if( d->nodetype == POINTER_DECLARATOR )
+	           {   printf("*");
+		   }
+		   else if( d->nodetype == SIMPLE_DECLARATOR )
+		   {   printf("%s", d->id);
+		   }
+               }while( (d= d->next) != NULL);
 	       break;
         }
 

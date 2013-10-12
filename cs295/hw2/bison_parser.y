@@ -192,8 +192,8 @@ translation_unit:   top_level_decl
 ;
 
 
-top_level_decl:  decl                  {$$= new_tld(DECL,$1); }
-|                function_definition   {printf("tld function_def...\n");}
+top_level_decl:  decl                  {$$= new_tld(DECL,$1);                }
+|                function_definition   {$$= new_tld(FUNCTION_DEFINITION,$1); }
 ;
 
 
@@ -274,7 +274,7 @@ pointer:    ASTERISK
 
 direct_declarator:    simple_declarator
 |                     SEP_LEFT_PAREN declarator SEP_RIGHT_PAREN  { $$= $2; }
-|                     function_declarator
+|                     function_declarator {printf("fdecl...\n"); }
 |                     array_declarator
 ;
 
@@ -304,7 +304,7 @@ parameter_list:   parameter_decl
 
 parameter_decl:  type_specifier declarator                { $$= new_parameter_decl($1,$2);    }
 |                type_specifier                           { $$= new_parameter_decl($1,NULL);  }
-|                type_specifier abstract_declarator       {  /* $$= new_parameter_decl($1,$2);    */  }
+|                type_specifier abstract_declarator       { $$= new_parameter_decl($1,$2);    }
 ;
 
 
@@ -338,8 +338,7 @@ function_definition:  function_def_specifier compound_statement
 
 
 function_def_specifier: type_specifier declarator
-                        {   printf("function declarator...\n");
-			    $$= new_function_def_specifier($1,$2);
+                        {   $$= new_function_def_specifier($1,$2);
 			}
 ;
 

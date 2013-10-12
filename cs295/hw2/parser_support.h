@@ -120,7 +120,7 @@ typedef struct tld
 {   ntype nodetype;
     int datatype; /* 1 is decl, 2 is funcdef */
     struct decl    *d;
-    struct funcdef *f;
+    struct ast *f;
 } tld;
 
 
