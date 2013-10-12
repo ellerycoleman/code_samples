@@ -28,7 +28,7 @@ void print_tree(ast *nodeptr)
      | a decl or a funcdef.
      +-----------------------------------------------------------------*/
     struct decl *de;
-    struct ast *funcdef;
+    struct function_def *funcdef;
     int i=1;
 
 
@@ -101,9 +101,14 @@ void print_tree(ast *nodeptr)
 
 
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
-        {   funcdef= (struct ast *)tldlist->tld->f;
+        {   funcdef= (struct function_def *)tldlist->tld->f;
 	    /* print function return type */
-	    printf("%s fn();\n", print_type((long)funcdef->l->l));
+	    printf("%s ", print_type(funcdef->fdspec->typespec));
+	    printf("%s(", funcdef->fdspec->d->adeclarator->id);
+	    print_parameter_list(funcdef->fdspec->d->plist);
+	    printf(")");
+	    printf("\n{   ");
+	    printf("\n}   ");
 	}
 
 
@@ -434,21 +439,21 @@ struct ast *new_constant(int type, void *value)
 
 
 struct ast *new_function_def_specifier(int type, struct declarator *d)
-{   struct ast *fdefspec= malloc(sizeof(struct ast));
+{   struct function_defspec *fdefspec= malloc(sizeof(struct function_defspec));
     fdefspec->nodetype= FUNCTION_DEF_SPECIFIER;
-    fdefspec->l= (struct ast *)(long)type;
-    fdefspec->r= (struct ast *)d;
-    return fdefspec;
+    fdefspec->typespec= type;
+    fdefspec->d= d;
+    return (struct ast *)fdefspec;
 }
 
 
 
 struct ast *new_function_definition(struct ast *fdefspec, struct ast *compound_stmt)
-{   struct ast *fdef= malloc(sizeof(struct ast));
+{   struct function_def *fdef= malloc(sizeof(struct function_def));
     fdef->nodetype= FUNCTION_DEFINITION;
-    fdef->l= fdefspec;
-    fdef->r= compound_stmt;
-    return fdef;
+    fdef->fdspec= (struct function_defspec *)fdefspec;
+    fdef->cstmt= compound_stmt;
+    return (struct ast *)fdef;
 }
 
 

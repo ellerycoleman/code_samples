@@ -138,6 +138,20 @@ typedef struct decostat_list
 } decostat_list;
 
 
+typedef struct function_defspec
+{   ntype nodetype;
+    int typespec;
+    struct declarator *d;
+} function_defspec;
+
+
+typedef struct function_def
+{   ntype nodetype;
+    struct function_defspec *fdspec;
+    struct ast *cstmt;
+} function_def;
+
+
 declarator *new_simple_declarator(char *id);
 tld_list *new_tld_list(ast *t, ast *next);
 ast *new_tld(int datatype, ast *t);
