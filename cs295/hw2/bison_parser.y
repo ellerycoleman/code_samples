@@ -52,16 +52,33 @@
           compound_statement
 	  null_statement
 	  goto_statement
+	  continue_statement
 
 
 
 %type <dlist> initialized_declarator_list
 
-%type <dp> declarator direct_declarator simple_declarator pointer pointer_declarator function_declarator parameter_decl abstract_declarator direct_abstract_declarator
 
-%type <i> type_specifier signed_type_specifier unsigned_type_specifier integer_type_specifier character_type_specifier
+%type <dp> declarator 
+           direct_declarator 
+	   simple_declarator 
+	   pointer 
+	   pointer_declarator 
+	   function_declarator 
+	   parameter_decl 
+	   abstract_declarator 
+	   direct_abstract_declarator
+
+
+%type <i> type_specifier 
+          signed_type_specifier 
+	  unsigned_type_specifier 
+	  integer_type_specifier 
+	  character_type_specifier
+
 
 %type <id> label
+
 
 %type <plist> parameter_list
 
@@ -652,6 +669,8 @@ break_statement:  RW_BREAK SEP_SEMICOLON
 
 
 continue_statement:  RW_CONTINUE SEP_SEMICOLON
+                     {   $$= new_expr(RW_CONTINUE,NULL,NULL);
+		     }
 ;
 
 

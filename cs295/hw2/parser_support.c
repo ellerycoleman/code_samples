@@ -102,10 +102,16 @@ void print_tree(ast *nodeptr)
 
 
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
-        {   struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
+        {   
+	
+	
+	
+	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
 	    struct function_defspec *fdspec= funcdef->fdspec;
 	    struct ast *cstmt= funcdef->cstmt;
 	    struct decostat_list *dlist;
+
+            printf("tld %d:\n", i++);
 
 	    /* print function return type */
 	    printf("%s ", print_type(fdspec->typespec));
@@ -164,6 +170,11 @@ void print_expr(struct ast *expr)
 	   printf("goto ");
 	   printf("%s", expr->l);
 	   break;
+
+        case RW_CONTINUE:
+	   printf("continue");
+	   break;
+
 
     }
     printf(";\n");

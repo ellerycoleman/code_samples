@@ -225,7 +225,7 @@ extern YYSTYPE yylval;
 	    }
 
 
-[A-Za-z_]{1}[A-Za-z0-9_]*   { yylval.id= yytext; return IDENTIFIER; }
+[A-Za-z_]{1}[A-Za-z0-9_]*   { yylval.id= strdup(yytext); return IDENTIFIER; }
 
 
 .   { return UNDEFINED; }
