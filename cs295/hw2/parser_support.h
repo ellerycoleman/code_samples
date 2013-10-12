@@ -17,7 +17,24 @@ typedef enum ntype {   DECL,
 		       DIRECT_DECLARATOR,
 		       POINTER_DECLARATOR,
 		       SIMPLE_DECLARATOR,
-		       FUNCTION_DECLARATOR
+		       FUNCTION_DECLARATOR,
+
+
+		       STATEMENT,
+		       EXPRESSION_STATEMENT,
+		       COMPOUND_STATEMENT,
+		       CONDITIONAL_STATEMENT,
+		       ITERATIVE_STATEMENT,
+		       BREAK_STATEMENT,
+		       CONTINUE_STATEMENT,
+		       RETURN_STATEMENT,
+		       GOTO_STATEMENT,
+		       NULL_STATEMENT,
+
+
+		       COMMA_EXPR,
+
+
 		   } ntype;
 
 typedef enum tspec {   SIGNED_SHORT_INT,
@@ -43,6 +60,12 @@ typedef struct numval
 {   ntype nodetype;
     int val;
 } numval;
+
+
+typedef struct constant
+{   ntype nodetype;
+    void *value;
+} constant;
 
 
 typedef struct expr
@@ -120,6 +143,9 @@ parameter_list *new_parameter_list(declarator *pd, parameter_list *next);
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist);
 void print_parameter_list(parameter_list *plist);
 parameter_list *reverse_parameter_list(parameter_list *plist);
+
+struct ast *new_constant(int type, void *value);
+struct ast *new_expr(int type,struct ast *l, struct ast *r);
 
 
 char *print_type(int type);

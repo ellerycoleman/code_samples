@@ -354,7 +354,22 @@ void print_parameter_list(parameter_list *plist)
 
 
 
+struct ast *new_expr(int type,struct ast *l, struct ast *r)
+{   struct expr *expr= malloc(sizeof(struct expr));
+    expr->nodetype= type;
+    expr->l= l;
+    expr->r= r;
+
+    return (struct ast *)expr;
+}
 
 
+
+struct ast *new_constant(int type, void *value)
+{   struct constant *k= malloc(sizeof(struct constant));
+    k->nodetype= type;
+    k->value= value;
+    return (struct ast *)k;
+}
 
 

@@ -35,7 +35,21 @@
 
 
 
-%type <a> decl function_definition function_def_specifier compound_statement translation_unit top_level_decl
+%type <a> decl 
+          function_definition
+	  function_def_specifier          
+          compound_statement
+	  translation_unit
+	  top_level_decl       
+	  statement
+	  comma_expr
+	  expression_statement
+	  assignment_expr
+	  constant
+	  conditional_expr
+	  unary_expr
+
+
 
 %type <dlist> initialized_declarator_list
 
@@ -129,10 +143,10 @@
 
 
 %token    <id> IDENTIFIER
-%token    INTEGER_CONSTANT
-%token    CHARACTER_CONSTANT
+%token    <a>INTEGER_CONSTANT
+%token    <a>CHARACTER_CONSTANT
 %token    CHARACTER_CONSTANT_OCTAL
-%token    STRING_CONSTANT
+%token    <a>STRING_CONSTANT
 
 
 %token    APOSTROPHE
@@ -357,6 +371,8 @@ expression_statement:   comma_expr SEP_SEMICOLON
 
 comma_expr:  assignment_expr
 |            comma_expr SEP_COMMA assignment_expr
+             {   $$= new_expr(COMMA_EXPR,$1,$3); 
+	     }
 ;
 
 
@@ -493,7 +509,9 @@ primary_expr:  IDENTIFIER
 ;
 
 
-constant:  INTEGER_CONSTANT
+constant:  INTEGER_CONSTANT     
+           {   $$= new_constant(INTEGER_CONSTANT,$1);
+	   }
 |          CHARACTER_CONSTANT
 |          STRING_CONSTANT
 ;
