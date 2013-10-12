@@ -53,6 +53,7 @@
 	  null_statement
 	  goto_statement
 	  continue_statement
+	  break_statement
 
 
 
@@ -665,6 +666,8 @@ for_expr:  SEP_LEFT_PAREN SEP_SEMICOLON SEP_SEMICOLON SEP_RIGHT_PAREN
 
 
 break_statement:  RW_BREAK SEP_SEMICOLON
+                  {   $$= new_expr(RW_BREAK,NULL,NULL);
+		  }
 ;
 
 

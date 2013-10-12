@@ -37,6 +37,7 @@ int main(void)
 
   goto label1;
   continue;
+  break;
 }
 
 
