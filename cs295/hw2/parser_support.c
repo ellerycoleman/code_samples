@@ -194,13 +194,14 @@ void print_expr(struct ast *expr)
 	   break;
 
         case DECOSTAT_LIST:
-	    printf("DEBUG: NEED TO PRINT COMMA LIST...\n");
 	    dlist= (struct decostat_list *)expr;
 	    dlist= reverse_decostat_list(dlist);
 	    while(dlist->next != NULL)
 	    {   print_comma_expr(dlist->decostat);
+	        printf(", ");
 	        dlist= dlist->next;
 	    }
+	    print_comma_expr(dlist->decostat);
 	    printf(";\n");
 
     }
@@ -220,47 +221,38 @@ void print_comma_expr(struct ast *expr)
 
         case INTEGER_CONSTANT:
 	   k= (struct constant *)expr;
-	   /* printf("DEBUG: printing int constant..\n"); */
 	   printf("%d", k->value);
-           printf(", ");
 	   break;
 
         case CHARACTER_CONSTANT:
 	   k= (struct constant *)expr;
 	   printf("'%c'", k->value);
-           printf(", ");
 	   break;
 
         case CHARACTER_CONSTANT_OCTAL:
 	   k= (struct constant *)expr;
 	   printf("%s", k->value);
-           printf(", ");
 	   break;
 
         case STRING_CONSTANT:
 	   k= (struct constant *)expr;
 	   printf("\"%s\"", k->value);
-           printf(", ");
 	   break;
 
         case RW_GOTO:
 	   printf("goto ");
 	   printf("%s", expr->l);
-           printf(", ");
 	   break;
 
         case RW_CONTINUE:
 	   printf("continue");
-           printf(", ");
 	   break;
 
         case RW_BREAK:
 	   printf("break");
-           printf(", ");
 	   break;
 
         case SEP_COMMA:
-	   /* printf("DEBUG: expr type: SEP_COMMA..\n"); */
 	   print_comma_expr(expr);
 	   break;
 
