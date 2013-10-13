@@ -207,10 +207,66 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case OP_ASSIGNMENT_MULTIPLY:
+	   print_expr(expr->l);
+	   printf("*=");
+	   print_expr(expr->r);
+	   break;
+
+
+
+        case OP_ASSIGNMENT_DIVIDE:
+	   print_expr(expr->l);
+	   printf("/=");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_ASSIGNMENT_REMAINDER:
+	   print_expr(expr->l);
+	   printf("%=");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_ASSIGNMENT_LEFT_BITSHIFT:
+	   print_expr(expr->l);
+	   printf("<<=");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_ASSIGNMENT_RIGHT_BITSHIFT:
+	   print_expr(expr->l);
+	   printf(">>=");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_ASSIGNMENT_BITWISE_AND:
+	   print_expr(expr->l);
+	   printf("&=");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_ASSIGNMENT_BITWISE_OR:
+	   print_expr(expr->l);
+	   printf("|=");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_ASSIGNMENT_BITWISE_XOR:
+	   print_expr(expr->l);
+	   printf("^=");
+	   print_expr(expr->r);
+	   break;
+
+
         case SIMPLE_DECLARATOR:
 	   print_decl(expr);
 	   break;
-
 
 
         default:
