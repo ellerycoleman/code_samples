@@ -36,7 +36,7 @@ void print_tree(ast *nodeptr)
     do  /* cycle through all of the TLD's */
     {   if(tldlist->tld->datatype == DECL)
         {   de= (struct decl *)tldlist->tld->d;
-        printf("tld %d: %s\n", i++, print_type(de->nodetype));
+        /* printf("tld %d: %s\n", i++, print_type(de->nodetype)); */
         switch(de->nodetype)
         {   case DECL:
 	       /* print type */
@@ -108,11 +108,11 @@ void print_tree(ast *nodeptr)
 	    struct ast *cstmt= funcdef->cstmt;
 	    struct decostat_list *dlist;
 
-            printf("tld %d:\n", i++);
+            /* printf("tld %d:\n", i++); */
 
 
 	    /* print function return type */
-	    printf("%s ", print_type(fdspec->typespec));
+	    printf("\n\n%s ", print_type(fdspec->typespec));
 	    printf("%s(", fdspec->d->adeclarator->id);
 	    print_parameter_list(fdspec->d->plist);
 	    printf(")");
