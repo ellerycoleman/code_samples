@@ -18,6 +18,7 @@
 #include "e95_tokens.h"
 #include "parser_support.h"
 
+
 %}
 
 
@@ -406,8 +407,12 @@ expression_statement:   comma_expr SEP_SEMICOLON
 ;
 
 
-comma_expr:  assignment_expr
+comma_expr:  assignment_expr  
+             {  $$= new_decostat_list($1,NULL);
+	     }
 |            comma_expr SEP_COMMA assignment_expr
+             {  $$= new_decostat_list($3,$1);
+	     }
 ;
 
 

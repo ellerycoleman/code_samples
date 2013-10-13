@@ -38,7 +38,7 @@ int main(void)
   goto label1;
   continue;
   break;
-  2,3,4,5,6;
+  1,2,3,4,5;
 }
 
 int main(void)

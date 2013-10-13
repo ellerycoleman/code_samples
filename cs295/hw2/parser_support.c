@@ -139,70 +139,151 @@ void print_tree(ast *nodeptr)
 
 void print_expr(struct ast *expr)
 {   struct constant *k;
+    int i=0;
+    struct decostat_list *dlist;
 
     switch(expr->nodetype)
     {   case SEP_SEMICOLON:
-           ;
+           printf(";\n");
 	   break;
 
         case INTEGER_CONSTANT:
 	   k= (struct constant *)expr;
-	   printf("DEBUG: printing int constant..\n");
+	   /* printf("DEBUG: printing int constant..\n"); */
 	   printf("%d", k->value);
+           printf(";\n");
 	   break;
 
         case CHARACTER_CONSTANT:
 	   k= (struct constant *)expr;
 	   printf("'%c'", k->value);
+           printf(";\n");
 	   break;
 
         case CHARACTER_CONSTANT_OCTAL:
 	   k= (struct constant *)expr;
 	   printf("%s", k->value);
+           printf(";\n");
 	   break;
 
         case STRING_CONSTANT:
 	   k= (struct constant *)expr;
 	   printf("\"%s\"", k->value);
+           printf(";\n");
 	   break;
 
         case RW_GOTO:
 	   printf("goto ");
 	   printf("%s", expr->l);
+           printf(";\n");
 	   break;
 
         case RW_CONTINUE:
 	   printf("continue");
+           printf(";\n");
 	   break;
 
         case RW_BREAK:
 	   printf("break");
+           printf(";\n");
 	   break;
 
         case SEP_COMMA:
-	   printf("DEBUG: expr type: SEP_COMMA..\n");
+	   /* printf("DEBUG: expr type: SEP_COMMA..\n"); */
 	   print_comma_expr(expr);
 	   break;
 
+        case DECOSTAT_LIST:
+	    printf("DEBUG: NEED TO PRINT COMMA LIST...\n");
+	    dlist= (struct decostat_list *)expr;
+	    dlist= reverse_decostat_list(dlist);
+	    while(dlist->next != NULL)
+	    {   print_comma_expr(dlist->decostat);
+	        dlist= dlist->next;
+	    }
+	    printf(";\n");
 
     }
-    printf(";\n");
 }
 
 
 
 void print_comma_expr(struct ast *expr)
-{   
-    struct ast *tmp;
-    tmp= expr;
+{   struct constant *k;
+    int i=0;
+    struct decostat_list *dlist;
 
-    while(tmp->l != NULL)
-    {   tmp= tmp->l;
+    switch(expr->nodetype)
+    {   case SEP_SEMICOLON:
+           printf(", ");
+	   break;
+
+        case INTEGER_CONSTANT:
+	   k= (struct constant *)expr;
+	   /* printf("DEBUG: printing int constant..\n"); */
+	   printf("%d", k->value);
+           printf(", ");
+	   break;
+
+        case CHARACTER_CONSTANT:
+	   k= (struct constant *)expr;
+	   printf("'%c'", k->value);
+           printf(", ");
+	   break;
+
+        case CHARACTER_CONSTANT_OCTAL:
+	   k= (struct constant *)expr;
+	   printf("%s", k->value);
+           printf(", ");
+	   break;
+
+        case STRING_CONSTANT:
+	   k= (struct constant *)expr;
+	   printf("\"%s\"", k->value);
+           printf(", ");
+	   break;
+
+        case RW_GOTO:
+	   printf("goto ");
+	   printf("%s", expr->l);
+           printf(", ");
+	   break;
+
+        case RW_CONTINUE:
+	   printf("continue");
+           printf(", ");
+	   break;
+
+        case RW_BREAK:
+	   printf("break");
+           printf(", ");
+	   break;
+
+        case SEP_COMMA:
+	   /* printf("DEBUG: expr type: SEP_COMMA..\n"); */
+	   print_comma_expr(expr);
+	   break;
+
     }
-
-    printf("DEBUG: leftmost node type: %d\n", tmp->l);
-    
 }
+
+
+
+
+
+
+
+/*
+
+void print_comma_expr(struct ast *expr)
+{   
+    if(expr->nodetype == SEP_COMMA)
+    {   print_expr(expr->l);
+    }
+    printf(", ");
+      
+}
+*/
 
 
 
@@ -294,20 +375,24 @@ struct ast *new_decostat_list(struct ast *decostat, struct ast *next)
 }
 
 
-struct ast *new_comma_list(struct ast *expr, struct ast *next)
-{   struct comma_list *cl1= malloc(sizeof(struct comma_list));
+void new_comma_list(struct ast *expr)
+{   extern debug_counter;
+    extern struct comma_list *tclist;
+    struct comma_list *tmp = tclist;
+
+    struct comma_list *cl1= malloc(sizeof(struct comma_list));
     {   cl1->nodetype= COMMA_LIST;
         cl1->expr= expr;
+	cl1->next= NULL;
     }
 
-    struct comma_list *cl2= malloc(sizeof(struct comma_list));
-    {   cl2->nodetype= COMMA_LIST;
-        cl2->expr= next;
+
+    while(tclist->next != NULL)
+    {   ++debug_counter;
+        printf("~~~DEBUG~~~ there are currently %d nodes in tclist...\n",debug_counter);
+        tclist= tclist->next;
     }
-
-    cl1->next= cl2;
-
-    return (struct ast *)cl1;
+    tclist->next= cl1;
 }
 
 

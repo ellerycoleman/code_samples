@@ -184,7 +184,8 @@ struct ast *new_expr(int type,struct ast *l, struct ast *r);
 
 char *print_type(int type);
 struct ast *parse_tree;
-
+struct comma_list *tclist;
+int debug_counter;
 
 
 struct ast *new_function_def_specifier(int type, struct declarator *d);
@@ -198,6 +199,6 @@ void print_expr(struct ast *expr);
 void print_comma_expr(struct ast *expr);
 
 
-struct ast *new_comma_list(struct ast *expr, struct ast *next);
+void new_comma_list(struct ast *expr);
 struct comma_list *reverse_comma_list(struct comma_list *clist);
 
