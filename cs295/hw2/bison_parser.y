@@ -59,6 +59,7 @@
 	  additive_expr
 	  multiplicative_expr
 	  cast_expr
+	  primary_expr
 
 
 
@@ -83,6 +84,7 @@
 	  character_type_specifier
 	  add_op
 	  mult_op
+	  assignment_op
 
 
 %type <id> label
@@ -423,21 +425,21 @@ comma_expr:  assignment_expr
 
 
 assignment_expr:  conditional_expr
-|                 unary_expr assignment_op assignment_expr 
+|                 unary_expr assignment_op assignment_expr  { $$= new_expr($2,$1,$3); }
 ;
 
 
-assignment_op:  OP_ASSIGNMENT
-|               OP_ASSIGNMENT_ADD
-|               OP_ASSIGNMENT_SUBTRACT
-|               OP_ASSIGNMENT_MULTIPLY
-|               OP_ASSIGNMENT_DIVIDE
-|               OP_ASSIGNMENT_REMAINDER
-|               OP_ASSIGNMENT_LEFT_BITSHIFT
-|               OP_ASSIGNMENT_RIGHT_BITSHIFT
-|               OP_ASSIGNMENT_BITWISE_AND
-|               OP_ASSIGNMENT_BITWISE_XOR
-|               OP_ASSIGNMENT_BITWISE_OR
+assignment_op:  OP_ASSIGNMENT                      { $$= OP_ASSIGNMENT;                }
+|               OP_ASSIGNMENT_ADD                  { $$= OP_ASSIGNMENT_ADD;            }                    
+|               OP_ASSIGNMENT_SUBTRACT             { $$= OP_ASSIGNMENT_SUBTRACT;       }
+|               OP_ASSIGNMENT_MULTIPLY             { $$= OP_ASSIGNMENT_MULTIPLY;       } 
+|               OP_ASSIGNMENT_DIVIDE               { $$= OP_ASSIGNMENT_DIVIDE;         }
+|               OP_ASSIGNMENT_REMAINDER            { $$= OP_ASSIGNMENT_REMAINDER;      }     
+|               OP_ASSIGNMENT_LEFT_BITSHIFT        { $$= OP_ASSIGNMENT_LEFT_BITSHIFT;  }        
+|               OP_ASSIGNMENT_RIGHT_BITSHIFT       { $$= OP_ASSIGNMENT_RIGHT_BITSHIFT; }       
+|               OP_ASSIGNMENT_BITWISE_AND          { $$= OP_ASSIGNMENT_BITWISE_AND;    }   
+|               OP_ASSIGNMENT_BITWISE_XOR          { $$= OP_ASSIGNMENT_BITWISE_XOR;    }  
+|               OP_ASSIGNMENT_BITWISE_OR           { $$= OP_ASSIGNMENT_BITWISE_OR;     }
 ;
 
 
@@ -554,6 +556,8 @@ postfix_expr:  primary_expr
 
 
 primary_expr:  IDENTIFIER
+               {   $$= (struct ast *)new_simple_declarator($1);
+	       }
 |              constant
 |              parenthesized_expr
 ;

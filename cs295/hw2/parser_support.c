@@ -223,11 +223,30 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case OP_ASSIGNMENT:
+	   print_expr(expr->l);
+	   printf("=");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_ASSIGNMENT_ADD:
+	   print_expr(expr->l);
+	   printf("+=");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_ASSIGNMENT_SUBTRACT:
+	   print_expr(expr->l);
+	   printf("-=");
+	   print_expr(expr->r);
+	   break;
 
 
 
         default:
-	   printf("PRINT_EXPR: I'm not sure what i was called with?\n");
+	   printf("PRINT_EXPR: I'm not sure what i was called with?  nodetype: %d\n",expr->nodetype);
 	   break;
 
     }
