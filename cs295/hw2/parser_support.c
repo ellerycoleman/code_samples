@@ -274,85 +274,6 @@ void print_decl(struct ast *expr)
 
 
 
-void print_comma_expr(struct ast *expr)
-{
-/*
-
-    struct constant *k;
-    int i=0;
-    struct decostat_list *dlist;
-
-    switch(expr->nodetype)
-    {   case SEP_SEMICOLON:
-           printf(", ");
-	   break;
-
-        case INTEGER_CONSTANT:
-	   k= (struct constant *)expr;
-	   printf("%d", k->value);
-	   break;
-
-        case CHARACTER_CONSTANT:
-	   k= (struct constant *)expr;
-	   printf("'%c'", k->value);
-	   break;
-
-        case CHARACTER_CONSTANT_OCTAL:
-	   k= (struct constant *)expr;
-	   printf("%s", k->value);
-	   break;
-
-        case STRING_CONSTANT:
-	   k= (struct constant *)expr;
-	   printf("\"%s\"", k->value);
-	   break;
-
-        case RW_GOTO:
-	   printf("goto ");
-	   printf("%s", expr->l);
-	   break;
-
-        case RW_CONTINUE:
-	   printf("continue");
-	   break;
-
-        case RW_BREAK:
-	   printf("break");
-	   break;
-
-        case SEP_COMMA:
-	   print_comma_expr(expr);
-	   break;
-
-
-        default:
-	   printf("PRINT_COMMA_EXPR: I'm not sure what i was called with?\n");
-	   break;
-
-    }
-
-*/
-
-}
-
-
-
-
-
-
-
-/*
-
-void print_comma_expr(struct ast *expr)
-{
-    if(expr->nodetype == SEP_COMMA)
-    {   print_expr(expr->l);
-    }
-    printf(", ");
-
-}
-*/
-
 
 
 declarator *new_simple_declarator(char *id)
@@ -443,26 +364,6 @@ struct ast *new_decostat_list(struct ast *decostat, struct ast *next)
 }
 
 
-void new_comma_list(struct ast *expr)
-{   extern debug_counter;
-    extern struct comma_list *tclist;
-    struct comma_list *tmp = tclist;
-
-    struct comma_list *cl1= malloc(sizeof(struct comma_list));
-    {   cl1->nodetype= COMMA_LIST;
-        cl1->expr= expr;
-	cl1->next= NULL;
-    }
-
-
-    while(tclist->next != NULL)
-    {   ++debug_counter;
-        printf("~~~DEBUG~~~ there are currently %d nodes in tclist...\n",debug_counter);
-        tclist= tclist->next;
-    }
-    tclist->next= cl1;
-}
-
 
 
 
@@ -537,18 +438,6 @@ struct decostat_list *reverse_decostat_list(struct decostat_list *dlist)
 }
 
 
-
-struct comma_list *reverse_comma_list(struct comma_list *clist)
-{   clist= (struct comma_list *)clist;
-    struct comma_list *newroot= NULL;
-    while(clist)
-    {   struct comma_list *next= clist->next;
-        clist->next= newroot;
-	newroot= clist;
-	clist= next;
-    }
-    return newroot;
-}
 
 
 

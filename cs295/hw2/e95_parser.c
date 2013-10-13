@@ -37,9 +37,6 @@ extern struct comma_list *tclist;
 
 int main(int argc, char **argv)
 {
-     tclist= malloc(sizeof(struct comma_list));
-     tclist->nodetype= COMMA_LIST;
-     printf("starting tclist at addr: %d\n", tclist);
 
     /* Configure input/output sources based on
      * user invocation of command.

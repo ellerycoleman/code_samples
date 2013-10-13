@@ -140,13 +140,6 @@ typedef struct decostat_list
 } decostat_list;
 
 
-struct comma_list
-{   ntype nodetype;
-    struct ast *expr;
-    struct comma_list *next;
-};
-
-
 typedef struct function_defspec
 {   ntype nodetype;
     int typespec;
@@ -185,7 +178,6 @@ struct ast *new_expr(int type,struct ast *l, struct ast *r);
 
 char *print_type(int type);
 struct ast *parse_tree;
-struct comma_list *tclist;
 int debug_counter;
 
 
@@ -198,9 +190,5 @@ struct decostat_list *reverse_decostat_list(struct decostat_list *dlist);
 
 void print_expr(struct ast *expr);
 void print_decl(struct ast *expr);
-void print_comma_expr(struct ast *expr);
 
-
-void new_comma_list(struct ast *expr);
-struct comma_list *reverse_comma_list(struct comma_list *clist);
 
