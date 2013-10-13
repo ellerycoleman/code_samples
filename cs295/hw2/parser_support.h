@@ -38,7 +38,8 @@ typedef enum ntype {   DECL,
 
 		       FUNCTION_DEFINITION,
 		       FUNCTION_DEF_SPECIFIER,
-		       DECOSTAT_LIST
+		       DECOSTAT_LIST,
+		       COMMA_LIST
 
 
 		   } ntype;
@@ -138,6 +139,13 @@ typedef struct decostat_list
 } decostat_list;
 
 
+struct comma_list
+{   ntype nodetype;
+    struct ast *expr;
+    struct comma_list *next;
+};
+
+
 typedef struct function_defspec
 {   ntype nodetype;
     int typespec;
@@ -184,5 +192,12 @@ struct ast *new_function_definition(struct ast *fdefspec, struct ast *compound_s
 
 struct ast *new_compound_statement(struct ast *decstmtlist);
 struct ast *new_decostat_list(struct ast *decostat, struct ast *next);
+struct decostat_list *reverse_decostat_list(struct decostat_list *dlist);
 
 void print_expr(struct ast *expr);
+void print_comma_expr(struct ast *expr);
+
+
+struct ast *new_comma_list(struct ast *expr, struct ast *next);
+struct comma_list *reverse_comma_list(struct comma_list *clist);
+

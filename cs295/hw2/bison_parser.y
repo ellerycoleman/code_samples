@@ -43,7 +43,6 @@
 	  statement
 	  comma_expr
 	  expression_statement
-	  assignment_expr
 	  constant
 	  conditional_expr
 	  unary_expr
@@ -54,6 +53,7 @@
 	  goto_statement
 	  continue_statement
 	  break_statement
+	  assignment_expr
 
 
 
@@ -369,7 +369,7 @@ compound_statement: SEP_LEFT_BRACE SEP_RIGHT_BRACE
                     {   $$= new_compound_statement(NULL);
 		    }
 |                   SEP_LEFT_BRACE declaration_or_statement_list SEP_RIGHT_BRACE
-                    {   $2= (struct ast *)(long)reverse_decostat_list($2);
+                    {   $2= (struct ast *)(long)reverse_decostat_list((struct decostat_list *)$2);
 		        $$= new_compound_statement($2);
 		    }
 ;
@@ -408,8 +408,6 @@ expression_statement:   comma_expr SEP_SEMICOLON
 
 comma_expr:  assignment_expr
 |            comma_expr SEP_COMMA assignment_expr
-             {   $$= new_expr(COMMA_EXPR,$1,$3);
-	     }
 ;
 
 

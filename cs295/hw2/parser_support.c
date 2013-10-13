@@ -51,12 +51,12 @@ void print_tree(ast *nodeptr)
 
                /* print declarator list */
 	       do
-	       {   
-	       
+	       {
+
 	           switch( dl->d->nodetype )
-		   {   
-		   
-		   
+		   {
+
+
 		       case SIMPLE_DECLARATOR:
                           printf(" %s", dl->d->id);
                           if(dl->next != NULL)
@@ -102,10 +102,7 @@ void print_tree(ast *nodeptr)
 
 
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
-        {   
-	
-	
-	
+        {
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
 	    struct function_defspec *fdspec= funcdef->fdspec;
 	    struct ast *cstmt= funcdef->cstmt;
@@ -113,12 +110,14 @@ void print_tree(ast *nodeptr)
 
             printf("tld %d:\n", i++);
 
+
 	    /* print function return type */
 	    printf("%s ", print_type(fdspec->typespec));
 	    printf("%s(", fdspec->d->adeclarator->id);
 	    print_parameter_list(fdspec->d->plist);
 	    printf(")");
 	    printf("\n{");
+
 
             /* display compound statement block */
 	    dlist= (struct decostat_list *) cstmt->l;
@@ -148,6 +147,7 @@ void print_expr(struct ast *expr)
 
         case INTEGER_CONSTANT:
 	   k= (struct constant *)expr;
+	   printf("DEBUG: printing int constant..\n");
 	   printf("%d", k->value);
 	   break;
 
@@ -179,11 +179,31 @@ void print_expr(struct ast *expr)
 	   printf("break");
 	   break;
 
+        case SEP_COMMA:
+	   printf("DEBUG: expr type: SEP_COMMA..\n");
+	   print_comma_expr(expr);
+	   break;
 
 
     }
     printf(";\n");
 }
+
+
+
+void print_comma_expr(struct ast *expr)
+{   
+    struct ast *tmp;
+    tmp= expr;
+
+    while(tmp->l != NULL)
+    {   tmp= tmp->l;
+    }
+
+    printf("DEBUG: leftmost node type: %d\n", tmp->l);
+    
+}
+
 
 
 declarator *new_simple_declarator(char *id)
@@ -274,6 +294,26 @@ struct ast *new_decostat_list(struct ast *decostat, struct ast *next)
 }
 
 
+struct ast *new_comma_list(struct ast *expr, struct ast *next)
+{   struct comma_list *cl1= malloc(sizeof(struct comma_list));
+    {   cl1->nodetype= COMMA_LIST;
+        cl1->expr= expr;
+    }
+
+    struct comma_list *cl2= malloc(sizeof(struct comma_list));
+    {   cl2->nodetype= COMMA_LIST;
+        cl2->expr= next;
+    }
+
+    cl1->next= cl2;
+
+    return (struct ast *)cl1;
+}
+
+
+
+
+
 
 /*
  | The declarator list is defined using left recursion.
@@ -342,7 +382,21 @@ struct decostat_list *reverse_decostat_list(struct decostat_list *dlist)
     }
     return newroot;
 }
-  
+
+
+
+struct comma_list *reverse_comma_list(struct comma_list *clist)
+{   clist= (struct comma_list *)clist;
+    struct comma_list *newroot= NULL;
+    while(clist)
+    {   struct comma_list *next= clist->next;
+        clist->next= newroot;
+	newroot= clist;
+	clist= next;
+    }
+    return newroot;
+}
+
 
 
 ast *new_decl(int typespecifier, declarator_list *dl)
@@ -358,6 +412,7 @@ ast *new_decl(int typespecifier, declarator_list *dl)
 
     return  (struct ast *)d;
 }
+
 
 ast *new_tld(int datatype, ast *tld)
 {   struct tld *t= malloc(sizeof(struct tld));
@@ -444,9 +499,9 @@ declarator *new_parameter_decl(int typespec, declarator *d)
 void print_parameter_list(parameter_list *plist)
 {   declarator *d;
     do
-    {   
+    {
         switch(plist->pd->nodetype)
-        {   
+        {
 	
 	    case SIMPLE_DECLARATOR:
                printf("%s ", print_type(plist->pd->typespecifier));
@@ -491,8 +546,6 @@ void print_parameter_list(parameter_list *plist)
         }
     }while((plist= plist->next) != NULL);
 }
-
-
 
 
 

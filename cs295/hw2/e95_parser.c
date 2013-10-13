@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     /* init_token_definition_map();    */
 
 
-    printf("in e95_parser.c::main() about to run yyparse()\n");
+    printf("in e95_parser.c::main() about to run yyparse()\n\n\n");
 
     /* Parse Input */
     yyparse();
