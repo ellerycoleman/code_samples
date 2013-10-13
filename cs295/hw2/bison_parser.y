@@ -55,6 +55,10 @@
 	  continue_statement
 	  break_statement
 	  assignment_expr
+	  parenthesized_expr
+	  additive_expr
+	  multiplicative_expr
+	  cast_expr
 
 
 
@@ -77,6 +81,8 @@
 	  unsigned_type_specifier 
 	  integer_type_specifier 
 	  character_type_specifier
+	  add_op
+	  mult_op
 
 
 %type <id> label
@@ -111,8 +117,8 @@
 %token    RW_WHILE
 
 
-%token    OP_DIVISION
-%token    OP_REMAINDER
+%token    <i>OP_DIVISION
+%token    <i>OP_REMAINDER
 
 
 %token    OP_BITWISE_OR
@@ -180,12 +186,12 @@
 %token    BACKTICK
 %token    PERIOD
 %token    AMPERSAND
-%token    ASTERISK
+%token    <i>ASTERISK
 %token    DOLLAR_SIGN
 %token    AT_SIGN
 %token    NUMBER_SIGN
-%token    MINUS_SIGN
-%token    PLUS_SIGN
+%token    <i>MINUS_SIGN
+%token    <i>PLUS_SIGN
 %token    GREATER_THAN_SYMBOL
 
 %token    END_OF_LINE
@@ -417,7 +423,7 @@ comma_expr:  assignment_expr
 
 
 assignment_expr:  conditional_expr
-|                 unary_expr assignment_op assignment_expr
+|                 unary_expr assignment_op assignment_expr 
 ;
 
 
@@ -499,22 +505,26 @@ shift_op:  OP_LEFT_BITSHIFT
 
 additive_expr:  multiplicative_expr
 |               additive_expr add_op multiplicative_expr
+                {  $$= new_expr($2,$1,$3); 
+		}
 ;
 
 
-add_op:   PLUS_SIGN
-|         MINUS_SIGN
+add_op:   PLUS_SIGN  { $$= PLUS_SIGN;  }
+|         MINUS_SIGN { $$= MINUS_SIGN; }
 ;
 
 
 multiplicative_expr:  cast_expr
 |                     multiplicative_expr mult_op cast_expr
+                      {  $$= new_expr($2,$1,$3); 
+		      }
 ;
 
 
-mult_op:  ASTERISK
-|         OP_DIVISION
-|         OP_REMAINDER
+mult_op:  ASTERISK     { $$= ASTERISK;     }
+|         OP_DIVISION  { $$= OP_DIVISION;  }
+|         OP_REMAINDER { $$= OP_REMAINDER; }
 ;
 
 
@@ -565,7 +575,7 @@ constant:  INTEGER_CONSTANT
 ;
 
 
-parenthesized_expr:  SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN
+parenthesized_expr:  SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN { $$= $2; }
 ;
 
 

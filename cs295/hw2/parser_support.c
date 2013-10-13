@@ -123,6 +123,7 @@ void print_tree(ast *nodeptr)
 	    dlist= (struct decostat_list *) cstmt->l;
 	    do
 	    {   print_expr(dlist->decostat);
+	        printf(";\n");
 	    } while( (dlist= dlist->next) != NULL);
 
 
@@ -141,76 +142,103 @@ void print_expr(struct ast *expr)
 {   struct constant *k;
     int i=0;
     struct decostat_list *dlist;
-
     switch(expr->nodetype)
     {   case SEP_SEMICOLON:
-           printf(";\n");
 	   break;
 
         case INTEGER_CONSTANT:
 	   k= (struct constant *)expr;
-	   /* printf("DEBUG: printing int constant..\n"); */
 	   printf("%d", k->value);
-           printf(";\n");
 	   break;
 
         case CHARACTER_CONSTANT:
 	   k= (struct constant *)expr;
 	   printf("'%c'", k->value);
-           printf(";\n");
 	   break;
 
         case CHARACTER_CONSTANT_OCTAL:
 	   k= (struct constant *)expr;
 	   printf("%s", k->value);
-           printf(";\n");
 	   break;
 
         case STRING_CONSTANT:
 	   k= (struct constant *)expr;
 	   printf("\"%s\"", k->value);
-           printf(";\n");
 	   break;
 
         case RW_GOTO:
 	   printf("goto ");
 	   printf("%s", expr->l);
-           printf(";\n");
 	   break;
 
         case RW_CONTINUE:
 	   printf("continue");
-           printf(";\n");
 	   break;
 
         case RW_BREAK:
 	   printf("break");
-           printf(";\n");
 	   break;
 
-        case SEP_COMMA:
-	   /* printf("DEBUG: expr type: SEP_COMMA..\n"); */
-	   print_comma_expr(expr);
-	   break;
-
-        case DECOSTAT_LIST:
+        case DECOSTAT_LIST:  /* comma separated statements */
 	    dlist= (struct decostat_list *)expr;
 	    dlist= reverse_decostat_list(dlist);
 	    while(dlist->next != NULL)
-	    {   print_comma_expr(dlist->decostat);
+	    {   print_expr(dlist->decostat);
 	        printf(", ");
 	        dlist= dlist->next;
 	    }
-	    print_comma_expr(dlist->decostat);
-	    printf(";\n");
+	    print_expr(dlist->decostat);
+	    break;
+
+
+        case PLUS_SIGN:
+	   print_expr(expr->l);
+	   printf("+");
+	   print_expr(expr->r);
+	   break;
+
+
+        case MINUS_SIGN:
+	   print_expr(expr->l);
+	   printf("-");
+	   print_expr(expr->r);
+	   break;
+
+        case ASTERISK:
+	   print_expr(expr->l);
+	   printf("*");
+	   print_expr(expr->r);
+	   break;
+
+        case OP_DIVISION:
+	   print_expr(expr->l);
+	   printf("/");
+	   print_expr(expr->r);
+	   break;
+
+        case OP_REMAINDER:
+	   print_expr(expr->l);
+	   putchar('%');
+	   print_expr(expr->r);
+	   break;
+
+
+
+
+
+        default:
+	   printf("PRINT_EXPR: I'm not sure what i was called with?\n");
+	   break;
 
     }
 }
 
 
-
 void print_comma_expr(struct ast *expr)
-{   struct constant *k;
+{
+/*
+
+    struct constant *k;
     int i=0;
     struct decostat_list *dlist;
 
@@ -256,7 +284,15 @@ void print_comma_expr(struct ast *expr)
 	   print_comma_expr(expr);
 	   break;
 
+
+        default:
+	   printf("PRINT_COMMA_EXPR: I'm not sure what i was called with?\n");
+	   break;
+
     }
+
+*/
+
 }
 
 

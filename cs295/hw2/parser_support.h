@@ -33,6 +33,7 @@ typedef enum ntype {   DECL,
 
 
 		       COMMA_EXPR,
+		       CAST_EXPR,
 
 
 
