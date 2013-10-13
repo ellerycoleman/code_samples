@@ -52,6 +52,9 @@ void print_tree(ast *nodeptr)
                 /* print declarator list */
 	        do
 	        {   print_decl((struct ast *)dl);
+		    if(dl->next != NULL)
+		    {   printf(", ");
+		    }
 	        }while( (dl= dl->next) != NULL);
 	        printf(";\n");
 	        break;
@@ -204,6 +207,11 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case SIMPLE_DECLARATOR:
+	   print_decl(expr);
+	   break;
+
+
 
         default:
 	   printf("PRINT_EXPR: I'm not sure what i was called with?  nodetype: %d\n",expr->nodetype);
@@ -217,16 +225,14 @@ void print_expr(struct ast *expr)
 
 void print_decl(struct ast *expr)
 {
-    struct declarator_list *dl= (struct declarator_list *)expr;
+    struct declarator_list *dl;
     struct declarator *d;
-    switch( dl->d->nodetype )
-    {
-        case SIMPLE_DECLARATOR:
-           printf(" %s", dl->d->id);
-           if(dl->d->next != NULL)
-           {  printf(",");
-           }
-           break;
+
+    switch(expr->nodetype)
+    {   case  SIMPLE_DECLARATOR:
+          d= (struct declarator *)expr;
+          printf("%s", d->id);
+          break;
 
 
 	 case POINTER_DECLARATOR:
@@ -237,9 +243,6 @@ void print_decl(struct ast *expr)
 	        }
 	        else if( d->nodetype == SIMPLE_DECLARATOR )
 	        {   printf("%s", d->id);
-	            if(dl->next != NULL)
-	            {  printf(",");
-                    }
 	        }
             }while( (d= d->next) != NULL);
 	    break;
@@ -254,7 +257,12 @@ void print_decl(struct ast *expr)
 	    print_parameter_list(dl->d->plist);
 	    printf(")");
             break;
+
+        default:
+	   printf("PRINT_DECL: I'm not sure what i was called with?  nodetype: %d\n",expr->nodetype);
+	   break;
     }
+
 }
 
 
@@ -569,7 +577,7 @@ void print_parameter_list(parameter_list *plist)
 
 
             case -1:  /* print type only */
-               printf("%s ", print_type(plist->pd->typespecifier));
+               printf("%s", print_type(plist->pd->typespecifier));
 	       d= plist->pd;
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
