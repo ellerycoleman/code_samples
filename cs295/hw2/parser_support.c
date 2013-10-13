@@ -36,66 +36,26 @@ void print_tree(ast *nodeptr)
     do  /* cycle through all of the TLD's */
     {   if(tldlist->tld->datatype == DECL)
         {   de= (struct decl *)tldlist->tld->d;
-        /* printf("tld %d: %s\n", i++, print_type(de->nodetype)); */
-        switch(de->nodetype)
-        {   case DECL:
-	       /* print type */
-	       printf("%s ", print_type(de->typespecifier));
+            /* printf("tld %d: %s\n", i++, print_type(de->nodetype)); */
+            switch(de->nodetype)
+            {   case DECL:
+	        /* print type */
+	        printf("%s ", print_type(de->typespecifier));
 
 
-	       declarator_list *dl= de->dl;
-	       declarator *d;
-	       parameter_list *plist;
-	       dl= reverse_declarator_list(dl);
+	        declarator_list *dl= de->dl;
+	        declarator *d;
+	        parameter_list *plist;
+	        dl= reverse_declarator_list(dl);
 
 
-               /* print declarator list */
-	       do
-	       {
-
-	           switch( dl->d->nodetype )
-		   {
-
-
-		       case SIMPLE_DECLARATOR:
-                          printf(" %s", dl->d->id);
-                          if(dl->next != NULL)
-                          {  printf(",");
-                          }
-			  break;
-
-
-		       case POINTER_DECLARATOR:
-		          d= dl->d;
-		          do
-			  {   if( d->nodetype == POINTER_DECLARATOR )
-			      {   printf("*");
-			      }
-			      else if( d->nodetype == SIMPLE_DECLARATOR )
-			      {   printf("%s", d->id);
-	                         if(dl->next != NULL)
-	                         {  printf(",");
-                                 }
-			      }
-                          }while( (d= d->next) != NULL);
-			  break;
-
-
-		       case FUNCTION_DECLARATOR:
-		          /* print function name */
-			  d= dl->d->adeclarator;
-
-                          /* print parameter list */
-			  printf("%s(", d->id);
-			  print_parameter_list(dl->d->plist);
-			  printf(")");
-                          break;
-
-                   }
-	       }while( (dl= dl->next) != NULL);
-	    printf(";\n");
-	    break;
-        }
+                /* print declarator list */
+	        do
+	        {   print_decl((struct ast *)dl);
+	        }while( (dl= dl->next) != NULL);
+	        printf(";\n");
+	        break;
+            }
 	}/* end if DECL */
 
 
@@ -253,6 +213,67 @@ void print_expr(struct ast *expr)
 }
 
 
+
+
+void print_decl(struct ast *expr)
+{
+    struct declarator_list *dl= (struct declarator_list *)expr;
+    struct declarator *d;
+    switch( dl->d->nodetype )
+    {
+        case SIMPLE_DECLARATOR:
+           printf(" %s", dl->d->id);
+           if(dl->d->next != NULL)
+           {  printf(",");
+           }
+           break;
+
+
+	 case POINTER_DECLARATOR:
+	    d= dl->d;
+	    do
+	    {   if( d->nodetype == POINTER_DECLARATOR )
+	        {   printf("*");
+	        }
+	        else if( d->nodetype == SIMPLE_DECLARATOR )
+	        {   printf("%s", d->id);
+	            if(dl->next != NULL)
+	            {  printf(",");
+                    }
+	        }
+            }while( (d= d->next) != NULL);
+	    break;
+
+
+         case FUNCTION_DECLARATOR:
+	 /* print function name */
+	    d= dl->d->adeclarator;
+
+         /* print parameter list */
+	    printf("%s(", d->id);
+	    print_parameter_list(dl->d->plist);
+	    printf(")");
+            break;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void print_comma_expr(struct ast *expr)
 {
 /*
@@ -323,12 +344,12 @@ void print_comma_expr(struct ast *expr)
 /*
 
 void print_comma_expr(struct ast *expr)
-{   
+{
     if(expr->nodetype == SEP_COMMA)
     {   print_expr(expr->l);
     }
     printf(", ");
-      
+
 }
 */
 
