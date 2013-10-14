@@ -43,34 +43,31 @@ void print_tree(ast *nodeptr)
     struct decl *de;
     struct function_def *funcdef;
     int i=1;
+    struct declarator *d;
 
 
     do  /* cycle through all of the TLD's */
     {   if(tldlist->tld->datatype == DECL)
         {   de= (struct decl *)tldlist->tld->d;
-            /* printf("tld %d: %s\n", i++, print_type(de->nodetype)); */
-            switch(de->nodetype)
-            {   case DECL:
-	        /* print type */
-	        printf("%s ", print_type(de->typespecifier));
+
+	    printf("%s ", print_type(de->typespecifier));
 
 
 	        declarator_list *dl= de->dl;
-	        declarator *d;
-	        parameter_list *plist;
 	        dl= reverse_declarator_list(dl);
 
 
                 /* print declarator list */
 	        do
-	        {   print_decl((struct ast *)dl);
+	        {   d= dl->d;
+		    print_decl((struct ast *)d);
 		    if(dl->next != NULL)
 		    {   printf(", ");
 		    }
 	        }while( (dl= dl->next) != NULL);
-	        printf(";\n");
-	        break;
-            }
+
+
+	    printf(";\n");
 	}/* end if DECL */
 
 
@@ -276,9 +273,15 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case DECL:
+	   print_type( ((struct decl *)expr)->typespecifier);
+	   break;
+
         case SIMPLE_DECLARATOR:
 	   print_decl(expr);
 	   break;
+
+
 
 
         default:
