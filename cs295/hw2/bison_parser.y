@@ -67,6 +67,7 @@
 	  preincrement_expr
 	  postincrement_expr
 	  postfix_expr
+	  return_statement
 
 
 
@@ -649,6 +650,7 @@ predecrement_expr:  OP_DECREMENT unary_expr   {  $$= new_expr(PREDECREMENT_EXPR,
 labeled_statement:  label SEP_COLON statement
 ;
 
+
 conditional_statement:  if_statement
 |                       if_else_statement
 ;
@@ -703,8 +705,8 @@ continue_statement:  RW_CONTINUE SEP_SEMICOLON
 ;
 
 
-return_statement:  RW_RETURN SEP_SEMICOLON
-|                  RW_RETURN comma_expr SEP_SEMICOLON
+return_statement:  RW_RETURN SEP_SEMICOLON             { $$= new_expr(RW_RETURN,NULL,NULL); }
+|                  RW_RETURN comma_expr SEP_SEMICOLON  { $$= new_expr(RW_RETURN,$2,NULL);   }
 ;
 
 
