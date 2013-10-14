@@ -1,5 +1,17 @@
 #!/usr/local/bin/bash
+#-----------------------------------------------------------------------------
+# File:		test.sh
+# Date:		Thu Oct 10 23:54:39 EDT 2013
+# Author:	Ellery Coleman <ellery.coleman@fas.harvard.edu>
+# Abstract:	A shell script to exercise and test the hw2 parser.
+#-----------------------------------------------------------------------------
+# Revision: $Id$
+#-----------------------------------------------------------------------------
 
+
+#
+# Write a C program and store it in testprog.c
+#----------------------------------------------
 
 cat <<DATA > testprog.c 
 
@@ -106,10 +118,18 @@ MYSTMT:    {
 /*---------------------------------------------------*/
 
 
-
 DATA
 
 
+
+
+# Now invoke the parser and give it the testprog.c
+# file that was created above.
+#----------------------------------------------------
 cat testprog.c
 echo "Preparing to parse the above input program..."
+echo "Running the parser with GDB..."
 cat testprog.c | gdb -x gdb.cmd ./parser
+
+
+
