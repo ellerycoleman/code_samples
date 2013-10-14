@@ -45,6 +45,8 @@ typedef enum ntype {   DECL,
 		       RETURN_STATEMENT,
 		       GOTO_STATEMENT,
 		       NULL_STATEMENT,
+		       LABELED_STATEMENT,
+		       LABEL,
 
 
 		       COMMA_EXPR,
@@ -57,6 +59,7 @@ typedef enum ntype {   DECL,
 		       POSTINCREMENT_EXPR,
 		       INDIRECTION_EXPR,
 		       ADDRESS_EXPR,
+		       BITWISE_NEGATION_EXPR,
 
 
 

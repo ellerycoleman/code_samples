@@ -71,6 +71,8 @@
 	  constant_expr
 	  indirection_expr
 	  address_expr
+	  labeled_statement
+	  bitwise_negation_expr
 
 
 
@@ -633,7 +635,7 @@ logical_negation_expr:  OP_LOGICAL_NOT cast_expr
 ;
 
 
-bitwise_negation_expr:  OP_ONES_COMPLIMENT cast_expr
+bitwise_negation_expr:  OP_ONES_COMPLIMENT cast_expr  {  $$= new_expr(BITWISE_NEGATION_EXPR,$2,NULL); }
 ;
 
 
@@ -653,7 +655,10 @@ predecrement_expr:  OP_DECREMENT unary_expr   {  $$= new_expr(PREDECREMENT_EXPR,
 ;
 
 
-labeled_statement:  label SEP_COLON statement
+labeled_statement:  label SEP_COLON statement 
+                    {   struct ast *label= new_constant(LABEL,$1);
+		        $$= new_expr(LABELED_STATEMENT,label,$3); 
+		    }
 ;
 
 

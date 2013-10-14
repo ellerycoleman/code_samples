@@ -75,6 +75,7 @@ int main(void)
     a++;
     *i;
     &i;
+    ~i;
 
 
 
@@ -87,6 +88,15 @@ int main(void)
     /* decls inside of function blocks */
     int i;
     int *p;
+
+
+    /* testing labeled statements */
+MYSTMT:    {  
+               a= 10;
+	       b= 5;
+	       c= a+b;
+	       return 0;
+           }
 
 
 }

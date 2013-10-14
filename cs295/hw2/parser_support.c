@@ -40,7 +40,7 @@ void print_tree(ast *nodeptr)
     /* A tld_list has a series of tld nodes; each node pointing to either
      | a decl or a funcdef.
      +-----------------------------------------------------------------*/
-    struct decl *de;
+    struct decl *tdecl;
     struct function_def *funcdef;
     int i=1;
     struct declarator *d;
@@ -53,12 +53,12 @@ void print_tree(ast *nodeptr)
 	     |            if TLD is a DECL
 	     +--------------------------------------------*/
         if(tldlist->tld->datatype == DECL)
-        {   de= (struct decl *)tldlist->tld->d;
-
+        {   tdecl= (struct decl *)tldlist->tld->d;
 
             /* print declarator list */
-	    printf("%s ", print_type(de->typespecifier));
-            print_expr((struct ast *)de);
+	    printf("%s ", print_type(tdecl->typespecifier));
+            print_expr((struct ast *)tdecl);
+
 	    printf(";\n");
 	}
 
@@ -138,6 +138,11 @@ void print_expr(struct ast *expr)
 	   printf("\"%s\"", k->value);
 	   break;
 
+        case LABEL:
+	   k= (struct constant *)expr;
+	   printf("%s", k->value);
+	   break;
+
         case RW_GOTO:
 	   printf("goto ");
 	   printf("%s", expr->l);
@@ -150,6 +155,18 @@ void print_expr(struct ast *expr)
         case RW_BREAK:
 	   printf("break");
 	   break;
+
+
+        case COMPOUND_STATEMENT:
+	    dlist= (struct decostat_list *)expr->l;
+	    printf("{   ");
+	    do
+	    {   print_expr(dlist->decostat);
+	        printf(";\n");
+            }while( (dlist= dlist->next) != NULL);
+	    printf("}\n");
+	   break;
+
 
         case DECOSTAT_LIST:  /* comma separated statements */
 	    dlist= (struct decostat_list *)expr;
@@ -343,6 +360,18 @@ void print_expr(struct ast *expr)
 	   print_expr(expr->l);
 	   break;
 
+
+        case BITWISE_NEGATION_EXPR:
+	   printf("~");
+	   print_expr(expr->l);
+	   break;
+
+
+        case LABELED_STATEMENT:
+	   print_expr(expr->l);
+	   printf(":   ");
+	   print_expr(expr->r);
+	   break;
 
 
         case RW_RETURN:
