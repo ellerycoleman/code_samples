@@ -282,6 +282,47 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case UNARY_MINUS_EXPR:
+	   printf("-");
+	   print_expr(expr->l);
+	   break;
+
+
+        case UNARY_PLUS_EXPR:
+	   printf("+");
+	   print_expr(expr->l);
+	   break;
+
+
+        case PREDECREMENT_EXPR:
+	   printf("--");
+	   print_expr(expr->l);
+	   break;
+
+
+        case POSTDECREMENT_EXPR:
+	   print_expr(expr->l);
+	   printf("--");
+	   break;
+
+
+        case PREINCREMENT_EXPR:
+	   printf("++");
+	   print_expr(expr->l);
+	   break;
+
+
+        case POSTINCREMENT_EXPR:
+	   print_expr(expr->l);
+	   printf("++");
+	   break;
+
+
+
+
+
+
+
 
 
         default:

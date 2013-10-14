@@ -48,6 +48,12 @@ typedef enum ntype {   DECL,
 
 		       COMMA_EXPR,
 		       CAST_EXPR,
+		       UNARY_MINUS_EXPR,
+		       UNARY_PLUS_EXPR,
+		       PREDECREMENT_EXPR,
+		       POSTDECREMENT_EXPR,
+		       PREINCREMENT_EXPR,
+		       POSTINCREMENT_EXPR,
 
 
 

@@ -62,6 +62,15 @@ int main(void)
 
     /* testing direct abstract declarators */
     int (*a);
+
+
+    /* unary ops */
+    -5;
+    +5;
+    --a;
+    a--;
+    ++a;
+    a++;
 }
 
 /*---------------------------------------------------*/

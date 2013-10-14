@@ -60,6 +60,14 @@
 	  multiplicative_expr
 	  cast_expr
 	  primary_expr
+	  unary_minus_expr
+	  unary_plus_expr
+	  predecrement_expr
+	  postdecrement_expr
+	  preincrement_expr
+	  postincrement_expr
+	  postfix_expr
+
 
 
 
@@ -598,19 +606,19 @@ expression_list:   assignment_expr
 ;
 
 
-postincrement_expr:  postfix_expr OP_INCREMENT
+postincrement_expr:  postfix_expr OP_INCREMENT   {  $$= new_expr(POSTINCREMENT_EXPR,$1,NULL); }
 ;
 
 
-postdecrement_expr:  postfix_expr OP_DECREMENT
+postdecrement_expr:  postfix_expr OP_DECREMENT   {  $$= new_expr(POSTDECREMENT_EXPR,$1,NULL); }
 ;
 
 
-unary_minus_expr:  MINUS_SIGN cast_expr
+unary_minus_expr:  MINUS_SIGN cast_expr  {  $$= new_expr(UNARY_MINUS_EXPR,$2,NULL); }
 ;
 
 
-unary_plus_expr:  PLUS_SIGN cast_expr
+unary_plus_expr:  PLUS_SIGN cast_expr    {  $$= new_expr(UNARY_PLUS_EXPR,$2,NULL); }
 ;
 
 
@@ -630,11 +638,11 @@ indirection_expr:  ASTERISK cast_expr
 ;
 
 
-preincrement_expr:  OP_INCREMENT unary_expr
+preincrement_expr:  OP_INCREMENT unary_expr   {  $$= new_expr(PREINCREMENT_EXPR,$2,NULL); }
 ;
 
 
-predecrement_expr:  OP_DECREMENT unary_expr
+predecrement_expr:  OP_DECREMENT unary_expr   {  $$= new_expr(PREDECREMENT_EXPR,$2,NULL); }
 ;
 
 
