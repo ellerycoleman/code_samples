@@ -58,7 +58,7 @@ void print_tree(ast *nodeptr)
 
             /* print declarator list */
 	    printf("%s ", print_type(de->typespecifier));
-            print_expr(de);
+            print_expr((struct ast *)de);
 	    printf(";\n");
 	}
 
@@ -364,7 +364,7 @@ void print_decl(struct ast *expr)
 
 
 	 case POINTER_DECLARATOR:
-	    d= dl->d;
+	    d= (struct declarator *)expr;
 	    do
 	    {   if( d->nodetype == POINTER_DECLARATOR )
 	        {   printf("*");
