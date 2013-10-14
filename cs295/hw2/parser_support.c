@@ -1,5 +1,17 @@
+/*============================================================================
+| File:		parser_support.c
+| Date:		Sun Sep 15 02:18:18 GMT 2013
+| Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
+| Abstract:	Implements user defined functions for parser.
++-----------------------------------------------------------------------------
+| Revision: $Id$
++===========================================================================*/
+
+
+
 #include "parser_support.h"
 #include "bison_parser.tab.h"
+
 
 
 yyerror(char *s,...)

@@ -1,7 +1,20 @@
+/*============================================================================
+| File:		parser_support.h
+| Date:		Sun Sep 15 02:18:18 GMT 2013
+| Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
+| Abstract:	Declarations for user defined functions for parser.
++-----------------------------------------------------------------------------
+| Revision: $Id$
++===========================================================================*/
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+
 
 
 
