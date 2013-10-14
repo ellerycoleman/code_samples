@@ -55,31 +55,18 @@ void print_tree(ast *nodeptr)
         if(tldlist->tld->datatype == DECL)
         {   de= (struct decl *)tldlist->tld->d;
 
+
+            /* print declarator list */
 	    printf("%s ", print_type(de->typespecifier));
-
-
-	        declarator_list *dl= de->dl;
-	        dl= reverse_declarator_list(dl);
-
-
-                /* print declarator list */
-	        do
-	        {   d= dl->d;
-		    print_decl((struct ast *)d);
-		    if(dl->next != NULL)
-		    {   printf(", ");
-		    }
-	        }while( (dl= dl->next) != NULL);
-
-
+            print_expr(de);
 	    printf(";\n");
-	}/* end if DECL */
+	}
 
 
 
 
             /*--------------------------------------------+
-	     |            if TLD is a FUNCTION_DEFINITION
+	     |      if TLD is a FUNCTION_DEFINITION
 	     +--------------------------------------------*/
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
         {
