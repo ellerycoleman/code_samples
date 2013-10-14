@@ -70,6 +70,7 @@
 	  return_statement
 	  constant_expr
 	  indirection_expr
+	  address_expr
 
 
 
@@ -636,11 +637,11 @@ bitwise_negation_expr:  OP_ONES_COMPLIMENT cast_expr
 ;
 
 
-address_expr:  AMPERSAND cast_expr
+address_expr:  AMPERSAND cast_expr            {  $$= new_expr(ADDRESS_EXPR,$2,NULL);      }
 ;
 
 
-indirection_expr:  ASTERISK cast_expr         { $$= new_expr(INDIRECTION_EXPR,$2, NULL);  }
+indirection_expr:  ASTERISK cast_expr         {  $$= new_expr(INDIRECTION_EXPR,$2, NULL); }
 ;
 
 

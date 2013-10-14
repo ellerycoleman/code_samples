@@ -56,6 +56,7 @@ typedef enum ntype {   DECL,
 		       PREINCREMENT_EXPR,
 		       POSTINCREMENT_EXPR,
 		       INDIRECTION_EXPR,
+		       ADDRESS_EXPR,
 
 
 

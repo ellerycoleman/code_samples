@@ -338,6 +338,13 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case ADDRESS_EXPR:
+	   printf("&");
+	   print_expr(expr->l);
+	   break;
+
+
+
         case RW_RETURN:
 	   printf("return");
 	   if( (expr->l) != NULL)

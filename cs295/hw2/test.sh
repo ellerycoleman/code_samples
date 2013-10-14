@@ -74,6 +74,7 @@ int main(void)
     ++a;
     a++;
     *i;
+    &i;
 
 
 
