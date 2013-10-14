@@ -381,6 +381,17 @@ declarator *new_pointer_declarator(declarator *next)
 }
 
 
+declarator *new_direct_abstract_declarator(int type, struct ast *data, declarator *next)
+{   declarator *d= malloc(sizeof(struct declarator));
+    d->nodetype= type;
+    if(type == DAD_PAREN_SINGLE_ARG)
+    {   d->adeclarator= (struct declarator *)data;
+    }
+
+    return d;
+}
+
+
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist)
 {   declarator *d= malloc(sizeof(declarator));
     {   d->nodetype= FUNCTION_DECLARATOR;

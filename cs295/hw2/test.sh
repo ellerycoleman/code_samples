@@ -58,6 +58,10 @@ int main(void)
     a&= 5;
     a|= 5;
     a^= 5;
+
+
+    /* testing direct abstract declarators */
+    int (*a);
 }
 
 /*---------------------------------------------------*/

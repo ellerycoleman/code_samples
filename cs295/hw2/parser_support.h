@@ -31,6 +31,7 @@ typedef enum ntype {   DECL,
 		       POINTER_DECLARATOR,
 		       SIMPLE_DECLARATOR,
 		       FUNCTION_DECLARATOR,
+		       DAD_PAREN_SINGLE_ARG,
 
 
 		       STATEMENT,
@@ -205,3 +206,5 @@ void print_expr(struct ast *expr);
 void print_decl(struct ast *expr);
 
 
+
+declarator *new_direct_abstract_declarator(int type, struct ast *data, struct declarator *next);

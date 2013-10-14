@@ -346,7 +346,8 @@ abstract_declarator:   pointer
 
 
 direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
-                              {   $$= $2;
+                              {   printf("GRAMMAR: DAD_PAREN_SINGLE_ARG detected..\n");   
+			          $$= new_direct_abstract_declarator(DAD_PAREN_SINGLE_ARG,(struct ast *)$2,NULL);
 			      }
 |                             SEP_LEFT_BRACKET SEP_RIGHT_BRACKET                    /*  int []  */
                               {
