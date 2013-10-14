@@ -331,6 +331,13 @@ void print_expr(struct ast *expr)
 	   printf("++");
 	   break;
 
+
+        case INDIRECTION_EXPR:
+	   printf("*");
+	   print_expr(expr->l);
+	   break;
+
+
         case RW_RETURN:
 	   printf("return");
 	   if( (expr->l) != NULL)
@@ -341,8 +348,10 @@ void print_expr(struct ast *expr)
 
 
 
+
+
         default:
-	   printf("PRINT_EXPR: I'm not sure what i was called with?  nodetype: %d\n",expr->nodetype);
+	   printf("PRINT_EXPR: not sure what to do with nodetype: %d\n",expr->nodetype);
 	   break;
 
     }
@@ -397,7 +406,7 @@ void print_decl(struct ast *expr)
 
 
         default:
-	   printf("PRINT_DECL: I'm not sure what i was called with?  nodetype: %d\n",expr->nodetype);
+	   printf("PRINT_DECL: not sure what to do with nodetype: %d\n",expr->nodetype);
 	   break;
     }
 

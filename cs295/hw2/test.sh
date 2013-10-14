@@ -73,6 +73,7 @@ int main(void)
     a--;
     ++a;
     a++;
+    *i;
 
 
 
@@ -85,6 +86,8 @@ int main(void)
     /* decls inside of function blocks */
     int i;
     int *p;
+
+
 }
 
 /*---------------------------------------------------*/

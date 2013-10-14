@@ -69,6 +69,7 @@
 	  postfix_expr
 	  return_statement
 	  constant_expr
+	  indirection_expr
 
 
 
@@ -639,7 +640,7 @@ address_expr:  AMPERSAND cast_expr
 ;
 
 
-indirection_expr:  ASTERISK cast_expr
+indirection_expr:  ASTERISK cast_expr         { $$= new_expr(INDIRECTION_EXPR,$2, NULL);  }
 ;
 
 
