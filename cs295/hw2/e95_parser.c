@@ -32,7 +32,6 @@ FILE *input, *output;
 
 
 int num_of_tokens_processed=0;
-extern struct comma_list *tclist;
 
 
 int main(int argc, char **argv)
