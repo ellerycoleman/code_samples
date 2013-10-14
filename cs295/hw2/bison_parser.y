@@ -68,6 +68,7 @@
 	  postincrement_expr
 	  postfix_expr
 	  return_statement
+	  constant_expr
 
 
 
@@ -84,6 +85,7 @@
 	   parameter_decl 
 	   abstract_declarator 
 	   direct_abstract_declarator
+	   array_declarator
 
 
 %type <i> type_specifier 
@@ -369,6 +371,8 @@ direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
 
 
 array_declarator:  direct_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
+                   {    $$= new_array_declarator(ARRAY_DECLARATOR,$1,$3);
+		   }
 ;
 
 

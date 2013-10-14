@@ -47,7 +47,12 @@ void print_tree(ast *nodeptr)
 
 
     do  /* cycle through all of the TLD's */
-    {   if(tldlist->tld->datatype == DECL)
+    {   
+    
+            /*--------------------------------------------+
+	     |            if TLD is a DECL
+	     +--------------------------------------------*/
+        if(tldlist->tld->datatype == DECL)
         {   de= (struct decl *)tldlist->tld->d;
 
 	    printf("%s ", print_type(de->typespecifier));
@@ -73,6 +78,9 @@ void print_tree(ast *nodeptr)
 
 
 
+            /*--------------------------------------------+
+	     |            if TLD is a FUNCTION_DEFINITION
+	     +--------------------------------------------*/
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
         {
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
@@ -114,6 +122,11 @@ void print_expr(struct ast *expr)
 {   struct constant *k;
     int i=0;
     struct decostat_list *dlist;
+    struct decl *tdecl;
+    struct declarator_list *dl;
+    struct declarator *d;
+
+
     switch(expr->nodetype)
     {   case SEP_SEMICOLON:
 	   break;
@@ -274,8 +287,22 @@ void print_expr(struct ast *expr)
 
 
         case DECL:
-	   print_type( ((struct decl *)expr)->typespecifier);
+	   tdecl= (struct decl *)expr;
+           dl= tdecl->dl;
+	   dl= reverse_declarator_list(dl);
+
+
+           /* print declarator list */
+	   printf("%s ",print_type(tdecl->typespecifier));
+	   do
+	   {   d= dl->d;
+	       print_decl((struct ast *)d);
+	       if(dl->next != NULL)
+	       {   printf(", ");
+	       }
+	   }while( (dl= dl->next) != NULL);
 	   break;
+
 
         case SIMPLE_DECLARATOR:
 	   print_decl(expr);
@@ -327,11 +354,6 @@ void print_expr(struct ast *expr)
 
 
 
-
-
-
-
-
         default:
 	   printf("PRINT_EXPR: I'm not sure what i was called with?  nodetype: %d\n",expr->nodetype);
 	   break;
@@ -376,6 +398,16 @@ void print_decl(struct ast *expr)
 	    print_parameter_list(dl->d->plist);
 	    printf(")");
             break;
+
+
+        case ARRAY_DECLARATOR:
+           d= (struct declarator *)expr;
+	   printf(" %s", d->adeclarator->id);
+	   printf("[");
+	   print_expr((struct ast *)d->exp);
+	   printf("]");
+	   break;
+
 
         default:
 	   printf("PRINT_DECL: I'm not sure what i was called with?  nodetype: %d\n",expr->nodetype);
@@ -424,6 +456,20 @@ declarator *new_pointer_declarator(declarator *next)
     else
     {   d->nodetype= POINTER_DECLARATOR;
         d->next= next;
+    }
+    return d;
+}
+
+
+declarator *new_array_declarator(int type, struct declarator *arrydec, struct ast *expr)
+{   declarator *d= malloc(sizeof(declarator));
+    if(d == NULL)
+    {   printf("*** Parser ran out of memory! ***\n");
+    }
+    else
+    {   d->nodetype= ARRAY_DECLARATOR;
+        d->adeclarator= arrydec;
+        d->exp= (struct expr *)expr;
     }
     return d;
 }

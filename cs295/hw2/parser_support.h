@@ -32,6 +32,7 @@ typedef enum ntype {   DECL,
 		       SIMPLE_DECLARATOR,
 		       FUNCTION_DECLARATOR,
 		       DAD_PAREN_SINGLE_ARG,
+		       ARRAY_DECLARATOR,
 
 
 		       STATEMENT,
@@ -214,3 +215,4 @@ void print_decl(struct ast *expr);
 
 
 declarator *new_direct_abstract_declarator(int type, struct ast *data, struct declarator *next);
+declarator *new_array_declarator(int type, struct declarator *arrydec, struct ast *expr);

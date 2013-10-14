@@ -60,8 +60,10 @@ int main(void)
     a^= 5;
 
 
-    /* testing direct abstract declarators */
-    int (*a);
+    /* testing direct abstract declarators and array declarators */
+    int (*q)(void);
+    int a[5];
+    char word[15];
 
 
     /* unary ops */
@@ -77,6 +79,12 @@ int main(void)
     /* return statement */
     return;
     return 3;
+
+
+
+    /* decls inside of function blocks */
+    int i;
+    int *p;
 }
 
 /*---------------------------------------------------*/
