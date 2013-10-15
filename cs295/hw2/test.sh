@@ -124,6 +124,13 @@ MYSTMT:    {
     int f2(char []);
     int f3(char [5]);
     int f4(char [][5]);
+    int f5(char (*)[5]);
+    int f6(char [][5]);
+    int f7(char [10][5]);
+    int f8(char [][10][5]);
+    int f9(char [][10][10][5]);
+    int f10(char[][12][11][10][5]);
+
 
 }
 

@@ -363,11 +363,6 @@ abstract_declarator:   pointer
 
 direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
                               {   /*  foo(int (*));    */
-			          /*
-			          printf("GRAMMAR: addr of $2: %d\n", $2);
-				  printf("GRAMMAR: nodetype of $2: %d\n", $2->nodetype);
-				  printf("GRAMMAR: typespec of $2: %d\n", $2->typespecifier);
-				  */
 			          $$= new_direct_abstract_declarator(PAREN_ENCLOSED,(struct ast *)$2,NULL);
 			      }
 |                             SEP_LEFT_BRACKET SEP_RIGHT_BRACKET
@@ -380,7 +375,15 @@ direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
 			      }
 |                             direct_abstract_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
                               {   /*  foo(int [][4]);  */
-			          $$= new_direct_abstract_declarator(DAD_LIST,NULL,NULL);
+			          printf("GRAMMAR: addr of $1: %d\n", $1);
+				  printf("GRAMMAR: nodetype of $1: %d\n", $1->nodetype);
+				  printf("GRAMMAR: typespec of $1: %d\n", $1->typespecifier);
+
+			          printf("GRAMMAR: addr of $3: %d\n", $3);
+				  printf("GRAMMAR: nodetype of $3: %d\n", $3->nodetype);
+				  printf("GRAMMAR: typespec of $3: %d\n", ((struct declarator *)$3)->typespecifier);
+
+			          $$= new_direct_abstract_declarator(DAD_LIST,$3,$1);
 			      }
 ;
 

@@ -432,13 +432,15 @@ void print_decl(struct ast *expr)
 {
     struct declarator_list *dl;
     struct declarator *d;
+    struct declarator *ad;
     struct ast *tast;
+
 
     switch(expr->nodetype)
     {   case  SIMPLE_DECLARATOR:
-          d= (struct declarator *)expr;
-          printf("%s", d->id);
-          break;
+           d= (struct declarator *)expr;
+           printf("%s", d->id);
+           break;
 
 
 	 case POINTER_DECLARATOR:
@@ -473,6 +475,10 @@ void print_decl(struct ast *expr)
 	   printf("]");
 	   break;
 
+      
+        case DIRECT_ABSTRACT_DECLARATOR:
+	   print_dad(d);
+	   break;
 
         default:
 	   printf("PRINT_DECL: not sure what to do with nodetype: %d\n",expr->nodetype);
@@ -542,8 +548,10 @@ declarator *new_array_declarator(int type, struct declarator *arrydec, struct as
 
 declarator *new_direct_abstract_declarator(int type, struct ast *data, declarator *next)
 {   declarator *d= malloc(sizeof(struct declarator));
+    
     d->nodetype= DIRECT_ABSTRACT_DECLARATOR;
     d->dadtype= type;
+
     if(type == PAREN_ENCLOSED)
     {   d->adeclarator= (struct declarator *)data;
     }
@@ -551,7 +559,10 @@ declarator *new_direct_abstract_declarator(int type, struct ast *data, declarato
     {   d->exp= (struct expr *)data;
     }
     else if(type == DAD_LIST)
-    {   d->adeclarator= (struct declarator *)data;
+    {   d->exp= (struct expr *)data;
+        printf("CREATING DAD_LIST: expr type: %d\n", d->exp->nodetype);
+        printf("CREATING DAD_LIST $1-> dadtype: d dadtype: %d\n", d->dadtype);
+        printf("CREATING DAD_LIST $3->dadtype: d->next->dadtype: %d\n", next->dadtype);
         d->next= next;
     }
 
@@ -831,39 +842,13 @@ void print_parameter_list(parameter_list *plist)
 
 	    case DIRECT_ABSTRACT_DECLARATOR:
 	       d= plist->pd;
-	       ad= d->adeclarator;
-	       printf("%s ", print_type(d->typespecifier));
-
-	       switch(d->dadtype)
-	       {   
-	           case PAREN_ENCLOSED:
-                      printf("(");
-		      print_decl((struct ast *)ad);
-                      printf(")");
-		      break;
-
-
-                   case BRACKET_NO_EXPR:
-                      printf("[]");
-		      break;
-
-
-                   case BRACKET_EXPR:
-                      printf("[");
-		      print_expr(d->exp);
-                      printf("]");
-		      break;
-
-
-                   case DAD_LIST:
-                      printf("dad_list DAD");
-		      break;
-
-
-                   default:
-		      printf("unknown dad type: %d\n",d->dadtype);
-               }
+	       print_dad(d);
 	       break;
+
+
+	    case DECL:
+	       d= plist->pd;
+	       print_decl((struct ast *)d);
 	       
 
             case -1:  /* print type only */
@@ -891,6 +876,91 @@ void print_parameter_list(parameter_list *plist)
         {   printf(", ");
         }
     }while((plist= plist->next) != NULL);
+}
+
+
+void print_dad(declarator *d)
+{   struct declarator *ad;
+               
+
+	       switch(d->dadtype)
+	       {   
+	           case PAREN_ENCLOSED:
+	              ad= d->adeclarator;
+	              printf("%s ", print_type(d->typespecifier));
+                      printf("(");
+		      print_decl((struct ast *)ad);
+                      printf(")");
+		      break;
+
+
+                   case BRACKET_NO_EXPR:
+	              printf("%s ", print_type(d->typespecifier));
+                      printf("[]");
+		      break;
+
+
+                   case BRACKET_EXPR:
+	              printf("%s ", print_type(d->typespecifier));
+                      printf("[");
+		      print_expr((struct ast *)d->exp);
+                      printf("]");
+		      break;
+
+
+                   case DAD_LIST:
+                      printf("%s ", print_type(d->typespecifier));
+		      d= reverse_declarators(d);
+		      do
+		      {   /* print the expression ending the dad_list */
+		          if(d->exp != NULL && d->next == NULL)
+		          {   printf("[");
+		              print_expr((struct ast *)d->exp);
+                              printf("]");
+                          }
+		          else if(d->exp != NULL && d->next != NULL)
+	                  {   
+		              printf("[");
+		              print_expr((struct ast *)d->exp);
+                              printf("]");
+                          }
+
+			  /* print dad_list members without typespecifiers */
+		          else
+		          {   
+			      switch(d->dadtype)
+	                      {   
+	                          case PAREN_ENCLOSED:
+                                     ad= d->adeclarator;
+                                     printf("(");
+		                     print_decl((struct ast *)ad);
+                                     printf(")");
+		                     break;
+
+
+                                  case BRACKET_NO_EXPR:
+                                     printf("[]");
+		                     break;
+
+
+                                  case BRACKET_EXPR:
+                                     printf("[");
+		                     print_expr((struct ast *)d->exp);
+                                     printf("]");
+		                     break;
+                                 
+				  default:
+				     printf("ERROR: problem printing dad_list...\n");
+				     break;
+		               }
+                          }
+                      }while( (d= d->next) != NULL);
+		      break;
+
+                   default:
+		      printf("unknown dad type: %d\n",d->dadtype);
+               }
+
 }
 
 

@@ -28,6 +28,7 @@ typedef enum ntype {   DECL,
 		       TLD_LIST,
 		       FUNCDEF,
 		       DIRECT_DECLARATOR,
+		       DECLARATOR_LIST,
 		       POINTER_DECLARATOR,
 		       SIMPLE_DECLARATOR,
 		       FUNCTION_DECLARATOR,
@@ -138,7 +139,8 @@ typedef struct funcdef
 
 
 typedef struct declarator_list
-{   declarator *d;
+{   ntype nodetype;
+    declarator *d;
     struct declarator_list *next;
 } declarator_list;
 
@@ -228,3 +230,4 @@ void print_decl(struct ast *expr);
 
 declarator *new_direct_abstract_declarator(int type, struct ast *data, struct declarator *next);
 declarator *new_array_declarator(int type, struct declarator *arrydec, struct ast *expr);
+void print_dad(declarator *d);
