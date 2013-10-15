@@ -41,7 +41,7 @@
 	  function_def_specifier
 	  translation_unit
 	  top_level_decl
-	  statement
+	  statement 
 	  comma_expr
 	  expression_statement
 	  constant
@@ -81,22 +81,22 @@
 %type <dlist> initialized_declarator_list
 
 
-%type <dp> declarator 
-           direct_declarator 
-	   simple_declarator 
-	   pointer 
-	   pointer_declarator 
-	   function_declarator 
-	   parameter_decl 
-	   abstract_declarator 
+%type <dp> declarator
+           direct_declarator
+	   simple_declarator
+	   pointer
+	   pointer_declarator
+	   function_declarator
+	   parameter_decl
+	   abstract_declarator
 	   direct_abstract_declarator
 	   array_declarator
 
 
-%type <i> type_specifier 
-          signed_type_specifier 
-	  unsigned_type_specifier 
-	  integer_type_specifier 
+%type <i> type_specifier
+          signed_type_specifier
+	  unsigned_type_specifier
+	  integer_type_specifier
 	  character_type_specifier
 	  add_op
 	  mult_op
@@ -351,7 +351,7 @@ parameter_list:   parameter_decl
 
 parameter_decl:  type_specifier declarator                { $$= new_parameter_decl($1,$2);    }
 |                type_specifier                           { $$= new_parameter_decl($1,NULL);  }
-|                type_specifier abstract_declarator       { printf("GRAMMAR: type spec + abstract declarator\n"); $$= new_parameter_decl($1,$2);    }
+|                type_specifier abstract_declarator       { $$= new_parameter_decl($1,$2);    }
 ;
 
 
@@ -362,19 +362,22 @@ abstract_declarator:   pointer
 
 
 direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
-                              {   printf("GRAMMAR: dad type paren_enclosed\n");
-			          $$= new_direct_abstract_declarator(PAREN_ENCLOSED,NULL,NULL);
+                              {   /*  foo(int (*));    */
+			          printf("GRAMMAR: addr of $2: %d\n", $2);
+				  printf("GRAMMAR: nodetype of $2: %d\n", $2->nodetype);
+				  printf("GRAMMAR: typespec of $2: %d\n", $2->typespecifier);
+			          $$= new_direct_abstract_declarator(PAREN_ENCLOSED,(struct ast *)$2,NULL);
 			      }
-|                             SEP_LEFT_BRACKET SEP_RIGHT_BRACKET                    /*  int []  */
-                              {   printf("GRAMMAR: dad type bracket_no_expr\n");
+|                             SEP_LEFT_BRACKET SEP_RIGHT_BRACKET
+                              {   /*  foo(int []);     */
 			          $$= new_direct_abstract_declarator(BRACKET_NO_EXPR,NULL,NULL);
 			      }
-|                             SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET      /*  int [4] */
-                              {   printf("GRAMMAR: dad type bracket_expr\n");
+|                             SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
+                              {   /*  foo(int [4]);    */
 			          $$= new_direct_abstract_declarator(BRACKET_EXPR,NULL,NULL);
 			      }
 |                             direct_abstract_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
-                              {   printf("GRAMMAR: dad type dad_list\n");
+                              {   /*  foo(int [][4]);  */
 			          $$= new_direct_abstract_declarator(DAD_LIST,NULL,NULL);
 			      }
 ;
@@ -418,9 +421,8 @@ declaration_or_statement_list:   declaration_or_statement
 
 
 declaration_or_statement:   decl
-|                           statement 
+|                           statement
 ;
-
 
 statement:  expression_statement
 |           labeled_statement
@@ -439,7 +441,7 @@ expression_statement:   comma_expr SEP_SEMICOLON
 ;
 
 
-comma_expr:  assignment_expr  
+comma_expr:  assignment_expr
              {  $$= new_decostat_list($1,NULL);
 	     }
 |            comma_expr SEP_COMMA assignment_expr
@@ -454,15 +456,15 @@ assignment_expr:  conditional_expr
 
 
 assignment_op:  OP_ASSIGNMENT                      { $$= OP_ASSIGNMENT;                }
-|               OP_ASSIGNMENT_ADD                  { $$= OP_ASSIGNMENT_ADD;            }                    
+|               OP_ASSIGNMENT_ADD                  { $$= OP_ASSIGNMENT_ADD;            }
 |               OP_ASSIGNMENT_SUBTRACT             { $$= OP_ASSIGNMENT_SUBTRACT;       }
-|               OP_ASSIGNMENT_MULTIPLY             { $$= OP_ASSIGNMENT_MULTIPLY;       } 
+|               OP_ASSIGNMENT_MULTIPLY             { $$= OP_ASSIGNMENT_MULTIPLY;       }
 |               OP_ASSIGNMENT_DIVIDE               { $$= OP_ASSIGNMENT_DIVIDE;         }
-|               OP_ASSIGNMENT_REMAINDER            { $$= OP_ASSIGNMENT_REMAINDER;      }     
-|               OP_ASSIGNMENT_LEFT_BITSHIFT        { $$= OP_ASSIGNMENT_LEFT_BITSHIFT;  }        
-|               OP_ASSIGNMENT_RIGHT_BITSHIFT       { $$= OP_ASSIGNMENT_RIGHT_BITSHIFT; }       
-|               OP_ASSIGNMENT_BITWISE_AND          { $$= OP_ASSIGNMENT_BITWISE_AND;    }   
-|               OP_ASSIGNMENT_BITWISE_XOR          { $$= OP_ASSIGNMENT_BITWISE_XOR;    }  
+|               OP_ASSIGNMENT_REMAINDER            { $$= OP_ASSIGNMENT_REMAINDER;      }
+|               OP_ASSIGNMENT_LEFT_BITSHIFT        { $$= OP_ASSIGNMENT_LEFT_BITSHIFT;  }
+|               OP_ASSIGNMENT_RIGHT_BITSHIFT       { $$= OP_ASSIGNMENT_RIGHT_BITSHIFT; }
+|               OP_ASSIGNMENT_BITWISE_AND          { $$= OP_ASSIGNMENT_BITWISE_AND;    }
+|               OP_ASSIGNMENT_BITWISE_XOR          { $$= OP_ASSIGNMENT_BITWISE_XOR;    }
 |               OP_ASSIGNMENT_BITWISE_OR           { $$= OP_ASSIGNMENT_BITWISE_OR;     }
 ;
 
@@ -531,7 +533,7 @@ shift_op:  OP_LEFT_BITSHIFT
 
 additive_expr:  multiplicative_expr
 |               additive_expr add_op multiplicative_expr
-                {  $$= new_expr($2,$1,$3); 
+                {  $$= new_expr($2,$1,$3);
 		}
 ;
 
@@ -543,7 +545,7 @@ add_op:   PLUS_SIGN  { $$= PLUS_SIGN;  }
 
 multiplicative_expr:  cast_expr
 |                     multiplicative_expr mult_op cast_expr
-                      {  $$= new_expr($2,$1,$3); 
+                      {  $$= new_expr($2,$1,$3);
 		      }
 ;
 
@@ -556,7 +558,7 @@ mult_op:  ASTERISK     { $$= ASTERISK;     }
 
 cast_expr:  unary_expr
 |           SEP_LEFT_PAREN type_name SEP_RIGHT_PAREN cast_expr
-            {  $$= new_expr(CAST_EXPR,$2,$4); 
+            {  $$= new_expr(CAST_EXPR,$2,$4);
 	       struct declarator *d;
 	       d= (struct declarator *)$2;
 	    }
@@ -603,7 +605,7 @@ constant:  INTEGER_CONSTANT
 |          STRING_CONSTANT
            {   $$= new_constant(STRING_CONSTANT,$1);
 	   }
-          
+
 ;
 
 
@@ -664,9 +666,9 @@ predecrement_expr:  OP_DECREMENT unary_expr   {  $$= new_expr(PREDECREMENT_EXPR,
 ;
 
 
-labeled_statement:  label SEP_COLON statement 
+labeled_statement:  label SEP_COLON statement
                     {   struct ast *label= new_constant(LABEL,$1);
-		        $$= new_expr(LABELED_STATEMENT,label,$3); 
+		        $$= new_expr(LABELED_STATEMENT,label,$3);
 		    }
 ;
 

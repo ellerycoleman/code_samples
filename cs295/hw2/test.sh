@@ -115,10 +115,15 @@ MYSTMT:    {
     (int *)p;
 
 
-    /* testing direct abstract declarators and array declarators */
+    /* testing array declarators */
     int a[5];
     char word[15];
 
+    /* testing direct abstract declarators */
+    int f1(int (*));
+    int f2(char []);
+    int f3(char [5]);
+    int f4(char [][5]);
 
 }
 
@@ -137,10 +142,7 @@ DATA
 #----------------------------------------------------
 cat testprog.c
 echo "Preparing to parse the above input program..."
-echo "Running the parser with GDB..."
 echo;echo;
 
-cat testprog.c | gdb -x gdb.cmd ./parser
-
-
+cat testprog.c | gdb -x gdb.cmd ./parser | tee  testprog_output.c
 

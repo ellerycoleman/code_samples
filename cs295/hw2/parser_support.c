@@ -18,7 +18,7 @@ extern int yylineno;
 yyerror(char *s,...)
 {   fprintf(stderr, "Problem in Parseville!\n\t");
     fprintf(stderr, "error: %s\n", s);
-    fprintf(stderr, "line number: %d", yylineno);
+    fprintf(stderr, "line number: %d\n\n", yylineno);
 }
 
 
@@ -58,7 +58,6 @@ void print_tree(ast *nodeptr)
         {   tdecl= (struct decl *)tldlist->tld->d;
 
             /* print declarator list */
-	    printf("%s ", print_type(tdecl->typespecifier));
             print_expr((struct ast *)tdecl);
 
 	    printf(";\n");
@@ -72,7 +71,13 @@ void print_tree(ast *nodeptr)
 	     +--------------------------------------------*/
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
         {
+
+	    /* retrieve function definition */
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
+
+            /* a function defintion is composed of a
+	     * fuction_defspec and a compound statement. 
+	     */
 	    struct function_defspec *fdspec= funcdef->fdspec;
 	    struct ast *cstmt= funcdef->cstmt;
 	    struct decostat_list *dlist;
@@ -452,9 +457,9 @@ void print_decl(struct ast *expr)
          case FUNCTION_DECLARATOR:
 	 /* print function name */
 	    d= (struct declarator *)expr;
+	    printf("%s(", d->adeclarator->id);
 
          /* print parameter list */
-	    printf("%s(", d->id);
 	    print_parameter_list(d->plist);
 	    printf(")");
             break;
@@ -537,9 +542,17 @@ declarator *new_array_declarator(int type, struct declarator *arrydec, struct as
 
 declarator *new_direct_abstract_declarator(int type, struct ast *data, declarator *next)
 {   declarator *d= malloc(sizeof(struct declarator));
-    d->nodetype= type;
-    if(type == DAD_PAREN_SINGLE_ARG)
+    d->nodetype= DIRECT_ABSTRACT_DECLARATOR;
+    d->dadtype= type;
+    if(type == PAREN_ENCLOSED)
     {   d->adeclarator= (struct declarator *)data;
+    }
+    else if(type == BRACKET_EXPR)
+    {   d->adeclarator= (struct declarator *)data;
+    }
+    else if(type == DAD_LIST)
+    {   d->adeclarator= (struct declarator *)data;
+        d->next= next;
     }
 
     return d;
@@ -773,6 +786,8 @@ declarator *new_parameter_decl(int typespec, declarator *d)
     {   pd->nodetype= d->nodetype;
         pd->next= d->next;
         pd->id= d->id;
+	pd->dadtype= d->dadtype;
+	pd->adeclarator= d->adeclarator;
     }
     else
     {   pd->nodetype= (enum ntype) -1;  /* specified type only */
@@ -784,6 +799,8 @@ declarator *new_parameter_decl(int typespec, declarator *d)
 
 void print_parameter_list(parameter_list *plist)
 {   declarator *d;
+    declarator *ad;
+
     do
     {
         switch(plist->pd->nodetype)
@@ -811,6 +828,36 @@ void print_parameter_list(parameter_list *plist)
                }while( (d= d->next) != NULL);
 	       break;
 
+	    case DIRECT_ABSTRACT_DECLARATOR:
+	       d= plist->pd;
+	       ad= d->adeclarator;
+	       printf("%s ", print_type(d->typespecifier));
+
+	       switch(d->dadtype)
+	       {   
+	           case PAREN_ENCLOSED:
+                      printf("(");
+		      print_decl((struct ast *)ad);
+                      printf(")");
+		      break;
+
+                   case BRACKET_NO_EXPR:
+                      printf("bracket_no_expr DAD");
+		      break;
+
+                   case BRACKET_EXPR:
+                      printf("bracket_expr DAD");
+		      break;
+
+                   case DAD_LIST:
+                      printf("dad_list DAD");
+		      break;
+
+                   default:
+		      printf("unknown dad type: %d\n",d->dadtype);
+               }
+	       break;
+	       
 
             case -1:  /* print type only */
                printf("%s", print_type(plist->pd->typespecifier));
@@ -824,8 +871,14 @@ void print_parameter_list(parameter_list *plist)
 		   }
                }while( (d= d->next) != NULL);
 	       break;
-        }
 
+
+           default:
+	      d= plist->pd;
+	      printf("PRINT_PARAMETER_LIST: not sure what to do with nodetype: %d\n",d->nodetype);
+	      break;
+
+        }
 
         if(plist->next != NULL)
         {   printf(", ");

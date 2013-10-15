@@ -68,7 +68,8 @@ typedef enum ntype {   DECL,
 		       FUNCTION_DEFINITION,
 		       FUNCTION_DEF_SPECIFIER,
 		       DECOSTAT_LIST,
-		       COMMA_LIST
+		       COMMA_LIST,
+		       DIRECT_ABSTRACT_DECLARATOR
 
 
 		   } ntype;
@@ -84,7 +85,7 @@ typedef enum tspec {   SIGNED_SHORT_INT,
 		       VOID
                    } tspec;
 
-typedef enum dadtype {PAREN_ENCLOSED,BRACKET_NO_EXPR,BRACKET_EXPR,DAD_LIST} dadtype;
+typedef enum dadtype {PAREN_ENCLOSED=900,BRACKET_NO_EXPR,BRACKET_EXPR,DAD_LIST} dadtype;
 
 
 
