@@ -548,7 +548,7 @@ declarator *new_direct_abstract_declarator(int type, struct ast *data, declarato
     {   d->adeclarator= (struct declarator *)data;
     }
     else if(type == BRACKET_EXPR)
-    {   d->adeclarator= (struct declarator *)data;
+    {   d->exp= (struct expr *)data;
     }
     else if(type == DAD_LIST)
     {   d->adeclarator= (struct declarator *)data;
@@ -788,6 +788,7 @@ declarator *new_parameter_decl(int typespec, declarator *d)
         pd->id= d->id;
 	pd->dadtype= d->dadtype;
 	pd->adeclarator= d->adeclarator;
+	pd->exp= d->exp;
     }
     else
     {   pd->nodetype= (enum ntype) -1;  /* specified type only */
@@ -841,17 +842,23 @@ void print_parameter_list(parameter_list *plist)
                       printf(")");
 		      break;
 
+
                    case BRACKET_NO_EXPR:
-                      printf("bracket_no_expr DAD");
+                      printf("[]");
 		      break;
 
+
                    case BRACKET_EXPR:
-                      printf("bracket_expr DAD");
+                      printf("[");
+		      print_expr(d->exp);
+                      printf("]");
 		      break;
+
 
                    case DAD_LIST:
                       printf("dad_list DAD");
 		      break;
+
 
                    default:
 		      printf("unknown dad type: %d\n",d->dadtype);
