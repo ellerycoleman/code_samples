@@ -560,9 +560,6 @@ declarator *new_direct_abstract_declarator(int type, struct ast *data, declarato
     }
     else if(type == DAD_LIST)
     {   d->exp= (struct expr *)data;
-        printf("CREATING DAD_LIST: expr type: %d\n", d->exp->nodetype);
-        printf("CREATING DAD_LIST $1-> dadtype: d dadtype: %d\n", d->dadtype);
-        printf("CREATING DAD_LIST $3->dadtype: d->next->dadtype: %d\n", next->dadtype);
         d->next= next;
     }
 
