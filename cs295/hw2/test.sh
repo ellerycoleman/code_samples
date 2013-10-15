@@ -131,7 +131,11 @@ MYSTMT:    {
     int f9(char [][10][10][5]);
     int f10(char[][12][11][10][5]);
     int f11(char *[]);
-
+   
+    /* testing subscript_expr */
+    name[2+3];
+    (2+3)*4;
+    i++[2];
 
 }
 

@@ -63,6 +63,7 @@ typedef enum ntype {   DECL,
 		       BITWISE_NEGATION_EXPR,
 		       LOGICAL_NEGATION_EXPR,
 		       PARENTHESIZED_EXPR,
+		       SUBSCRIPT_EXPR,
 
 
 

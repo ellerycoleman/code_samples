@@ -406,6 +406,15 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+
+        case SUBSCRIPT_EXPR:
+	   print_expr(expr->l);
+	   printf("[");
+	   print_expr(expr->r);
+	   printf("]");
+	   break;
+
+
         case RW_RETURN:
 	   printf("return");
 	   if( (expr->l) != NULL)

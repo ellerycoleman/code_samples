@@ -75,6 +75,7 @@
 	  bitwise_negation_expr
 	  logical_negation_expr
 	  type_name
+	  subscript_expr
 
 
 
@@ -616,6 +617,9 @@ parenthesized_expr:  SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN {  $$= new_expr(P
 
 
 subscript_expr:  postfix_expr SEP_LEFT_BRACKET comma_expr SEP_RIGHT_BRACKET
+                 {   printf("GRAMMAR: found a subscript expr...\n");
+		     $$= new_expr(SUBSCRIPT_EXPR,$1,$3);
+		 }
 ;
 
 
