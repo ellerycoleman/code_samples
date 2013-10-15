@@ -130,6 +130,7 @@ MYSTMT:    {
     int f8(char [][10][5]);
     int f9(char [][10][10][5]);
     int f10(char[][12][11][10][5]);
+    int f11(char *[]);
 
 
 }
@@ -149,6 +150,7 @@ DATA
 #----------------------------------------------------
 cat testprog.c
 echo "Preparing to parse the above input program..."
+echo "Running parser with GDB..."
 echo;echo;
 
 cat testprog.c | gdb -x gdb.cmd ./parser | tee  testprog_output.c

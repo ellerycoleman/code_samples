@@ -16,9 +16,9 @@ extern int yylineno;
 
 
 yyerror(char *s,...)
-{   fprintf(stderr, "Problem in Parseville!\n\t");
-    fprintf(stderr, "error: %s\n", s);
-    fprintf(stderr, "line number: %d\n\n", yylineno);
+{   fprintf(stderr, "Problem in Parseville!\n");
+    fprintf(stderr, "\terror: %s\n", s);
+    fprintf(stderr, "\tline number: %d\n\n", yylineno);
 }
 
 
@@ -773,6 +773,9 @@ char * print_type(int type)
         case VOID:
 	   p= "void";
 	   break;
+        default:
+	   p= "";
+	   break;
     }
 
 
@@ -800,6 +803,7 @@ declarator *new_parameter_decl(int typespec, declarator *d)
 	pd->dadtype= d->dadtype;
 	pd->adeclarator= d->adeclarator;
 	pd->exp= d->exp;
+	pd->plist= d->plist;
     }
     else
     {   pd->nodetype= (enum ntype) -1;  /* specified type only */
@@ -812,7 +816,6 @@ declarator *new_parameter_decl(int typespec, declarator *d)
 void print_parameter_list(parameter_list *plist)
 {   declarator *d;
     declarator *ad;
-
     do
     {
         switch(plist->pd->nodetype)
@@ -828,14 +831,18 @@ void print_parameter_list(parameter_list *plist)
 
 
 	    case POINTER_DECLARATOR:
-               printf("%s ", print_type(plist->pd->typespecifier));
 	       d= plist->pd;
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
-	           {   printf("*");
+	           {   printf("%s ", print_type(plist->pd->typespecifier));
+		       printf("*");
 		   }
 		   else if( d->nodetype == SIMPLE_DECLARATOR )
-		   {   printf("%s", d->id);
+	           {   printf("%s ", print_type(plist->pd->typespecifier));
+		       printf("%s", d->id);
+		   }
+		   else if( d->nodetype == DIRECT_ABSTRACT_DECLARATOR )
+		   {   print_dad(d);
 		   }
                }while( (d= d->next) != NULL);
 	       break;
