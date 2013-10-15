@@ -47,6 +47,7 @@ clean:
 	rm -f e95_scanner scanner
 	rm -f bison_parser.tab.*
 	rm -f e95_parser parser
+	rm -f testprog*
 
 
 test:	all

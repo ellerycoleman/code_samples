@@ -217,7 +217,8 @@
 %token    UNDEFINED
 
 
-%right "then" RW_ELSE
+%nonassoc IFX
+%nonassoc RW_ELSE
 
 
 
@@ -679,7 +680,7 @@ conditional_statement:  if_statement
 ;
 
 
-if_statement:       RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement %prec "then"
+if_statement:       RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement %prec IFX
 ; /* this symbol uses %prec to resolve the shift/reduce error, per advice on stackoverflow.com */
 
 
