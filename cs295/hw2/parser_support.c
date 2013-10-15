@@ -1020,5 +1020,14 @@ struct ast *new_compound_statement(struct ast *decstmtlist)
 }
 
 
+struct ast *new_flow(struct ast *cond, struct ast *thendo, struct ast *els)
+{   struct flow *tflow= malloc(sizeof(struct flow));
+    tflow->cond= cond;
+    tflow->thendo= thendo;
+    tflow->els= els;
+
+    return (struct ast *)tflow;
+}
+
 
 

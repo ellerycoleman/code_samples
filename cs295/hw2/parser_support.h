@@ -189,6 +189,14 @@ typedef struct function_def
 } function_def;
 
 
+typedef struct flow
+{   ntype nodetype;
+    struct ast *cond;
+    struct ast *thendo;
+    struct ast *els;
+} flow;
+
+
 declarator *new_simple_declarator(char *id);
 tld_list *new_tld_list(ast *t, ast *next);
 ast *new_tld(int datatype, ast *t);
@@ -231,3 +239,4 @@ void print_decl(struct ast *expr);
 declarator *new_direct_abstract_declarator(int type, struct ast *data, struct declarator *next);
 declarator *new_array_declarator(int type, struct declarator *arrydec, struct ast *expr);
 void print_dad(declarator *d);
+struct ast *new_flow(struct ast *cond, struct ast *thendo, struct ast *els);
