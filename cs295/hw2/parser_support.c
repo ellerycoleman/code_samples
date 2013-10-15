@@ -12,11 +12,13 @@
 #include "parser_support.h"
 #include "bison_parser.tab.h"
 
+extern int yylineno;
 
 
 yyerror(char *s,...)
 {   fprintf(stderr, "Problem in Parseville!\n\t");
     fprintf(stderr, "error: %s\n", s);
+    fprintf(stderr, "line number: %d", yylineno);
 }
 
 
@@ -392,8 +394,8 @@ void print_expr(struct ast *expr)
 	   tast= expr->l;
 	   d= (struct declarator *)tast;
 	   printf("(");
-	   printf("%s", print_type(d->typespecifier));
-	   print_decl(d);
+	   printf("%s ", print_type(d->typespecifier));
+	   print_decl((struct ast *)d);
 	   printf(")");
 	   print_expr(expr->r);
 	   break;

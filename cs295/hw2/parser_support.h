@@ -84,6 +84,9 @@ typedef enum tspec {   SIGNED_SHORT_INT,
 		       VOID
                    } tspec;
 
+typedef enum dadtype {PAREN_ENCLOSED,BRACKET_NO_EXPR,BRACKET_EXPR,DAD_LIST} dadtype;
+
+
 
 typedef struct ast
 {   ntype nodetype;
@@ -113,6 +116,7 @@ typedef struct expr
 typedef struct declarator
 { ntype nodetype;
   tspec typespecifier;  /* for parameter_decl's */
+  dadtype dadtype;      /* for direcect abstract declarators */
   char *id;
   struct declarator *next;
   struct declarator *adeclarator; /* for use with function/abstract declarators */

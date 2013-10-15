@@ -74,12 +74,6 @@ int main(void)
     a^= 5;
 
 
-    /* testing direct abstract declarators and array declarators */
-    int (*q)(void);
-    int a[5];
-    char word[15];
-
-
     /* unary ops */
     -5;
     +5;
@@ -119,6 +113,13 @@ MYSTMT:    {
 
     /* cast expr  */
     (int *)p;
+
+
+    /* testing direct abstract declarators and array declarators */
+    int a[5];
+    char word[15];
+
+
 }
 
 /*---------------------------------------------------*/
@@ -137,6 +138,8 @@ DATA
 cat testprog.c
 echo "Preparing to parse the above input program..."
 echo "Running the parser with GDB..."
+echo;echo;
+
 cat testprog.c | gdb -x gdb.cmd ./parser
 
 

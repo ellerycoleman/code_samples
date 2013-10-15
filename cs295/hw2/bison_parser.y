@@ -351,7 +351,7 @@ parameter_list:   parameter_decl
 
 parameter_decl:  type_specifier declarator                { $$= new_parameter_decl($1,$2);    }
 |                type_specifier                           { $$= new_parameter_decl($1,NULL);  }
-|                type_specifier abstract_declarator       { $$= new_parameter_decl($1,$2);    }
+|                type_specifier abstract_declarator       { printf("GRAMMAR: type spec + abstract declarator\n"); $$= new_parameter_decl($1,$2);    }
 ;
 
 
@@ -362,16 +362,21 @@ abstract_declarator:   pointer
 
 
 direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
-                              {   printf("GRAMMAR: DAD_PAREN_SINGLE_ARG detected..\n");   
-			          $$= new_direct_abstract_declarator(DAD_PAREN_SINGLE_ARG,(struct ast *)$2,NULL);
+                              {   printf("GRAMMAR: dad type paren_enclosed\n");
+			          $$= new_direct_abstract_declarator(PAREN_ENCLOSED,NULL,NULL);
 			      }
 |                             SEP_LEFT_BRACKET SEP_RIGHT_BRACKET                    /*  int []  */
-                              {
+                              {   printf("GRAMMAR: dad type bracket_no_expr\n");
+			          $$= new_direct_abstract_declarator(BRACKET_NO_EXPR,NULL,NULL);
 			      }
 |                             SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET      /*  int [4] */
-                              {
+                              {   printf("GRAMMAR: dad type bracket_expr\n");
+			          $$= new_direct_abstract_declarator(BRACKET_EXPR,NULL,NULL);
 			      }
 |                             direct_abstract_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
+                              {   printf("GRAMMAR: dad type dad_list\n");
+			          $$= new_direct_abstract_declarator(DAD_LIST,NULL,NULL);
+			      }
 ;
 
 
@@ -554,7 +559,6 @@ cast_expr:  unary_expr
             {  $$= new_expr(CAST_EXPR,$2,$4); 
 	       struct declarator *d;
 	       d= (struct declarator *)$2;
-	       printf("GRAMMAR: typespec of type_name: %d\n", d->typespecifier);
 	    }
 ;
 
