@@ -831,15 +831,14 @@ void print_parameter_list(parameter_list *plist)
 
 
 	    case POINTER_DECLARATOR:
+               printf("%s ", print_type(plist->pd->typespecifier));
 	       d= plist->pd;
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
-	           {   printf("%s ", print_type(plist->pd->typespecifier));
-		       printf("*");
+	           {   printf("*");
 		   }
 		   else if( d->nodetype == SIMPLE_DECLARATOR )
-	           {   printf("%s ", print_type(plist->pd->typespecifier));
-		       printf("%s", d->id);
+	           {   printf("%s", d->id);
 		   }
 		   else if( d->nodetype == DIRECT_ABSTRACT_DECLARATOR )
 		   {   print_dad(d);
