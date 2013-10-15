@@ -73,7 +73,8 @@
 	  address_expr
 	  labeled_statement
 	  bitwise_negation_expr
-
+	  logical_negation_expr
+	  type_name
 
 
 
@@ -550,6 +551,11 @@ mult_op:  ASTERISK     { $$= ASTERISK;     }
 
 cast_expr:  unary_expr
 |           SEP_LEFT_PAREN type_name SEP_RIGHT_PAREN cast_expr
+            {  $$= new_expr(CAST_EXPR,$2,$4); 
+	       struct declarator *d;
+	       d= (struct declarator *)$2;
+	       printf("GRAMMAR: typespec of type_name: %d\n", d->typespecifier);
+	    }
 ;
 
 
@@ -597,7 +603,7 @@ constant:  INTEGER_CONSTANT
 ;
 
 
-parenthesized_expr:  SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN { $$= $2; }
+parenthesized_expr:  SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN {  $$= new_expr(PARENTHESIZED_EXPR,$2,NULL); }
 ;
 
 
@@ -610,8 +616,7 @@ function_call:   postfix_expr SEP_LEFT_PAREN SEP_RIGHT_PAREN
 ;
 
 
-expression_list:   assignment_expr
-|                  expression_list SEP_COMMA assignment_expr
+expression_list:   comma_expr
 ;
 
 
@@ -623,15 +628,15 @@ postdecrement_expr:  postfix_expr OP_DECREMENT   {  $$= new_expr(POSTDECREMENT_E
 ;
 
 
-unary_minus_expr:  MINUS_SIGN cast_expr  {  $$= new_expr(UNARY_MINUS_EXPR,$2,NULL); }
+unary_minus_expr:  MINUS_SIGN cast_expr      {  $$= new_expr(UNARY_MINUS_EXPR,$2,NULL); }
 ;
 
 
-unary_plus_expr:  PLUS_SIGN cast_expr    {  $$= new_expr(UNARY_PLUS_EXPR,$2,NULL); }
+unary_plus_expr:  PLUS_SIGN cast_expr        {  $$= new_expr(UNARY_PLUS_EXPR,$2,NULL);  }
 ;
 
 
-logical_negation_expr:  OP_LOGICAL_NOT cast_expr
+logical_negation_expr:  OP_LOGICAL_NOT cast_expr      {  $$= new_expr(LOGICAL_NEGATION_EXPR,$2,NULL); }
 ;
 
 
@@ -738,8 +743,8 @@ null_statement:  SEP_SEMICOLON { $$= new_expr(SEP_SEMICOLON,NULL,NULL); }
 
 
 
-type_name:  type_specifier
-|           type_specifier abstract_declarator
+type_name:  type_specifier                           { $$= (struct ast *)new_parameter_decl($1,NULL);  }
+|           type_specifier abstract_declarator       { $$= (struct ast *)new_parameter_decl($1,$2);    }
 ;
 
 

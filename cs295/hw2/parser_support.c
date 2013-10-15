@@ -112,6 +112,7 @@ void print_expr(struct ast *expr)
     struct decl *tdecl;
     struct declarator_list *dl;
     struct declarator *d;
+    struct ast *tast;
 
 
     switch(expr->nodetype)
@@ -367,9 +368,33 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case LOGICAL_NEGATION_EXPR:
+	   printf("!");
+	   print_expr(expr->l);
+	   break;
+
+
         case LABELED_STATEMENT:
 	   print_expr(expr->l);
 	   printf(":   ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case PARENTHESIZED_EXPR:
+	   printf("(");
+	   print_expr(expr->l);
+	   printf(")");
+	   break;
+
+
+        case CAST_EXPR:
+	   tast= expr->l;
+	   d= (struct declarator *)tast;
+	   printf("(");
+	   printf("%s", print_type(d->typespecifier));
+	   print_decl(d);
+	   printf(")");
 	   print_expr(expr->r);
 	   break;
 
@@ -400,6 +425,7 @@ void print_decl(struct ast *expr)
 {
     struct declarator_list *dl;
     struct declarator *d;
+    struct ast *tast;
 
     switch(expr->nodetype)
     {   case  SIMPLE_DECLARATOR:

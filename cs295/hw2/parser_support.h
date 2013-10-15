@@ -60,6 +60,8 @@ typedef enum ntype {   DECL,
 		       INDIRECTION_EXPR,
 		       ADDRESS_EXPR,
 		       BITWISE_NEGATION_EXPR,
+		       LOGICAL_NEGATION_EXPR,
+		       PARENTHESIZED_EXPR,
 
 
 

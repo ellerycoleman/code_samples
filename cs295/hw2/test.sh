@@ -50,6 +50,8 @@ int main(void)
   goto label1;
   continue;
   break;
+  return;
+  return 8;
   1,2,3,4,5;
 }
 
@@ -88,6 +90,7 @@ int main(void)
     *i;
     &i;
     ~i;
+    !i;
 
 
 
@@ -110,7 +113,12 @@ MYSTMT:    {
 	       return 0;
            }
 
+    /* parenthesized expr  */
+    (i= 2, j= 3);
 
+
+    /* cast expr  */
+    (int *)p;
 }
 
 /*---------------------------------------------------*/
