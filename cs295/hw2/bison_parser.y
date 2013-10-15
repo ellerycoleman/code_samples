@@ -41,7 +41,7 @@
 	  function_def_specifier
 	  translation_unit
 	  top_level_decl
-	  statement 
+	  statement
 	  comma_expr
 	  expression_statement
 	  constant
@@ -357,7 +357,7 @@ parameter_decl:  type_specifier declarator                { $$= new_parameter_de
 
 abstract_declarator:   pointer
 |                      direct_abstract_declarator
-|                      pointer direct_abstract_declarator  
+|                      pointer direct_abstract_declarator
                        {   $2->typespecifier= -1;
 		           $1->next= $2;
 		           $$= $1;
@@ -434,7 +434,7 @@ statement:  expression_statement
 |           continue_statement
 |           return_statement
 |           goto_statement
-|           null_statement  
+|           null_statement
 ;
 
 
