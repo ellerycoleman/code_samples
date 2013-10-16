@@ -76,6 +76,7 @@ typedef enum ntype {   DECL,
 
 		       FUNCTION_DEFINITION,
 		       FUNCTION_DEF_SPECIFIER,
+		       FUNCTION_CALL,
 		       DECOSTAT_LIST,
 		       COMMA_LIST,
 		       DIRECT_ABSTRACT_DECLARATOR

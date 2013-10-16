@@ -502,11 +502,28 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case OP_LEFT_BITSHIFT:
+	   print_expr(expr->l);
+	   printf(" << ");
+	   print_expr(expr->r);
+	   break;
 
 
+        case OP_RIGHT_BITSHIFT:
+	   print_expr(expr->l);
+	   printf(" >> ");
+	   print_expr(expr->r);
+	   break;
 
 
-
+        case FUNCTION_CALL:
+	   print_expr(expr->l);
+	   printf("(");
+	   if(expr->r != NULL)
+	   {   print_expr(expr->r);
+	   }
+	   printf(")");
+	   break;
 
 
 

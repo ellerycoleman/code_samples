@@ -43,6 +43,7 @@
 	  top_level_decl
 	  statement
 	  comma_expr
+	  expression_list
 	  expression_statement
 	  constant
 	  conditional_expr
@@ -84,6 +85,7 @@
 	  equality_expr
 	  relational_expr
 	  shift_expr
+	  function_call
 
 
 %type <dlist> initialized_declarator_list
@@ -111,6 +113,8 @@
 	  assignment_op
 	  equality_op
 	  relational_op
+	  shift_op
+
 
 
 %type <id> label
@@ -552,11 +556,13 @@ relational_op:  OP_RELATIONAL_LT       { $$= OP_RELATIONAL_LT;    }
 
 shift_expr:   additive_expr
 |             shift_expr shift_op additive_expr
+              {   $$= new_expr($2,$1,$3);
+	      }
 ;
 
 
-shift_op:  OP_LEFT_BITSHIFT
-|          OP_RIGHT_BITSHIFT
+shift_op:  OP_LEFT_BITSHIFT    { $$= OP_LEFT_BITSHIFT;  }
+|          OP_RIGHT_BITSHIFT   { $$= OP_RIGHT_BITSHIFT; }
 ;
 
 
@@ -648,7 +654,11 @@ subscript_expr:  postfix_expr SEP_LEFT_BRACKET comma_expr SEP_RIGHT_BRACKET
 
 
 function_call:   postfix_expr SEP_LEFT_PAREN SEP_RIGHT_PAREN
+                 {   $$= new_expr(FUNCTION_CALL,$1,NULL);
+		 }
 |                postfix_expr SEP_LEFT_PAREN expression_list SEP_RIGHT_PAREN
+                 {   $$= new_expr(FUNCTION_CALL,$1,$3);
+		 }
 ;
 
 
