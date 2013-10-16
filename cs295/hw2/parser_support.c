@@ -432,6 +432,88 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case LOGICAL_AND_EXPR:
+	   print_expr(expr->l);
+	   printf(" && ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case BITWISE_OR_EXPR:
+	   print_expr(expr->l);
+	   printf(" | ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case BITWISE_XOR_EXPR:
+	   print_expr(expr->l);
+	   printf(" ^ ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case BITWISE_AND_EXPR:
+	   print_expr(expr->l);
+	   printf(" & ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_EQUALITY:
+	   print_expr(expr->l);
+	   printf(" == ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_NON_EQUALITY:
+	   print_expr(expr->l);
+	   printf(" != ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_RELATIONAL_LT:
+	   print_expr(expr->l);
+	   printf(" < ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_RELATIONAL_LTE:
+	   print_expr(expr->l);
+	   printf(" <= ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case GREATER_THAN_SYMBOL:
+	   print_expr(expr->l);
+	   printf(" > ");
+	   print_expr(expr->r);
+	   break;
+
+
+        case OP_RELATIONAL_GTE:
+	   print_expr(expr->l);
+	   printf(" >= ");
+	   print_expr(expr->r);
+	   break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         case RW_RETURN:
 	   printf("return");
 	   if( (expr->l) != NULL)

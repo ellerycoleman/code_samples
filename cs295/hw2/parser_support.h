@@ -66,6 +66,11 @@ typedef enum ntype {   DECL,
 		       SUBSCRIPT_EXPR,
 		       CONDITIONAL_EXPR,
 		       LOGICAL_OR_EXPR,
+		       LOGICAL_AND_EXPR,
+		       BITWISE_OR_EXPR,
+		       BITWISE_XOR_EXPR,
+		       BITWISE_AND_EXPR,
+
 
 
 

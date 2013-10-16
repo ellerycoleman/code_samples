@@ -139,8 +139,21 @@ MYSTMT:    {
 
 
 
-    /* testing conditional_expr and logical OR expr */
+    /* testing conditional_expr, logical, bitwise, and relational expr */
     ( a || b ) ? 11 : 22;
+    ( a && B ) || ( c && d ) || ( e && f );
+    ( a && b ) ? 22 : 33;
+    ( a|b ) && (c|d) && (e|f) && (g|h);
+    ( a |  b ) ? 33 : 44;
+    (a^b) | (c^d) | (d^e);
+    ( a ^  b ) ? 44 : 55;
+    (a&b) ^ (c&d) ^ (d&e);
+    (a == (b != c));
+    a >  1;
+    b >= 2;
+    c <  3;
+    d <= 4;
+
 }
 
 /*---------------------------------------------------*/

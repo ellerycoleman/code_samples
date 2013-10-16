@@ -78,7 +78,12 @@
 	  subscript_expr
 	  logical_or_expr
 	  logical_and_expr
-
+	  bitwise_or_expr
+          bitwise_xor_expr
+          bitwise_and_expr
+	  equality_expr
+	  relational_expr
+	  shift_expr
 
 
 %type <dlist> initialized_declarator_list
@@ -104,6 +109,8 @@
 	  add_op
 	  mult_op
 	  assignment_op
+	  equality_op
+	  relational_op
 
 
 %type <id> label
@@ -490,43 +497,56 @@ logical_or_expr:   logical_and_expr
 
 logical_and_expr:  bitwise_or_expr
 |                  logical_and_expr OP_LOGICAL_AND bitwise_or_expr
+                   {   $$= new_expr(LOGICAL_AND_EXPR,$1,$3);
+		   }
+;
 ;
 
 
 bitwise_or_expr:  bitwise_xor_expr
 |                 bitwise_or_expr OP_BITWISE_OR bitwise_xor_expr
+                  {   $$= new_expr(BITWISE_OR_EXPR,$1,$3);
+		  }
 ;
 
 
 bitwise_xor_expr:  bitwise_and_expr
 |                  bitwise_xor_expr OP_BITWISE_XOR bitwise_and_expr
+                   {   $$= new_expr(BITWISE_XOR_EXPR,$1,$3);
+		   }
 ;
 
 
 bitwise_and_expr:  equality_expr
 |                  bitwise_and_expr AMPERSAND equality_expr
+                   {   $$= new_expr(BITWISE_AND_EXPR,$1,$3);
+		   }
 ;
 
 
 equality_expr:  relational_expr
 |               equality_expr equality_op relational_expr
+                {   $$= new_expr($2,$1,$3);
+	        }
 ;
 
 
-equality_op:  OP_EQUALITY
-|             OP_NON_EQUALITY
+equality_op:  OP_EQUALITY       { $$= OP_EQUALITY;     }
+|             OP_NON_EQUALITY   { $$= OP_NON_EQUALITY; }
 ;
 
 
 relational_expr:  shift_expr
 |                 relational_expr relational_op shift_expr
+                  {   $$= new_expr($2,$1,$3);
+	          }
 ;
 
 
-relational_op:  OP_RELATIONAL_LT
-|               OP_RELATIONAL_LTE
-|               GREATER_THAN_SYMBOL
-|               OP_RELATIONAL_GTE
+relational_op:  OP_RELATIONAL_LT       { $$= OP_RELATIONAL_LT;    }
+|               OP_RELATIONAL_LTE      { $$= OP_RELATIONAL_LTE;   }
+|               GREATER_THAN_SYMBOL    { $$= GREATER_THAN_SYMBOL; }
+|               OP_RELATIONAL_GTE      { $$= OP_RELATIONAL_GTE;   }
 ;
 
 
