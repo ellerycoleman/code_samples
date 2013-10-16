@@ -608,7 +608,6 @@ constant:  INTEGER_CONSTANT
 |          STRING_CONSTANT
            {   $$= new_constant(STRING_CONSTANT,$1);
 	   }
-
 ;
 
 
@@ -617,8 +616,7 @@ parenthesized_expr:  SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN {  $$= new_expr(P
 
 
 subscript_expr:  postfix_expr SEP_LEFT_BRACKET comma_expr SEP_RIGHT_BRACKET
-                 {   printf("GRAMMAR: found a subscript expr...\n");
-		     $$= new_expr(SUBSCRIPT_EXPR,$1,$3);
+                 {   $$= new_expr(SUBSCRIPT_EXPR,$1,$3);
 		 }
 ;
 
