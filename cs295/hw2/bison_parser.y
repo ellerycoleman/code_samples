@@ -474,6 +474,8 @@ assignment_op:  OP_ASSIGNMENT                      { $$= OP_ASSIGNMENT;         
 
 conditional_expr:  logical_or_expr
 |                  logical_or_expr OP_QUESTION_MARK comma_expr SEP_COLON conditional_expr
+                   {  /*  $$= new_conditional_expr(CONDITIONAL_EXPR,$1,$2,$3); */
+		   }
 ;
 
 

@@ -895,83 +895,83 @@ void print_dad(declarator *d)
 {   struct declarator *ad;
                
 
-	       switch(d->dadtype)
-	       {   
-	           case PAREN_ENCLOSED:
-	              ad= d->adeclarator;
-	              printf("%s ", print_type(d->typespecifier));
-                      printf("(");
-		      print_decl((struct ast *)ad);
-                      printf(")");
-		      break;
+    switch(d->dadtype)
+    {   
+        case PAREN_ENCLOSED:
+           ad= d->adeclarator;
+           printf("%s ", print_type(d->typespecifier));
+           printf("(");
+           print_decl((struct ast *)ad);
+           printf(")");
+           break;
 
 
-                   case BRACKET_NO_EXPR:
-	              printf("%s ", print_type(d->typespecifier));
-                      printf("[]");
-		      break;
+        case BRACKET_NO_EXPR:
+	   printf("%s ", print_type(d->typespecifier));
+           printf("[]");
+	   break;
 
 
-                   case BRACKET_EXPR:
-	              printf("%s ", print_type(d->typespecifier));
-                      printf("[");
-		      print_expr((struct ast *)d->exp);
-                      printf("]");
-		      break;
+        case BRACKET_EXPR:
+	   printf("%s ", print_type(d->typespecifier));
+           printf("[");
+	   print_expr((struct ast *)d->exp);
+           printf("]");
+	   break;
 
 
-                   case DAD_LIST:
-                      printf("%s ", print_type(d->typespecifier));
-		      d= reverse_declarators(d);
-		      do
-		      {   /* print the expression ending the dad_list */
-		          if(d->exp != NULL && d->next == NULL)
-		          {   printf("[");
-		              print_expr((struct ast *)d->exp);
-                              printf("]");
-                          }
-		          else if(d->exp != NULL && d->next != NULL)
-	                  {   
-		              printf("[");
-		              print_expr((struct ast *)d->exp);
-                              printf("]");
-                          }
-
-			  /* print dad_list members without typespecifiers */
-		          else
-		          {   
-			      switch(d->dadtype)
-	                      {   
-	                          case PAREN_ENCLOSED:
-                                     ad= d->adeclarator;
-                                     printf("(");
-		                     print_decl((struct ast *)ad);
-                                     printf(")");
-		                     break;
-
-
-                                  case BRACKET_NO_EXPR:
-                                     printf("[]");
-		                     break;
-
-
-                                  case BRACKET_EXPR:
-                                     printf("[");
-		                     print_expr((struct ast *)d->exp);
-                                     printf("]");
-		                     break;
-                                 
-				  default:
-				     printf("ERROR: problem printing dad_list...\n");
-				     break;
-		               }
-                          }
-                      }while( (d= d->next) != NULL);
-		      break;
-
-                   default:
-		      printf("unknown dad type: %d\n",d->dadtype);
+        case DAD_LIST:
+           printf("%s ", print_type(d->typespecifier));
+	   d= reverse_declarators(d);
+	   do
+	   {   /* print the expression ending the dad_list */
+	       if(d->exp != NULL && d->next == NULL)
+	       {   printf("[");
+	           print_expr((struct ast *)d->exp);
+                   printf("]");
                }
+	       else if(d->exp != NULL && d->next != NULL)
+	       {   
+	           printf("[");
+	           print_expr((struct ast *)d->exp);
+                   printf("]");
+               }
+
+	       /* print dad_list members without typespecifiers */
+	       else
+	       {   
+	           switch(d->dadtype)
+	           {   
+	               case PAREN_ENCLOSED:
+                       ad= d->adeclarator;
+                       printf("(");
+		       print_decl((struct ast *)ad);
+                       printf(")");
+		       break;
+
+
+                       case BRACKET_NO_EXPR:
+                          printf("[]");
+                          break;
+
+
+                       case BRACKET_EXPR:
+                          printf("[");
+		          print_expr((struct ast *)d->exp);
+                          printf("]");
+		          break;
+                                 
+		       default:
+		          printf("ERROR: problem printing dad_list...\n");
+		          break;
+		   }
+               }
+           }while( (d= d->next) != NULL);
+	   break;
+
+        default:
+	   printf("unknown dad type: %d\n",d->dadtype);
+    }
 
 }
 
