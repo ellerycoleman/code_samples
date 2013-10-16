@@ -76,6 +76,8 @@
 	  logical_negation_expr
 	  type_name
 	  subscript_expr
+	  logical_or_expr
+	  logical_and_expr
 
 
 
@@ -474,13 +476,15 @@ assignment_op:  OP_ASSIGNMENT                      { $$= OP_ASSIGNMENT;         
 
 conditional_expr:  logical_or_expr
 |                  logical_or_expr OP_QUESTION_MARK comma_expr SEP_COLON conditional_expr
-                   {  /*  $$= new_conditional_expr(CONDITIONAL_EXPR,$1,$2,$3); */
+                   {   $$= new_conditional_expr($1,$3,$5);
 		   }
 ;
 
 
 logical_or_expr:   logical_and_expr
 |                  logical_or_expr OP_LOGICAL_OR logical_and_expr
+                   {   $$= new_expr(LOGICAL_OR_EXPR,$1,$3);
+		   }
 ;
 
 

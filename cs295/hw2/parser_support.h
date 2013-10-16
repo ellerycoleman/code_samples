@@ -64,6 +64,8 @@ typedef enum ntype {   DECL,
 		       LOGICAL_NEGATION_EXPR,
 		       PARENTHESIZED_EXPR,
 		       SUBSCRIPT_EXPR,
+		       CONDITIONAL_EXPR,
+		       LOGICAL_OR_EXPR,
 
 
 
@@ -198,6 +200,13 @@ typedef struct flow
 } flow;
 
 
+typedef struct cond_expr
+{   ntype nodetype;
+    struct ast *cond;
+    struct ast *return1;
+    struct ast *return2;
+} cond_expr;
+
 declarator *new_simple_declarator(char *id);
 tld_list *new_tld_list(ast *t, ast *next);
 ast *new_tld(int datatype, ast *t);
@@ -241,3 +250,4 @@ declarator *new_direct_abstract_declarator(int type, struct ast *data, struct de
 declarator *new_array_declarator(int type, struct declarator *arrydec, struct ast *expr);
 void print_dad(declarator *d);
 struct ast *new_flow(struct ast *cond, struct ast *thendo, struct ast *els);
+struct ast *new_conditional_expr(struct ast *cond, struct ast *return1, struct ast *return2);

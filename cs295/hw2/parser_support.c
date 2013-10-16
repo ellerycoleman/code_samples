@@ -120,6 +120,7 @@ void print_expr(struct ast *expr)
     struct declarator_list *dl;
     struct declarator *d;
     struct ast *tast;
+    struct cond_expr *cexpr;
 
 
     switch(expr->nodetype)
@@ -406,12 +407,28 @@ void print_expr(struct ast *expr)
 	   break;
 
 
-
         case SUBSCRIPT_EXPR:
 	   print_expr(expr->l);
 	   printf("[");
 	   print_expr(expr->r);
 	   printf("]");
+	   break;
+
+
+        case CONDITIONAL_EXPR:
+	   cexpr= (struct cond_expr *)expr;
+	   print_expr(cexpr->cond);
+	   printf(" ? ");
+	   print_expr(cexpr->return1);
+	   printf(" : ");
+	   print_expr(cexpr->return2);
+	   break;
+
+
+        case LOGICAL_OR_EXPR:
+	   print_expr(expr->l);
+	   printf(" || ");
+	   print_expr(expr->r);
 	   break;
 
 
@@ -987,6 +1004,15 @@ struct ast *new_expr(int type,struct ast *l, struct ast *r)
 }
 
 
+struct ast *new_conditional_expr(struct ast *cond, struct ast *return1, struct ast *return2)
+{   struct cond_expr *expr= malloc(sizeof(struct cond_expr));
+    expr->nodetype= CONDITIONAL_EXPR;
+    expr->cond= cond;
+    expr->return1= return1;
+    expr->return2= return2;
+
+    return (struct ast *)expr;
+}
 
 struct ast *new_constant(int type, void *value)
 {   struct constant *k= malloc(sizeof(struct constant));
