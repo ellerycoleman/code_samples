@@ -567,6 +567,15 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case DO_STATEMENT:
+	   tflow= (struct flow *)expr;
+	   printf("do");
+	   print_expr(tflow->thendo);
+	   printf(" while(");
+	   print_expr(tflow->cond);
+	   printf(")\n");
+	   break;
+
 
         case RW_RETURN:
 	   printf("return");
@@ -1204,6 +1213,7 @@ struct ast *new_if_statement(struct ast *cond, struct ast *thendo, struct ast *e
 }
 
 
+
 struct ast *new_while_statement(struct ast *cond, struct ast *thendo)
 {   struct flow *tflow= malloc(sizeof(struct flow));
     tflow->nodetype= WHILE_STATEMENT;
@@ -1212,6 +1222,18 @@ struct ast *new_while_statement(struct ast *cond, struct ast *thendo)
 
     return (struct ast *)tflow;
 }
+
+
+
+struct ast *new_do_statement(struct ast *cond, struct ast *thendo)
+{   struct flow *tflow= malloc(sizeof(struct flow));
+    tflow->nodetype= DO_STATEMENT;
+    tflow->cond= cond;
+    tflow->thendo= thendo;
+
+    return (struct ast *)tflow;
+}
+
 
 
 

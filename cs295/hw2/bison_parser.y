@@ -86,6 +86,7 @@
 	  if_statement
 	  if_else_statement
 	  while_statement
+	  do_statement
 
 
 %type <dlist> initialized_declarator_list
@@ -743,6 +744,8 @@ while_statement:  RW_WHILE SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement
 
 
 do_statement:  RW_DO statement RW_WHILE SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN SEP_SEMICOLON
+               {   $$= new_do_statement($5,$2);
+	       }
 ;
 
 
