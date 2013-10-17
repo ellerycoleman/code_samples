@@ -50,6 +50,7 @@ typedef enum ntype {   DECL,
 		       IF_ELSE_STATEMENT,
 		       WHILE_STATEMENT,
 		       DO_STATEMENT,
+		       FOR_STATEMENT,
 		       LABELED_STATEMENT,
 		       LABEL,
 
@@ -266,6 +267,12 @@ struct ast *new_conditional_expr(struct ast *cond, struct ast *return1, struct a
 struct ast *new_if_statement(struct ast *cond, struct ast *thendo, struct ast *elsedo);
 struct ast *new_while_statement(struct ast *cond, struct ast *thendo);
 struct ast *new_do_statement(struct ast *cond, struct ast *thendo);
+
+struct ast *new_for_statement(struct ast *forinit,
+                              struct ast *cond,
+                              struct ast *forupdate,
+                              struct ast *thendo
+                             );
 
 
 

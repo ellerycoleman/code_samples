@@ -124,7 +124,6 @@ void print_expr(struct ast *expr)
     struct cond_expr *cexpr;
     struct flow *tflow;
 
-
     switch(expr->nodetype)
     {   case SEP_SEMICOLON:
 	   break;
@@ -577,6 +576,25 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case FOR_STATEMENT:
+	   tflow= (struct flow *)expr;
+	   printf("for(");
+	   if(tflow->forinit != NULL)
+	   {   print_expr(tflow->forinit);
+	       putchar(';');
+	   }
+	   if(tflow->cond != NULL)
+	   {   print_expr(tflow->cond);
+	       putchar(';');
+	   }
+	   if(tflow->forupdate)
+	   {   print_expr(tflow->forupdate);
+	       printf(")\n");
+	   }
+	   print_expr(tflow->thendo);
+	   break;
+
+
         case RW_RETURN:
 	   printf("return");
 	   if( (expr->l) != NULL)
@@ -594,6 +612,7 @@ void print_expr(struct ast *expr)
 	   break;
 
     }
+
 }
 
 
@@ -655,7 +674,6 @@ void print_decl(struct ast *expr)
 	   printf("PRINT_DECL: not sure what to do with nodetype: %d\n",expr->nodetype);
 	   break;
     }
-
 }
 
 
@@ -1205,9 +1223,9 @@ struct ast *new_if_statement(struct ast *cond, struct ast *thendo, struct ast *e
     else
     {   tflow->nodetype= IF_ELSE_STATEMENT;
     }
-    tflow->cond= cond;
-    tflow->thendo= thendo;
-    tflow->elsedo= elsedo;
+    tflow->cond   = cond;
+    tflow->thendo = thendo;
+    tflow->elsedo = elsedo;
 
     return (struct ast *)tflow;
 }
@@ -1227,12 +1245,30 @@ struct ast *new_while_statement(struct ast *cond, struct ast *thendo)
 
 struct ast *new_do_statement(struct ast *cond, struct ast *thendo)
 {   struct flow *tflow= malloc(sizeof(struct flow));
-    tflow->nodetype= DO_STATEMENT;
-    tflow->cond= cond;
-    tflow->thendo= thendo;
+    tflow->nodetype = DO_STATEMENT;
+    tflow->cond     = cond;
+    tflow->thendo   = thendo;
 
     return (struct ast *)tflow;
 }
+
+
+
+struct ast *new_for_statement(struct ast *forinit,
+                              struct ast *cond,
+			      struct ast *forupdate,
+			      struct ast *thendo
+			     )
+{   struct flow *tflow= malloc(sizeof(struct flow));
+    tflow->nodetype  = FOR_STATEMENT;
+    tflow->forinit   = forinit;
+    tflow->cond      = cond;
+    tflow->forupdate = forupdate;
+    tflow->thendo    = thendo;
+
+    return (struct ast *)tflow;
+}
+
 
 
 

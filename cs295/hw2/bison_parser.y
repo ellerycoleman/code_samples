@@ -87,6 +87,10 @@
 	  if_else_statement
 	  while_statement
 	  do_statement
+	  for_expr
+	  for_statement
+	  conditional_statement
+	  iterative_statement
 
 
 %type <dlist> initialized_declarator_list
@@ -750,17 +754,38 @@ do_statement:  RW_DO statement RW_WHILE SEP_LEFT_PAREN comma_expr SEP_RIGHT_PARE
 
 
 for_statement: RW_FOR for_expr statement
+               {   struct flow *tflow;
+	           tflow= (struct flow *)$2;
+	           tflow->thendo= $3;
+		   $$= (struct ast *)tflow;
+	       }
 ;
 
 
 for_expr:  SEP_LEFT_PAREN SEP_SEMICOLON SEP_SEMICOLON SEP_RIGHT_PAREN
+           {   $$= new_for_statement(NULL,NULL,NULL,NULL);
+	   }
 |          SEP_LEFT_PAREN comma_expr SEP_SEMICOLON SEP_SEMICOLON SEP_RIGHT_PAREN
+           {   $$= new_for_statement($2,NULL,NULL,NULL);
+	   }
 |          SEP_LEFT_PAREN SEP_SEMICOLON comma_expr SEP_SEMICOLON SEP_RIGHT_PAREN
+           {   $$= new_for_statement(NULL,$3,NULL,NULL);
+	   }
 |          SEP_LEFT_PAREN SEP_SEMICOLON SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
+           {   $$= new_for_statement(NULL,NULL,$4,NULL);
+	   }
 |          SEP_LEFT_PAREN comma_expr SEP_SEMICOLON comma_expr SEP_SEMICOLON SEP_RIGHT_PAREN
+           {   $$= new_for_statement($2,$4,NULL,NULL);
+	   }
 |          SEP_LEFT_PAREN comma_expr SEP_SEMICOLON SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
+           {   $$= new_for_statement($2,NULL,$5,NULL);
+	   }
 |          SEP_LEFT_PAREN SEP_SEMICOLON comma_expr SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
+           {   $$= new_for_statement(NULL,$3,$5,NULL);
+	   }
 |          SEP_LEFT_PAREN comma_expr SEP_SEMICOLON comma_expr SEP_SEMICOLON comma_expr SEP_RIGHT_PAREN
+           {   $$= new_for_statement($2,$4,$6,NULL);
+	   }
 ;
 
 
