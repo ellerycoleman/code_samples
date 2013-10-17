@@ -46,6 +46,8 @@ typedef enum ntype {   DECL,
 		       RETURN_STATEMENT,
 		       GOTO_STATEMENT,
 		       NULL_STATEMENT,
+		       IF_STATEMENT,
+		       IF_ELSE_STATEMENT,
 		       LABELED_STATEMENT,
 		       LABEL,
 
@@ -202,7 +204,9 @@ typedef struct flow
 {   ntype nodetype;
     struct ast *cond;
     struct ast *thendo;
-    struct ast *els;
+    struct ast *elsedo;
+    struct ast *forinit;
+    struct ast *forupdate;
 } flow;
 
 
@@ -257,3 +261,9 @@ declarator *new_array_declarator(int type, struct declarator *arrydec, struct as
 void print_dad(declarator *d);
 struct ast *new_flow(struct ast *cond, struct ast *thendo, struct ast *els);
 struct ast *new_conditional_expr(struct ast *cond, struct ast *return1, struct ast *return2);
+struct ast *new_if_statement(struct ast *cond, struct ast *thendo, struct ast *elsedo);
+
+
+
+
+

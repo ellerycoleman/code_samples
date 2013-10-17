@@ -158,8 +158,29 @@ MYSTMT:    {
     b >> 2;
 
 
+    /* testing  function calls */
     display_current_time();
-    calc_volume(5,3,4);
+    calc_volume(5, 8<<1,*4);
+
+
+
+    /* testing conditional statements and loops */
+    if(a > b)
+    {   printf("%d", A);
+    }
+
+
+    if(c > d)
+    {   printf("%d", c);
+    }
+    else if( e > f)
+    {   printf("%d", e);
+    }
+    else
+    {   printf("%d", q);
+    }
+
+
 
 }
 

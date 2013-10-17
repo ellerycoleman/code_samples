@@ -121,6 +121,7 @@ void print_expr(struct ast *expr)
     struct declarator *d;
     struct ast *tast;
     struct cond_expr *cexpr;
+    struct flow *tflow;
 
 
     switch(expr->nodetype)
@@ -526,9 +527,24 @@ void print_expr(struct ast *expr)
 	   break;
 
 
+        case IF_STATEMENT:
+	   tflow= (struct flow *)expr;
+	   printf("if(");
+	   print_expr(tflow->cond);
+	   printf(")\n");
+	   print_expr(tflow->thendo);
+	   break;
 
 
-
+        case IF_ELSE_STATEMENT:
+	   tflow= (struct flow *)expr;
+	   printf("if(");
+	   print_expr(tflow->cond);
+	   printf(")\n");
+	   print_expr(tflow->thendo);
+	   printf("else ");
+	   print_expr(tflow->elsedo);
+	   break;
 
 
         case RW_RETURN:
@@ -1151,11 +1167,17 @@ struct ast *new_compound_statement(struct ast *decstmtlist)
 }
 
 
-struct ast *new_flow(struct ast *cond, struct ast *thendo, struct ast *els)
+struct ast *new_if_statement(struct ast *cond, struct ast *thendo, struct ast *elsedo)
 {   struct flow *tflow= malloc(sizeof(struct flow));
+    if(elsedo == NULL)
+    {   tflow->nodetype= IF_STATEMENT;
+    }
+    else
+    {   tflow->nodetype= IF_ELSE_STATEMENT;
+    }
     tflow->cond= cond;
     tflow->thendo= thendo;
-    tflow->els= els;
+    tflow->elsedo= elsedo;
 
     return (struct ast *)tflow;
 }

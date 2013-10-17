@@ -18,7 +18,6 @@
 #include "e95_tokens.h"
 #include "parser_support.h"
 
-
 %}
 
 
@@ -28,8 +27,6 @@
     struct declarator_list *dlist;
     struct parameter_list *plist;
     struct declarator *dp;
-    struct tld *tld;
-    struct parameter_decl *pdecl;
     char *id;
     int i;
 }
@@ -86,6 +83,8 @@
 	  relational_expr
 	  shift_expr
 	  function_call
+	  if_statement
+	  if_else_statement
 
 
 %type <dlist> initialized_declarator_list
@@ -719,10 +718,14 @@ conditional_statement:  if_statement
 
 
 if_statement:       RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement %prec IFX
+                    {   $$= new_if_statement($3,$5,NULL);
+		    }
 ; /* this symbol uses %prec to resolve the shift/reduce error, per advice on stackoverflow.com */
 
 
 if_else_statement:  RW_IF SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement RW_ELSE statement
+                    {   $$= new_if_statement($3,$5,$7);
+		    }
 ;
 
 
