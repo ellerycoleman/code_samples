@@ -218,8 +218,16 @@ DATA
 #----------------------------------------------------
 cat testprog.c
 echo "Preparing to parse the above input program..."
-echo "Running parser with GDB..."
 echo;echo;
 
+
+# GDB Version.
+echo "Running parser with GDB..."
 cat testprog.c | gdb -x gdb.cmd ./parser | tee  testprog_output.c
+
+
+# NON GDB Version
+#cat testprog.c | ./parser | tee  testprog_output.c
+
+
 
