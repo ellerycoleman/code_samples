@@ -85,6 +85,7 @@
 	  function_call
 	  if_statement
 	  if_else_statement
+	  while_statement
 
 
 %type <dlist> initialized_declarator_list
@@ -736,6 +737,8 @@ iterative_statement:  while_statement
 
 
 while_statement:  RW_WHILE SEP_LEFT_PAREN comma_expr SEP_RIGHT_PAREN statement
+                  {   $$= new_while_statement($3,$5);
+		  }
 ;
 
 

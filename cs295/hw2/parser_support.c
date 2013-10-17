@@ -115,6 +115,7 @@ void print_tree(ast *nodeptr)
 void print_expr(struct ast *expr)
 {   struct constant *k;
     int i=0;
+    char *c;
     struct decostat_list *dlist;
     struct decl *tdecl;
     struct declarator_list *dl;
@@ -145,7 +146,17 @@ void print_expr(struct ast *expr)
 
         case STRING_CONSTANT:
 	   k= (struct constant *)expr;
-	   printf("\"%s\"", k->value);
+	   c= (char *)(k->value);
+	   putchar('"');
+	   for(i=0; i<=strlen(c); i++)
+	   {   if(c[i] == '\n')  /* unescape return chars */
+	       {   printf("\\n");
+	       }
+	       else
+	       {   putchar(c[i]);
+	       }
+	   }
+	   putchar('"');
 	   break;
 
         case LABEL:
@@ -545,6 +556,16 @@ void print_expr(struct ast *expr)
 	   printf("else ");
 	   print_expr(tflow->elsedo);
 	   break;
+
+
+        case WHILE_STATEMENT:
+	   tflow= (struct flow *)expr;
+	   printf("while(");
+	   print_expr(tflow->cond);
+	   printf(")\n");
+	   print_expr(tflow->thendo);
+	   break;
+
 
 
         case RW_RETURN:
@@ -1178,6 +1199,16 @@ struct ast *new_if_statement(struct ast *cond, struct ast *thendo, struct ast *e
     tflow->cond= cond;
     tflow->thendo= thendo;
     tflow->elsedo= elsedo;
+
+    return (struct ast *)tflow;
+}
+
+
+struct ast *new_while_statement(struct ast *cond, struct ast *thendo)
+{   struct flow *tflow= malloc(sizeof(struct flow));
+    tflow->nodetype= WHILE_STATEMENT;
+    tflow->cond= cond;
+    tflow->thendo= thendo;
 
     return (struct ast *)tflow;
 }

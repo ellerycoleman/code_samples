@@ -181,6 +181,13 @@ MYSTMT:    {
     }
 
 
+    while(i <= 10)
+    {   printf("%d\n", ++i);
+        while( j >= 20)
+	{   printf("%d\n", j--);
+	}
+    }
+
 
 }
 
