@@ -24,7 +24,7 @@ yyerror(char *s,...)
 
 
 
-void print_tree(ast *nodeptr)
+void print_tree(struct ast *nodeptr)
 {   printf("\n\n\n\n");
     printf("#----------------------------------------------------------\n");
     printf("#           Parse Tree for E95 C Language                  \n");
@@ -81,8 +81,6 @@ void print_tree(ast *nodeptr)
 	    struct function_defspec *fdspec= funcdef->fdspec;
 	    struct ast *cstmt= funcdef->cstmt;
 	    struct decostat_list *dlist;
-
-            /* printf("tld %d:\n", i++); */
 
 
 	    /* print function return type */
@@ -696,47 +694,32 @@ void print_decl(struct ast *expr)
 
 
 declarator *new_simple_declarator(char *id)
-{   declarator *d= malloc(sizeof(declarator));
-    if(d == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   d->nodetype= SIMPLE_DECLARATOR;
-        d->id= strdup(id);
-    }
+{   declarator *d= emalloc(sizeof(declarator));
+    d->nodetype= SIMPLE_DECLARATOR;
+    d->id= strdup(id);
     return d;
 }
 
 
 declarator *new_pointer_declarator(declarator *next)
-{   declarator *d= malloc(sizeof(declarator));
-    if(d == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   d->nodetype= POINTER_DECLARATOR;
-        d->next= next;
-    }
+{   declarator *d= emalloc(sizeof(declarator));
+    d->nodetype= POINTER_DECLARATOR;
+    d->next= next;
     return d;
 }
 
 
 declarator *new_array_declarator(int type, struct declarator *arrydec, struct ast *expr)
-{   declarator *d= malloc(sizeof(declarator));
-    if(d == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   d->nodetype= ARRAY_DECLARATOR;
-        d->adeclarator= arrydec;
-        d->exp= (struct expr *)expr;
-    }
+{   declarator *d= emalloc(sizeof(declarator));
+    d->nodetype= ARRAY_DECLARATOR;
+    d->adeclarator= arrydec;
+    d->exp= (struct expr *)expr;
     return d;
 }
 
 
 declarator *new_direct_abstract_declarator(int type, struct ast *data, declarator *next)
-{   declarator *d= malloc(sizeof(struct declarator));
+{   declarator *d= emalloc(sizeof(struct declarator));
     
     d->nodetype= DIRECT_ABSTRACT_DECLARATOR;
     d->dadtype= type;
@@ -757,7 +740,7 @@ declarator *new_direct_abstract_declarator(int type, struct ast *data, declarato
 
 
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist)
-{   declarator *d= malloc(sizeof(declarator));
+{   declarator *d= emalloc(sizeof(declarator));
     {   d->nodetype= FUNCTION_DECLARATOR;
         d->adeclarator= fdecl;
         d->plist= plist;
@@ -772,21 +755,16 @@ declarator *new_function_declarator(declarator *fdecl, parameter_list *plist)
 
 
 declarator_list *new_declarator_list(declarator *d, declarator_list *next)
-{   declarator_list *dl= malloc(sizeof(struct declarator_list));
-    if(dl == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   dl->d= d;
-        dl->next= next;
-    }
+{   declarator_list *dl= emalloc(sizeof(struct declarator_list));
+    dl->d= d;
+    dl->next= next;
     return dl;
 }
 
 
 
 parameter_list *new_parameter_list(declarator *pd, parameter_list *next)
-{   parameter_list *pl= malloc(sizeof(struct parameter_list));
+{   parameter_list *pl= emalloc(sizeof(struct parameter_list));
     pl->pd= pd;
     pl->next= next;
     return pl;
@@ -794,21 +772,16 @@ parameter_list *new_parameter_list(declarator *pd, parameter_list *next)
 
 
 
-tld_list *new_tld_list(ast *t, ast *next)
-{   tld_list *tl= malloc(sizeof(struct tld_list));
-    if(tl == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   tl->tld= (struct tld *)t;
-        tl->next= (struct tld_list *)next;
-    }
+struct tld_list *new_tld_list(struct ast *t, struct ast *next)
+{   struct tld_list *tl= emalloc(sizeof(struct tld_list));
+    tl->tld= (struct tld *)t;
+    tl->next= (struct tld_list *)next;
     return tl;
 }
 
 
 struct ast *new_decostat_list(struct ast *decostat, struct ast *next)
-{   decostat_list *dl= malloc(sizeof(struct decostat_list));
+{   struct decostat_list *dl= emalloc(sizeof(struct decostat_list));
     {   dl->nodetype= DECOSTAT_LIST;
         dl->decostat= decostat;
 	dl->next= (struct decostat_list *)next;
@@ -843,10 +816,10 @@ declarator_list *reverse_declarator_list(declarator_list *dl)
 
 
 
-tld_list *reverse_tld_list(struct tld_list *tl)
-{   tld_list *newroot= NULL;
+struct tld_list *reverse_tld_list(struct tld_list *tl)
+{   struct tld_list *newroot= NULL;
     while(tl)
-    {   tld_list *next= tl->next;
+    {   struct tld_list *next= tl->next;
         tl->next= newroot;
 	newroot= tl;
 	tl= next;
@@ -895,36 +868,27 @@ struct decostat_list *reverse_decostat_list(struct decostat_list *dlist)
 
 
 
-ast *new_decl(int typespecifier, declarator_list *dl)
-{   decl *d= malloc(sizeof(struct decl));
-    if(d == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
-    }
-    else
-    {   d->nodetype= DECL;
-        d->typespecifier= typespecifier;
-        d->dl=  dl;
-    }
+struct ast *new_decl(int typespecifier, declarator_list *dl)
+{   struct decl *d= emalloc(sizeof(struct decl));
+    d->nodetype= DECL;
+    d->typespecifier= typespecifier;
+    d->dl=  dl;
 
     return  (struct ast *)d;
 }
 
 
-ast *new_tld(int datatype, ast *tld)
-{   struct tld *t= malloc(sizeof(struct tld));
-    if(t == NULL)
-    {   printf("*** Parser ran out of memory! ***\n");
+struct ast *new_tld(int datatype, struct ast *tld)
+{   struct tld *t= emalloc(sizeof(struct tld));
+    t->nodetype= TLD;
+    t->datatype= datatype;
+    if(datatype == DECL)
+    {   t->d= (struct decl *)tld;
     }
-    else
-    {   t->nodetype= TLD;
-        t->datatype= datatype;
-        if(datatype == DECL)
-	{   t->d= (struct decl *)tld;
-	}
-	if(datatype == FUNCTION_DEFINITION)
-	{   t->f= (struct ast *)tld;
-	}
+    if(datatype == FUNCTION_DEFINITION)
+    {   t->f= (struct ast *)tld;
     }
+
     return (struct ast *)t;
 }
 
@@ -980,7 +944,7 @@ void print_simple_declarator(declarator *d)
 
 
 declarator *new_parameter_decl(int typespec, declarator *d)
-{   declarator *pd= malloc(sizeof(struct declarator));
+{   declarator *pd= emalloc(sizeof(struct declarator));
     pd->typespecifier= typespec;
     if(d != NULL)
     {   pd->nodetype= d->nodetype;
@@ -1158,7 +1122,7 @@ void print_dad(declarator *d)
 
 
 struct ast *new_expr(int type,struct ast *l, struct ast *r)
-{   struct expr *expr= malloc(sizeof(struct expr));
+{   struct expr *expr= emalloc(sizeof(struct expr));
     expr->nodetype= type;
     expr->l= l;
     expr->r= r;
@@ -1168,7 +1132,7 @@ struct ast *new_expr(int type,struct ast *l, struct ast *r)
 
 
 struct ast *new_conditional_expr(struct ast *cond, struct ast *return1, struct ast *return2)
-{   struct cond_expr *expr= malloc(sizeof(struct cond_expr));
+{   struct cond_expr *expr= emalloc(sizeof(struct cond_expr));
     expr->nodetype= CONDITIONAL_EXPR;
     expr->cond= cond;
     expr->return1= return1;
@@ -1178,7 +1142,7 @@ struct ast *new_conditional_expr(struct ast *cond, struct ast *return1, struct a
 }
 
 struct ast *new_constant(int type, void *value)
-{   struct constant *k= malloc(sizeof(struct constant));
+{   struct constant *k= emalloc(sizeof(struct constant));
     k->nodetype= type;
     k->value= value;
     return (struct ast *)k;
@@ -1187,7 +1151,7 @@ struct ast *new_constant(int type, void *value)
 
 
 struct ast *new_function_def_specifier(int type, struct declarator *d)
-{   struct function_defspec *fdefspec= malloc(sizeof(struct function_defspec));
+{   struct function_defspec *fdefspec= emalloc(sizeof(struct function_defspec));
     fdefspec->nodetype= FUNCTION_DEF_SPECIFIER;
     fdefspec->typespec= type;
     fdefspec->d= d;
@@ -1197,7 +1161,7 @@ struct ast *new_function_def_specifier(int type, struct declarator *d)
 
 
 struct ast *new_function_definition(struct ast *fdefspec, struct ast *compound_stmt)
-{   struct function_def *fdef= malloc(sizeof(struct function_def));
+{   struct function_def *fdef= emalloc(sizeof(struct function_def));
     fdef->nodetype= FUNCTION_DEFINITION;
     fdef->fdspec= (struct function_defspec *)fdefspec;
     fdef->cstmt= compound_stmt;
@@ -1206,7 +1170,7 @@ struct ast *new_function_definition(struct ast *fdefspec, struct ast *compound_s
 
 
 struct ast *new_compound_statement(struct ast *decstmtlist)
-{   struct ast *cstmt= malloc(sizeof(struct ast));
+{   struct ast *cstmt= emalloc(sizeof(struct ast));
     cstmt->nodetype= COMPOUND_STATEMENT;
     cstmt->l= decstmtlist;
 
@@ -1216,7 +1180,7 @@ struct ast *new_compound_statement(struct ast *decstmtlist)
 
 
 struct ast *new_if_statement(struct ast *cond, struct ast *thendo, struct ast *elsedo)
-{   struct flow *tflow= malloc(sizeof(struct flow));
+{   struct flow *tflow= emalloc(sizeof(struct flow));
     if(elsedo == NULL)
     {   tflow->nodetype= IF_STATEMENT;
     }
@@ -1233,7 +1197,7 @@ struct ast *new_if_statement(struct ast *cond, struct ast *thendo, struct ast *e
 
 
 struct ast *new_while_statement(struct ast *cond, struct ast *thendo)
-{   struct flow *tflow= malloc(sizeof(struct flow));
+{   struct flow *tflow= emalloc(sizeof(struct flow));
     tflow->nodetype= WHILE_STATEMENT;
     tflow->cond= cond;
     tflow->thendo= thendo;
@@ -1244,7 +1208,7 @@ struct ast *new_while_statement(struct ast *cond, struct ast *thendo)
 
 
 struct ast *new_do_statement(struct ast *cond, struct ast *thendo)
-{   struct flow *tflow= malloc(sizeof(struct flow));
+{   struct flow *tflow= emalloc(sizeof(struct flow));
     tflow->nodetype = DO_STATEMENT;
     tflow->cond     = cond;
     tflow->thendo   = thendo;
@@ -1259,7 +1223,7 @@ struct ast *new_for_statement(struct ast *forinit,
 			      struct ast *forupdate,
 			      struct ast *thendo
 			     )
-{   struct flow *tflow= malloc(sizeof(struct flow));
+{   struct flow *tflow= emalloc(sizeof(struct flow));
     tflow->nodetype  = FOR_STATEMENT;
     tflow->forinit   = forinit;
     tflow->cond      = cond;
@@ -1271,5 +1235,14 @@ struct ast *new_for_statement(struct ast *forinit,
 
 
 
+
+void * emalloc(int size)
+{   void *space= malloc(size);
+    if(space == NULL)
+    {   printf("*** Parser ran out of memory! ***\n");
+        exit(-1);
+    }
+    return space;
+}
 
 

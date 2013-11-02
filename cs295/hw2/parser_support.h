@@ -104,35 +104,37 @@ typedef enum dadtype {PAREN_ENCLOSED=900,BRACKET_NO_EXPR,BRACKET_EXPR,DAD_LIST} 
 
 
 
-typedef struct ast
+struct ast
 {   ntype nodetype;
     struct ast *l;
     struct ast *r;
-} ast;
+};
 
 
-typedef struct numval
+struct numval
 {   ntype nodetype;
     int val;
-} numval;
+};
 
 
-typedef struct constant
+struct constant
 {   ntype nodetype;
     void *value;
-} constant;
+};
 
 
-typedef struct expr
+struct expr
 {   ntype nodetype;
     struct ast *l;
     struct ast *r;
-} expr;
+};
 
+
+/* All declarators are handled with a single declarator struct */
 typedef struct declarator
-{ ntype nodetype;
-  tspec typespecifier;  /* for parameter_decl's */
-  dadtype dadtype;      /* for direcect abstract declarators */
+{ ntype nodetype;       /* signifies what type of declarator this is  */
+  tspec typespecifier;  /* typespec for parameter_decl's              */
+  dadtype dadtype;      /* dadtype for direcect abstract declarators  */
   char *id;
   struct declarator *next;
   struct declarator *adeclarator; /* for use with function/abstract declarators */
@@ -141,15 +143,16 @@ typedef struct declarator
 } declarator;
 
 
+
 typedef struct parameter_list
 {   declarator *pd;
     struct parameter_list *next;
 } parameter_list;
 
 
-typedef struct funcdef
+struct funcdef
 {   ntype nodetype;
-} funcdef;
+};
 
 
 typedef struct declarator_list
@@ -160,74 +163,75 @@ typedef struct declarator_list
 
 
 
-typedef struct decl
+struct decl
 {   ntype nodetype;
     tspec typespecifier;
     struct declarator_list *dl;
-} decl;
+};
 
 
-typedef struct tld
+struct tld
 {   ntype nodetype;
     int datatype; /* 1 is decl, 2 is funcdef */
     struct decl    *d;
     struct ast *f;
-} tld;
+};
 
 
-typedef struct tld_list
+struct tld_list
 {   ntype nodetype;
     struct tld *tld;
     struct tld_list *next;
-} tld_list;
+};
 
 
-typedef struct decostat_list
+struct decostat_list
 {   ntype nodetype;
     struct ast *decostat;
     struct decostat_list *next;
-} decostat_list;
+};
 
 
-typedef struct function_defspec
+struct function_defspec
 {   ntype nodetype;
     int typespec;
     struct declarator *d;
-} function_defspec;
+};
 
 
-typedef struct function_def
+struct function_def
 {   ntype nodetype;
     struct function_defspec *fdspec;
     struct ast *cstmt; /* decostat_list */
-} function_def;
+};
 
 
-typedef struct flow
+struct flow
 {   ntype nodetype;
     struct ast *cond;
     struct ast *thendo;
     struct ast *elsedo;
     struct ast *forinit;
     struct ast *forupdate;
-} flow;
+};
 
 
-typedef struct cond_expr
+struct cond_expr
 {   ntype nodetype;
     struct ast *cond;
     struct ast *return1;
     struct ast *return2;
-} cond_expr;
+};
+
 
 declarator *new_simple_declarator(char *id);
-tld_list *new_tld_list(ast *t, ast *next);
-ast *new_tld(int datatype, ast *t);
-ast *new_decl(int typespecifier, declarator_list *dl);
-void print_tree(ast *nodeptr);
+struct tld_list *new_tld_list(struct ast *t, struct ast *next);
+struct ast *new_tld(int datatype, struct ast *t);
+struct ast *new_decl(int typespecifier, declarator_list *dl);
+void print_tree(struct ast *nodeptr);
 declarator_list *new_declarator_list(declarator *d, declarator_list *next);
 declarator_list *reverse_declarator_list(declarator_list *dl);
-tld_list *reverse_tld_list(struct tld_list *tl);
+struct tld_list *reverse_tld_list(struct tld_list *tl);
 declarator *new_pointer_declarator(declarator *next);
 declarator *reverse_declarators(declarator *dp);
 
@@ -274,6 +278,7 @@ struct ast *new_for_statement(struct ast *forinit,
                               struct ast *thendo
                              );
 
+void * emalloc(int size);
 
 
 
