@@ -971,7 +971,7 @@ void print_parameter_list(parameter_list *plist)
 {   declarator *d;
     declarator *ad;
     do
-    {
+    {   printf("(");
         switch(plist->pd->nodetype)
         {
 	
@@ -1031,6 +1031,8 @@ void print_parameter_list(parameter_list *plist)
 	      break;
 
         }
+        printf(")");
+
 
         if(plist->next != NULL)
         {   printf(", ");
