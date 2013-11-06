@@ -49,8 +49,8 @@ void print_tree(struct ast *nodeptr)
 
 
     do  /* cycle through all of the TLD's */
-    {   
-    
+    {
+
             /*--------------------------------------------+
 	     |            if TLD is a DECL
 	     +--------------------------------------------*/
@@ -58,7 +58,9 @@ void print_tree(struct ast *nodeptr)
         {   tdecl= (struct decl *)tldlist->tld->d;
 
             /* print declarator list */
+	    printf("(");
             print_expr((struct ast *)tdecl);
+	    printf(")");
 
 	    printf(";\n");
 	}
@@ -76,7 +78,7 @@ void print_tree(struct ast *nodeptr)
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
 
             /* a function defintion is composed of a
-	     * fuction_defspec and a compound statement. 
+	     * fuction_defspec and a compound statement.
 	     */
 	    struct function_defspec *fdspec= funcdef->fdspec;
 	    struct ast *cstmt= funcdef->cstmt;
@@ -318,7 +320,9 @@ void print_expr(struct ast *expr)
 	   printf("%s ",print_type(tdecl->typespecifier));
 	   do
 	   {   d= dl->d;
+	       printf("(");
 	       print_decl((struct ast *)d);
+	       printf(")");
 	       if(dl->next != NULL)
 	       {   printf(", ");
 	       }
@@ -663,7 +667,7 @@ void print_decl(struct ast *expr)
 	   printf("]");
 	   break;
 
-      
+
         case DIRECT_ABSTRACT_DECLARATOR:
 	   print_dad(d);
 	   break;
@@ -720,7 +724,7 @@ declarator *new_array_declarator(int type, struct declarator *arrydec, struct as
 
 declarator *new_direct_abstract_declarator(int type, struct ast *data, declarator *next)
 {   declarator *d= emalloc(sizeof(struct declarator));
-    
+
     d->nodetype= DIRECT_ABSTRACT_DECLARATOR;
     d->dadtype= type;
 
@@ -1005,7 +1009,7 @@ void print_parameter_list(parameter_list *plist)
 	    case DECL:
 	       d= plist->pd;
 	       print_decl((struct ast *)d);
-	       
+
 
             case -1:  /* print type only */
                printf("%s", print_type(plist->pd->typespecifier));
@@ -1037,10 +1041,10 @@ void print_parameter_list(parameter_list *plist)
 
 void print_dad(declarator *d)
 {   struct declarator *ad;
-               
+
 
     switch(d->dadtype)
-    {   
+    {
         case PAREN_ENCLOSED:
            ad= d->adeclarator;
            printf("%s ", print_type(d->typespecifier));
@@ -1075,7 +1079,7 @@ void print_dad(declarator *d)
                    printf("]");
                }
 	       else if(d->exp != NULL && d->next != NULL)
-	       {   
+	       {
 	           printf("[");
 	           print_expr((struct ast *)d->exp);
                    printf("]");
@@ -1083,9 +1087,9 @@ void print_dad(declarator *d)
 
 	       /* print dad_list members without typespecifiers */
 	       else
-	       {   
+	       {
 	           switch(d->dadtype)
-	           {   
+	           {
 	               case PAREN_ENCLOSED:
                        ad= d->adeclarator;
                        printf("(");
@@ -1104,7 +1108,7 @@ void print_dad(declarator *d)
 		          print_expr((struct ast *)d->exp);
                           printf("]");
 		          break;
-                                 
+
 		       default:
 		          printf("ERROR: problem printing dad_list...\n");
 		          break;
