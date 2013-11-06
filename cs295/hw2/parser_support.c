@@ -29,7 +29,7 @@ void print_tree(struct ast *nodeptr)
     printf("#----------------------------------------------------------\n");
     printf("#           Parse Tree for E95 C Language                  \n");
     printf("#----------------------------------------------------------\n");
-    printf("(\n\n\n");
+    printf("\n\n\n");
 
 
 
@@ -105,7 +105,7 @@ void print_tree(struct ast *nodeptr)
 
 
     }while( (tldlist= tldlist->next) != NULL );
-    printf("\n\n\n)\n\n\n\n");
+    printf("\n\n\n\n\n\n\n");
 }
 
 
