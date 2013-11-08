@@ -351,13 +351,22 @@ void print_expr(struct ast *expr)
 
 
            /* print declarator list */
-	   printf("(%s",print_type(tdecl->typespecifier));
+	   if( dl->d->nodetype == SIMPLE_DECLARATOR)
+	   {   printf("(%s) ",print_type(tdecl->typespecifier));
+	   }
+	   else
+	   {   printf("(%s ",print_type(tdecl->typespecifier));
+	   }
+	   
+
 	   do
 	   {   d= dl->d;
+	       /*
 	       if( dl->d->nodetype == SIMPLE_DECLARATOR && initial_typespec)
 	       {   printf(") ");
 	           initial_typespec=0;
 	       }
+	       */
 	       print_decl((struct ast *)d);
 	       if(dl->next != NULL)
 	       {   printf(", ");
@@ -757,10 +766,22 @@ void print_decl(struct ast *expr)
 	            print_expr((struct ast *)d->exp);
          	    printf("])");
 		}
+	        else if( d->nodetype == FUNCTION_DECLARATOR )
+		{   
+	            /* print function name */
+	            printf(") ");
+	            printf("%s(", d->adeclarator->id);
 
+                    /* print parameter list */
+	            print_parameter_list(d->plist);
+	            printf(")");
+		}
+
+            /*
 	    if(d->next != NULL   &&   d->next->nodetype == ARRAY_DECLARATOR)
 	    {   printf(")");
 	    }
+	    */
 
             }while( (d= d->next) != NULL);
 	    break;
