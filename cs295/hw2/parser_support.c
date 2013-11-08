@@ -777,11 +777,9 @@ void print_decl(struct ast *expr)
 	            printf(")");
 		}
 
-            /*
 	    if(d->next != NULL   &&   d->next->nodetype == ARRAY_DECLARATOR)
 	    {   printf(")");
 	    }
-	    */
 
             }while( (d= d->next) != NULL);
 	    break;
@@ -1127,6 +1125,7 @@ void print_parameter_list(parameter_list *plist)
 	    case POINTER_DECLARATOR:
                printf("%s ", print_type(plist->pd->typespecifier));
 	       d= plist->pd;
+
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
 	           {   printf("*");
@@ -1137,8 +1136,15 @@ void print_parameter_list(parameter_list *plist)
 		   else if( d->nodetype == DIRECT_ABSTRACT_DECLARATOR )
 		   {   print_dad(d);
 		   }
+	           else if( d->nodetype == ARRAY_DECLARATOR )
+		   {   printf(" (%s", d->adeclarator->id);
+         	       printf("[");
+	               print_expr((struct ast *)d->exp);
+         	       printf("])");
+		   }
                }while( (d= d->next) != NULL);
 	       break;
+
 
 	    case DIRECT_ABSTRACT_DECLARATOR:
 	       d= plist->pd;
