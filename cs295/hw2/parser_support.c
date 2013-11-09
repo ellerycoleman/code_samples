@@ -13,12 +13,15 @@
 #include "bison_parser.tab.h"
 
 extern int yylineno;
+extern char e95_strbuf2[];
+int first_ptr;
 
 
 yyerror(char *s,...)
 {   fprintf(stderr, "Problem in Parseville!\n");
     fprintf(stderr, "\terror: %s\n", s);
     fprintf(stderr, "\tline number: %d\n\n", yylineno);
+    fprintf(stderr, "\t%s\n\n", e95_strbuf2);
 }
 
 
@@ -88,7 +91,7 @@ void print_tree(struct ast *nodeptr)
 	    printf("%s(", fdspec->d->adeclarator->id);
 	    print_parameter_list(fdspec->d->plist);
 	    printf(")");
-	    printf("\n{");
+	    printf("\n{\n");
 
 
             /* display compound statement block */
@@ -99,7 +102,7 @@ void print_tree(struct ast *nodeptr)
 	    } while( (dlist= dlist->next) != NULL);
 
 
-	    printf("\n}   ");
+	    printf("\n}\n\n");
 	}
 
 
@@ -178,12 +181,12 @@ void print_expr(struct ast *expr)
 
         case COMPOUND_STATEMENT:
 	    dlist= (struct decostat_list *)expr->l;
-	    printf("{   ");
+	    printf("{ ");
 	    do
 	    {   print_expr(dlist->decostat);
 	        printf(";\n");
             }while( (dlist= dlist->next) != NULL);
-	    printf("}\n");
+	    printf("}\n\n");
 	   break;
 
 
@@ -202,7 +205,11 @@ void print_expr(struct ast *expr)
         case PLUS_SIGN:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("+");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -211,7 +218,11 @@ void print_expr(struct ast *expr)
         case MINUS_SIGN:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("-");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -220,7 +231,11 @@ void print_expr(struct ast *expr)
         case ASTERISK:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("*");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -229,7 +244,11 @@ void print_expr(struct ast *expr)
         case OP_DIVISION:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("/");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -238,7 +257,11 @@ void print_expr(struct ast *expr)
         case OP_REMAINDER:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   putchar('%');
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -247,7 +270,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -256,7 +283,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_ADD:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("+=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -265,7 +296,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_SUBTRACT:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("-=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -274,7 +309,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_MULTIPLY:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("*=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -284,7 +323,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_DIVIDE:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("/=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -293,7 +336,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_REMAINDER:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("%=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -302,7 +349,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_LEFT_BITSHIFT:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("<<=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -311,7 +362,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_RIGHT_BITSHIFT:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf(">>=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -320,7 +375,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_BITWISE_AND:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("&=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -329,7 +388,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_BITWISE_OR:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("|=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -338,7 +401,11 @@ void print_expr(struct ast *expr)
         case OP_ASSIGNMENT_BITWISE_XOR:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf("^=");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -354,19 +421,23 @@ void print_expr(struct ast *expr)
 	   if( dl->d->nodetype == SIMPLE_DECLARATOR)
 	   {   printf("(%s) ",print_type(tdecl->typespecifier));
 	   }
+
+	   else if( dl->d->nodetype == POINTER_DECLARATOR)
+	   {   if( dl->d->next != NULL  &&  dl->d->next->nodetype != SIMPLE_DECLARATOR)
+	       {   printf("(%s ",print_type(tdecl->typespecifier));
+	           first_ptr=1;
+	       }
+	       else
+	       {   printf("(%s) ",print_type(tdecl->typespecifier));
+	       }
+	   }
 	   else
-	   {   printf("(%s ",print_type(tdecl->typespecifier));
+	   {   printf("(%s",print_type(tdecl->typespecifier));
 	   }
 	   
 
 	   do
 	   {   d= dl->d;
-	       /*
-	       if( dl->d->nodetype == SIMPLE_DECLARATOR && initial_typespec)
-	       {   printf(") ");
-	           initial_typespec=0;
-	       }
-	       */
 	       print_decl((struct ast *)d);
 	       if(dl->next != NULL)
 	       {   printf(", ");
@@ -739,6 +810,7 @@ void print_decl(struct ast *expr)
 {
     struct declarator_list *dl;
     struct declarator *d;
+    struct declarator *dview;
     struct declarator *ad;
     struct ast *tast;
 
@@ -750,36 +822,52 @@ void print_decl(struct ast *expr)
            break;
 
 
-	 case POINTER_DECLARATOR:
-	    printf(" ");
-	    d= (struct declarator *)expr;
-	    do
-	    {   if( d->nodetype == POINTER_DECLARATOR )
-	        {   printf("*");
-	        }
-	        else if( d->nodetype == SIMPLE_DECLARATOR )
-	        {   printf("%s", d->id);
-	        }
-	        else if( d->nodetype == ARRAY_DECLARATOR )
-		{   printf(" (%s", d->adeclarator->id);
-         	    printf("[");
-	            print_expr((struct ast *)d->exp);
-         	    printf("])");
-		}
-	        else if( d->nodetype == FUNCTION_DECLARATOR )
-		{   
-	            /* print function name */
-	            printf(") ");
-	            printf("%s(", d->adeclarator->id);
+        case POINTER_DECLARATOR:
+	   d= (struct declarator *)expr;
 
-                    /* print parameter list */
-	            print_parameter_list(d->plist);
-	            printf(")");
-		}
+	   do
+	   {   if( d->nodetype == POINTER_DECLARATOR )
+	       {   
+	           /* printing paren before pointer declarator */
+		   if(first_ptr)
+		   {
+	               dview= d;
+		       while(dview->next != NULL  &&  dview->next->nodetype == POINTER_DECLARATOR)
+		       {   dview= dview->next;
+		       }
+		       if(dview->next != NULL  &&  dview->next->nodetype == SIMPLE_DECLARATOR)
+		       {   printf(") ");
+		           first_ptr=0;
+		       }
+	           }
+	           printf("*");
+               }
 
-	    if(d->next != NULL   &&   d->next->nodetype == ARRAY_DECLARATOR)
-	    {   printf(")");
-	    }
+	       else if( d->nodetype == SIMPLE_DECLARATOR )
+	       {   printf("%s", d->id);
+	       }
+
+	       else if( d->nodetype == ARRAY_DECLARATOR )
+	       {   printf(" (%s", d->adeclarator->id);
+                   printf("[");
+	           print_expr((struct ast *)d->exp);
+         	   printf("])");
+	       }
+
+	       else if( d->nodetype == FUNCTION_DECLARATOR )
+	       {      
+	           /* print function name */
+	           printf(") ");
+	           printf("%s(", d->adeclarator->id);
+
+                   /* print parameter list */
+	           print_parameter_list(d->plist);
+	           printf(")");
+	       }
+
+	       if(d->next != NULL   &&   d->next->nodetype == ARRAY_DECLARATOR)
+	       {   printf(")");
+	       }
 
             }while( (d= d->next) != NULL);
 	    break;
