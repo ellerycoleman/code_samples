@@ -38,11 +38,12 @@ extern YYSTYPE yylval;
 %%
 
 
+
 \/\*([^\*]|\*+[^\/\*])*\*\/+  {   /* NOTE: This is a regex to match C comments.
                                            The core of this regex was taken from page 40
                                            of the Flex & Bison book by John Levine.
                                            ISBN: 978-0-596-15597-1
-                                   
+
                                            It was modified slightly in order to get flex
                                            to accept it.
                                   */
@@ -151,14 +152,14 @@ extern YYSTYPE yylval;
 '\\[0-7]{1,3}' {  /* Handle octal character constants */
 		  yylval.a= (struct ast *) strdup(yytext);
 		  cvalue= get_octal_value(yytext);
-                  return CHARACTER_CONSTANT_OCTAL; 
+                  return CHARACTER_CONSTANT_OCTAL;
                }
 
 '[0-9A-Za-z]'  {  cvalue= yytext[1]; yylval.i= yytext[1]; return CHARACTER_CONSTANT; }
 
 
 "\""                    {   /* Beginning of string constant has been detected  */
-                            BEGIN(e95_string); 
+                            BEGIN(e95_string);
 			    e95_strbuf[0]='\0';
                             e95_strbuf_idx=0;
                         }
@@ -173,17 +174,17 @@ extern YYSTYPE yylval;
 
 <e95_string>\\([ntbrfv\\'"a?]|[0-9]{1,3})  { /* Detected an escape sequence */
 				                char converted_escape_code= (char) convert_escape_char(yytext);
-				                strncat(e95_strbuf,&converted_escape_code,1); 
+				                strncat(e95_strbuf,&converted_escape_code,1);
 			                   }
 
 
 <e95_string>\\\n        {  /* allow escaped returns, but don't copy them
                               to the string buffer.
-                           */ 
+                           */
 		        }
 
 
-<e95_string>\n          {   /* unescaped returns are errors - try to fail gracefully */ 
+<e95_string>\n          {   /* unescaped returns are errors - try to fail gracefully */
                                strncat(e95_strbuf, "...UNTERMINATED_STRING",22);
 			       yytext= e95_strbuf;
 			       BEGIN(INITIAL);
@@ -251,7 +252,7 @@ extern YYSTYPE yylval;
  *========================================================
  */
 char convert_escape_char(char *escape_code)
-{   
+{
     char converted_char=0;
 
     if(isalpha(escape_code[1]) || ispunct(escape_code[1]))
