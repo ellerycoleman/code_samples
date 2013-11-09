@@ -566,18 +566,34 @@ void print_expr(struct ast *expr)
 
         case CONDITIONAL_EXPR:
 	   cexpr= (struct cond_expr *)expr;
+
+	   printf("(");
 	   print_expr(cexpr->cond);
+	   printf(")");
+
 	   printf(" ? ");
+           
+
+	   printf("(");
 	   print_expr(cexpr->return1);
+	   printf(")");
+
 	   printf(" : ");
+
+	   printf("(");
 	   print_expr(cexpr->return2);
+	   printf(")");
 	   break;
 
 
         case LOGICAL_OR_EXPR:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf(" || ");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -586,7 +602,11 @@ void print_expr(struct ast *expr)
         case LOGICAL_AND_EXPR:
 	   printf("(");
 	   print_expr(expr->l);
+	   printf(")");
+
 	   printf(" && ");
+
+	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
 	   break;
@@ -596,7 +616,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" | ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -607,7 +629,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" ^ ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -618,7 +642,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" & ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -629,7 +655,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" == ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -640,7 +668,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" != ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -651,7 +681,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" < ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -662,7 +694,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" <= ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -673,7 +707,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" > ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -684,7 +720,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" >= ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -695,7 +733,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" << ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
@@ -706,7 +746,9 @@ void print_expr(struct ast *expr)
 	   printf("(");
 	   print_expr(expr->l);
 	   printf(")");
+
 	   printf(" >> ");
+
 	   printf("(");
 	   print_expr(expr->r);
 	   printf(")");
