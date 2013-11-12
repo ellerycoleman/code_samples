@@ -16,7 +16,7 @@
 %{
 
 #include "e95_tokens.h"
-#include "parser_support.h"
+#include "e95_parser.h"
 
 %}
 
@@ -844,4 +844,4 @@ label:  IDENTIFIER
  +---------------------------------------------------------*/
 
 
- /* all user functions for the parser are now defined in parser_support.c */
+ /* all user functions for the parser are now defined in e95_parser.c */
