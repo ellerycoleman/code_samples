@@ -125,3 +125,5 @@ cs295/hw2/gdb.cmd -text
 cs295/hw2/parser_support.c -text
 cs295/hw2/parser_support.h -text
 cs295/hw2/test.sh -text
+cs295/hw3/test/book_example/Makefile -text
+cs295/hw3/test/book_example/flex_scanner.l -text
