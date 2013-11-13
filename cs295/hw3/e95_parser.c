@@ -11,6 +11,9 @@
 #include "e95_tokens.h"
 #include "e95_parser.h"
 #include "bison_parser.tab.h"
+#include "symbol_table.h"
+
+
 
 #define INT_MAX       2147483647
 #define LONG_MAX      2147483647
@@ -20,7 +23,6 @@
 void connect_io(int,char **);
 void usage(void);
 int yylex();
-
 
 
 extern char *yytext;
@@ -60,7 +62,7 @@ int main(int argc, char **argv)
      *------------------------------------------*/
      connect_io(argc,argv);
      yyin= input;
-     
+
 
     /* Initialize token definition map */
     /* init_token_definition_map();    */
@@ -89,9 +91,9 @@ int main(int argc, char **argv)
  *===============================================================
  */
 void connect_io(int argc,char **argv)
-{   
+{
     if(argc == 3)
-    {   
+    {
 #ifdef DEBUG
         printf("argc == 3\n\n");
 	printf("argv[1]: %s\n", argv[1]);
@@ -99,7 +101,7 @@ void connect_io(int argc,char **argv)
 #endif
         /* connect input  */
         if(strcmp("-",argv[1]))
-	{   
+	{
 
 #ifdef DEBUG
 	    printf("connecting input: %s\n", argv[1]);
@@ -112,7 +114,7 @@ void connect_io(int argc,char **argv)
 
 	/* connect output */
 	if(strcmp("-",argv[2]))
-	{   
+	{
 #ifdef DEBUG
    	    printf("connecting output: %s\n", argv[2]);
 #endif
@@ -580,7 +582,7 @@ void print_expr(struct ast *expr)
 	   else
 	   {   printf("(%s",print_type(tdecl->typespecifier));
 	   }
-	   
+
 
 	   do
 	   {   d= dl->d;
@@ -718,7 +720,7 @@ void print_expr(struct ast *expr)
 	   printf(")");
 
 	   printf(" ? ");
-           
+
 
 	   printf("(");
 	   print_expr(cexpr->return1);
@@ -1020,7 +1022,7 @@ void print_decl(struct ast *expr)
 
 	   do
 	   {   if( d->nodetype == POINTER_DECLARATOR )
-	       {   
+	       {
 	           /* printing paren before pointer declarator */
 		   if(first_ptr)
 		   {
@@ -1048,7 +1050,7 @@ void print_decl(struct ast *expr)
 	       }
 
 	       else if( d->nodetype == FUNCTION_DECLARATOR )
-	       {      
+	       {
 	           /* print function name */
 	           printf(") ");
 	           printf("%s(", d->adeclarator->id);
@@ -1112,6 +1114,7 @@ declarator *new_simple_declarator(char *id)
 {   declarator *d= emalloc(sizeof(declarator));
     d->nodetype= SIMPLE_DECLARATOR;
     d->id= strdup(id);
+    d->sp= lookup(id);
     return d;
 }
 
@@ -1285,9 +1288,16 @@ struct decostat_list *reverse_decostat_list(struct decostat_list *dlist)
 
 struct ast *new_decl(int typespecifier, declarator_list *dl)
 {   struct decl *d= emalloc(sizeof(struct decl));
+    dl= reverse_declarator_list(dl);
+
     d->nodetype= DECL;
     d->typespecifier= typespecifier;
     d->dl=  dl;
+
+    /* add each item in declarator list to symbol table */
+    do
+    {   printf("adding this decl type to symbol table:  %d\n", dl->d->nodetype);
+    }while(dl= dl->next);
 
     return  (struct ast *)d;
 }
@@ -1385,7 +1395,7 @@ void print_parameter_list(parameter_list *plist)
     {   printf("(");
         switch(plist->pd->nodetype)
         {
-	
+
 	    case SIMPLE_DECLARATOR:
                printf("%s ", print_type(plist->pd->typespecifier));
 	       if(plist->pd->id != NULL)

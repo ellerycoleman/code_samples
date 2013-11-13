@@ -1,5 +1,5 @@
 /*============================================================================
-| File:		parser_support.h
+| File:		e95_parser.h
 | Date:		Sun Sep 15 02:18:18 GMT 2013
 | Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 | Abstract:	Declarations for user defined functions for parser.
@@ -13,9 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-
-
 
 
 
@@ -140,6 +137,7 @@ typedef struct declarator
   struct declarator *adeclarator; /* for use with function/abstract declarators */
   struct expr *exp;
   struct parameter_list *plist;
+  struct symbol *sp;
 } declarator;
 
 
