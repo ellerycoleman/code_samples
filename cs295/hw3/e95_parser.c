@@ -36,6 +36,7 @@ FILE *input, *output;
 
 
 int num_of_tokens_processed=0;
+int need_array_paren;
 extern int yylineno;
 extern char e95_strbuf2[];
 int first_ptr;
@@ -564,6 +565,7 @@ void print_expr(struct ast *expr)
 
 
         case DECL:
+	   need_array_paren= 1;
 	   tdecl= (struct decl *)expr;
            dl= tdecl->dl;
 
@@ -1083,7 +1085,10 @@ void print_decl(struct ast *expr)
 
 
         case ARRAY_DECLARATOR:
-	   printf(")");
+	   if(need_array_paren)
+	   {   printf(")");
+	       need_array_paren=0;
+           }
            d= (struct declarator *)expr;
 	   printf(" %s", d->adeclarator->id);
 	   printf("[");
