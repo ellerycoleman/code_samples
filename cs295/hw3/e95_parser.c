@@ -11,7 +11,6 @@
 #include "e95_tokens.h"
 #include "e95_parser.h"
 #include "bison_parser.tab.h"
-#include "symbol_table.h"
 
 
 
@@ -1342,10 +1341,8 @@ struct ast *new_decl(int typespecifier, declarator_list *dl)
 
 
 
-        /*
         addref(yylineno,"stdin",dp->id,0);
 	dp->sp= lookup(dp->id);
-	*/
     }while(tmpdlp= tmpdlp->next);
 
 
@@ -1736,5 +1733,9 @@ void * emalloc(int size)
     }
     return space;
 }
+
+#include "symbol_table.c"
+
+
 
 

@@ -7,14 +7,13 @@
 | Revision: $Id$
 +===========================================================================*/
 
-#include "symbol_table.h"
 
 
 /*-----------------------------------------------
- | main
+ | test_main
  +---------------------------------------------*/
 
-static int main(int argc, char **argv)
+static int test_main(int argc, char **argv)
 {
     int i;
 

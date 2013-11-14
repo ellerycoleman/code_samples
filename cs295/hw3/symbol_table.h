@@ -7,12 +7,6 @@
 | Revision: $Id$
 +===========================================================================*/
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-extern int yylineno;
-
 
 #define NHASH 9997
 

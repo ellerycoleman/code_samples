@@ -10,7 +10,7 @@
 
 
 all:    clean bison_parser.o flex_scanner.o e95_parser.c e95_parser.h symbol_table.c symbol_table.h
-	gcc -g flex_scanner.o bison_parser.o e95_parser.c symbol_table.c -o e95_parser -lfl
+	gcc -g flex_scanner.o bison_parser.o e95_parser.c -o e95_parser -lfl #symbol table code included in e95_parser.*
 	ln -s e95_parser parser
 
 
