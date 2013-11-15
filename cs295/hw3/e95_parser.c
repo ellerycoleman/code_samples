@@ -1303,8 +1303,8 @@ struct ast *new_decl(int typespecifier, declarator_list *dl)
     /*--------------------------------------------*/
 
     struct decl *d= emalloc(sizeof(struct decl));  /* this is the decl we'll populate and return */
-    struct declarator *dp;                         /* we'll use this variable to interface with each declarator in the list */
-    struct declarator_list *tmpdlp;                /* we'll iterate through a copy of the dl pointer passed into the function  */
+    struct declarator *dp;                         /* we'll use this variable to interface with each declarator in the list    */
+    struct declarator_list *tmpdl;                 /* we'll iterate through a copy of the dl pointer passed into the function  */
 
 
 
@@ -1312,38 +1312,16 @@ struct ast *new_decl(int typespecifier, declarator_list *dl)
     /* add each item in declarator_list to the symbol table */
     /*------------------------------------------------------*/
     dl= reverse_declarator_list(dl);  /* set the declarator_list in proper order                                  */
-    tmpdlp= dl;                       /* copy the dl pointer to tmpdl to avoid having to reset where dl points to */
+    tmpdl= dl;                        /* copy the dl pointer to tmpdl to avoid having to reset where dl points to */
 
 
 
     /* iterate through all declarators */
+    char *filename="(stdin)";
     do
-    {   dp= tmpdlp->d;   /* point to the current declarator */
-        
-
-	/* In order to account for pointers, each declarator
-	 | may actually be a chain of declarators.  We'll follow the
-	 | chain of declarators to the end, making the needed 
-	 | changes to the symbol table as we proceed.  
-	 +---------------------------------------------------------*/
-        while(dp->next != NULL)
-	{   printf("type is %d, ", dp->nodetype);
-	    dp= dp->next;
-	}
-
-
-	/* At this point we've tracked through all of the pointers.
-	/* Now we see what's type of identifier is at the end of the
-	/* pointer list.
-	/*----------------------------------------------------------*/
-	printf("At the end of the pointers we have type: %d\n", dp->nodetype);
-
-
-
-
-        addref(yylineno,"stdin",dp->id,0);
-	dp->sp= lookup(dp->id);
-    }while(tmpdlp= tmpdlp->next);
+    {   dp= tmpdl->d;   /* point to the current declarator */
+        addref(filename,yylineno,dp); 
+    }while(tmpdl= tmpdl->next);
 
 
 

@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "symbol_table.h"
 
 
 
@@ -138,7 +137,6 @@ typedef struct declarator
     struct declarator *adeclarator; /* for use with function/abstract declarators */
     struct expr *exp;
     struct parameter_list *plist;
-    struct symbol *sp;
 } declarator;
 
 
@@ -279,6 +277,10 @@ struct ast *new_for_statement(struct ast *forinit,
 
 void * emalloc(int size);
 
+
+
+
+#include "symbol_table.h"
 
 
 

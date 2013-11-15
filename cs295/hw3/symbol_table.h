@@ -8,12 +8,11 @@
 +===========================================================================*/
 
 
-#define NHASH 9997
+#define NHASH 20
 
 void printrefs(void);
-struct symbol *lookup(char *);
-void addref(int, char *, char *, int);
-struct symbol *lookup(char *sym);
+void addref(char *filename, int lineno, struct declarator *);
+struct declarator *lookup(declarator *sym);
 
 
 struct symbol
@@ -30,7 +29,7 @@ struct ref
 };
 
 
-struct symbol symtab[NHASH];
+struct declarator *symtab[NHASH];
 
 
 char *currfilename;

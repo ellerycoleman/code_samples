@@ -15,7 +15,7 @@
 %{
 void printrefs(void);
 
-#define NHASH 9997
+#define NHASH 200
 
 struct symbol
 {   char *name;
@@ -217,10 +217,36 @@ static int symcompare(const void *xa, const void *xb)
  +---------------------------------------------*/
 void printrefs(void)
 {   struct symbol *sp;
+    int i;
+
+    printf("\n\n\n");
+    printf("#-------------------\n");
+    printf("# Presort Display   \n");
+    printf("#-------------------\n");
+    for(i=0; i<NHASH; i++)
+    {   printf("symtab[%d]: %s\n", i, symtab[i].name);
+    }
+    printf("\n\n\n");
+
 
 
     /* sort the symbol table */
     qsort(symtab, NHASH, sizeof(struct symbol), symcompare); 
+
+
+
+
+    printf("\n\n\n");
+    printf("#-------------------\n");
+    printf("# Post-sort Display \n");
+    printf("#-------------------\n");
+    for(i=0; i<NHASH; i++)
+    {   printf("symtab[%d]: %s\n", i, symtab[i].name);
+    }
+    printf("\n\n\n");
+
+
+
 
     for(sp=symtab; sp->name && sp < symtab+NHASH; sp++)
     {   char *prevfn= NULL;
