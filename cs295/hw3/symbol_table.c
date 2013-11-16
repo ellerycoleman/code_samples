@@ -7,7 +7,6 @@
 | Revision: $Id$
 +===========================================================================*/
 
-int q=0;
 
 /*-----------------------------------------------
  | test_main
@@ -79,6 +78,11 @@ struct declarator *lookup(struct declarator *sym)
     while(sym->next != NULL)
     {   sym= sym->next;
     }
+    if(sym->nodetype == ARRAY_DECLARATOR)
+    {   sym= sym->adeclarator;
+    }
+
+    printf("Declarator type after fast-forward: %d\n", sym->nodetype);
 
     /* calculate which symtab cell this symbol is supposed to be in */
     sp= (struct declarator *)&symtab[symhash(sym->id)%NHASH];
@@ -122,8 +126,14 @@ struct declarator *lookup(struct declarator *sym)
  | addref
  +---------------------------------------------*/
 void addref(char *filename, int lineno, struct declarator *dp)
-{
-    lookup(dp);
+{   
+    printf("Adding ref of type: %d\n", dp->nodetype);
+    if(dp->nodetype == ARRAY_DECLARATOR)
+    {   lookup(dp->adeclarator);
+    }
+    else
+    {   lookup(dp);
+    }
 }
 
 
@@ -137,18 +147,6 @@ int symcompare(const void *xa, const void *xb)
 {   struct declarator *a= *(struct declarator * const *)xa;
     struct declarator *b= *(struct declarator * const *)xb;
 
-
-    printf("comparing a.addr (%ld) and b.addr (%ld) - ", a,b);
-    if(!a)
-    {   printf("a is null, ");
-    }
-
-    if(!b)
-    {   printf("b is null ");
-    }
-    printf("\n");
-
-    
 
     /* case that a and b are both NULL */
     if(!a && !b)
@@ -201,41 +199,18 @@ void printrefs(void)
 {   struct declarator *sp;
     int i;
 
-    struct declarator *etest= symtab[2];
-
-    printf("address of symtab[2]: %ld\n", &symtab[2]);
-
-    printf("\n\n\n");
-    printf("Symtab addr: %ld\n", &symtab);
-    printf("#-----------------\n");
-    printf("#    symtab before\n");
-    printf("#    q: %d\n", q     );
-    printf("#-----------------\n");
-    for(i=0; i<NHASH; i++)
-    {   printf("(%ld) symtab[%d]: ", &symtab[i], i);
-        printf("%ld\n", symtab[i]);
-	if(symtab[i])
-	{   printf("     name: %s\n", symtab[i]->id);
-	}
-    }
-    printf("\n\n\n");
-
-
     /* sort the symbol table */
     qsort(symtab, NHASH, sizeof(struct declarator *), symcompare);
 
 
-
-    printf("\n\n\n");
-    printf("#-----------------\n");
-    printf("#    symtab after \n");
-    printf("#    q: %d\n", q     );
-    printf("#-----------------\n");
     for(i=0; i<NHASH; i++)
     {   printf("symtab[%d]: ", i);
-        printf("%ld\n", symtab[i]);
+        printf("%ld ", symtab[i]);
 	if(symtab[i])
 	{   printf("     name: %s\n", symtab[i]->id);
+	}
+	else
+	{   printf("\n");
 	}
     }
     printf("\n\n\n");
