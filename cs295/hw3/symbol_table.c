@@ -9,6 +9,70 @@
 
 
 /*-----------------------------------------------
+ | symbol_table_init
+ +---------------------------------------------*/
+void symbol_table_init(void)
+{   struct basic_type basic_types[9];
+
+    basic_types[SIGNED_SHORT_INT].type     = SIGNED_SHORT_INT;
+    basic_types[SIGNED_SHORT_INT].attrs[0] = INTEGRAL_T;
+    basic_types[SIGNED_SHORT_INT].attrs[1] = ARITHMETIC_T;
+    basic_types[SIGNED_SHORT_INT].attrs[2] = SCALAR_T;
+
+
+    basic_types[SIGNED_LONG_INT].type     = SIGNED_LONG_INT;
+    basic_types[SIGNED_LONG_INT].attrs[0] = INTEGRAL_T;
+    basic_types[SIGNED_LONG_INT].attrs[1] = ARITHMETIC_T;
+    basic_types[SIGNED_LONG_INT].attrs[2] = SCALAR_T;
+
+
+    basic_types[SIGNED_INT].type     = SIGNED_INT;
+    basic_types[SIGNED_INT].attrs[0] = INTEGRAL_T;
+    basic_types[SIGNED_INT].attrs[1] = ARITHMETIC_T;
+    basic_types[SIGNED_INT].attrs[2] = SCALAR_T;
+
+
+    basic_types[SIGNED_CHAR].type     = SIGNED_CHAR;
+    basic_types[SIGNED_CHAR].attrs[0] = INTEGRAL_T;
+    basic_types[SIGNED_CHAR].attrs[1] = ARITHMETIC_T;
+    basic_types[SIGNED_CHAR].attrs[2] = SCALAR_T;
+
+
+    basic_types[UNSIGNED_SHORT_INT].type     = UNSIGNED_SHORT_INT;
+    basic_types[UNSIGNED_SHORT_INT].attrs[0] = INTEGRAL_T;
+    basic_types[UNSIGNED_SHORT_INT].attrs[1] = ARITHMETIC_T;
+    basic_types[UNSIGNED_SHORT_INT].attrs[2] = SCALAR_T;
+
+
+    basic_types[UNSIGNED_LONG_INT].type     = UNSIGNED_LONG_INT;
+    basic_types[UNSIGNED_LONG_INT].attrs[0] = INTEGRAL_T;
+    basic_types[UNSIGNED_LONG_INT].attrs[1] = ARITHMETIC_T;
+    basic_types[UNSIGNED_LONG_INT].attrs[2] = SCALAR_T;
+
+
+    basic_types[UNSIGNED_INT].type     = UNSIGNED_INT;
+    basic_types[UNSIGNED_INT].attrs[0] = INTEGRAL_T;
+    basic_types[UNSIGNED_INT].attrs[1] = ARITHMETIC_T;
+    basic_types[UNSIGNED_INT].attrs[2] = SCALAR_T;
+
+
+    basic_types[UNSIGNED_CHAR].type     = UNSIGNED_CHAR;
+    basic_types[UNSIGNED_CHAR].attrs[0] = INTEGRAL_T;
+    basic_types[UNSIGNED_CHAR].attrs[1] = ARITHMETIC_T;
+    basic_types[UNSIGNED_CHAR].attrs[2] = SCALAR_T;
+
+
+    basic_types[VOID].type     = VOID;
+    basic_types[VOID].attrs[0] = VOID_T;
+    basic_types[VOID].attrs[1] = VOID_T;
+    basic_types[VOID].attrs[2] = VOID_T;
+}
+
+
+
+
+
+/*-----------------------------------------------
  | test_main
  +---------------------------------------------*/
 

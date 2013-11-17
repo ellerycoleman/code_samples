@@ -97,7 +97,12 @@ typedef enum tspec {   SIGNED_SHORT_INT,
 		       VOID
                    } tspec;
 
+
+enum type_attrs {INTEGRAL_T,ARITHMETIC_T,SCALAR_T,VOID_T};
+
+
 typedef enum dadtype {PAREN_ENCLOSED=900,BRACKET_NO_EXPR,BRACKET_EXPR,DAD_LIST} dadtype;
+
 
 
 

@@ -10,6 +10,8 @@
 
 #define NHASH 20
 
+
+void symbol_table_init(void);
 void printrefs(void);
 void addref(char *filename, int lineno, struct declarator *);
 struct declarator *lookup(declarator *sym);
@@ -21,16 +23,16 @@ struct symbol
 };
 
 
-struct ref
-{   struct ref *next;
-    char *filename;
-    int flags;
-    int lineno;
+struct basic_type
+{   int type;
+    int attrs[3];
 };
-
+    
 
 struct declarator *symtab[NHASH];
 
 
 char *currfilename;
+
+
 
