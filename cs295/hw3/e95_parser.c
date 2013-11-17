@@ -1077,7 +1077,7 @@ void print_decl(struct ast *expr)
          case FUNCTION_DECLARATOR:
 	 /* print function name */
 	    d= (struct declarator *)expr;
-	    printf("%s(", d->adeclarator->id);
+	    printf(") %s(", d->adeclarator->id);
 
          /* print parameter list */
 	    print_parameter_list(d->plist);

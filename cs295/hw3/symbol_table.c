@@ -142,7 +142,7 @@ struct declarator *lookup(struct declarator *sym)
     while(sym->next != NULL)
     {   sym= sym->next;
     }
-    if(sym->nodetype == ARRAY_DECLARATOR)
+    if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
     {   sym= sym->adeclarator;
     }
 
