@@ -146,7 +146,6 @@ struct declarator *lookup(struct declarator *sym)
     {   sym= sym->adeclarator;
     }
 
-    printf("Declarator type after fast-forward: %d\n", sym->nodetype);
 
     /* calculate which symtab cell this symbol is supposed to be in */
     sp= (struct declarator *)&symtab[symhash(sym->id)%NHASH];
@@ -191,7 +190,6 @@ struct declarator *lookup(struct declarator *sym)
  +---------------------------------------------*/
 void addref(char *filename, int lineno, struct declarator *dp)
 {   
-    printf("Adding ref of type: %d\n", dp->nodetype);
     if(dp->nodetype == ARRAY_DECLARATOR)
     {   lookup(dp->adeclarator);
     }
@@ -268,13 +266,11 @@ void printrefs(void)
 
 
     for(i=0; i<NHASH; i++)
-    {   printf("symtab[%d]: ", i);
-        printf("%ld ", symtab[i]);
+    {   
 	if(symtab[i])
-	{   printf("     name: %s\n", symtab[i]->id);
-	}
-	else
-	{   printf("\n");
+	{   printf("symtab[%d]: ", i);
+            printf("%ld ", symtab[i]);
+	    printf("     name: %s\n", symtab[i]->id);
 	}
     }
     printf("\n\n\n");
