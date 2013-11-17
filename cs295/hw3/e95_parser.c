@@ -64,8 +64,10 @@ int main(int argc, char **argv)
      yyin= input;
 
 
-    /* Initialize token definition map */
-    /* init_token_definition_map();    */
+    /* Initialize token definition map           */
+    /* init_token_definition_map();              */
+    /* Initialize symbol table basic_types array */
+    symbol_table_init();
 
 
     printf("in e95_parser.c::main() about to run yyparse()\n\n\n");
@@ -571,20 +573,20 @@ void print_expr(struct ast *expr)
 
            /* print declarator list */
 	   if( dl->d->nodetype == SIMPLE_DECLARATOR)
-	   {   printf("(%s) ",print_type(tdecl->typespecifier));
+	   {   printf("(%s) ",print_type(tdecl->tspe->type));
 	   }
 
 	   else if( dl->d->nodetype == POINTER_DECLARATOR)
 	   {   if( dl->d->next != NULL  &&  dl->d->next->nodetype != SIMPLE_DECLARATOR)
-	       {   printf("(%s ",print_type(tdecl->typespecifier));
+	       {   printf("(%s ",print_type(tdecl->tspe->type));
 	           first_ptr=1;
 	       }
 	       else
-	       {   printf("(%s) ",print_type(tdecl->typespecifier));
+	       {   printf("(%s) ",print_type(tdecl->tspe->type));
 	       }
 	   }
 	   else
-	   {   printf("(%s",print_type(tdecl->typespecifier));
+	   {   printf("(%s",print_type(tdecl->tspe->type));
 	   }
 
 
@@ -701,7 +703,7 @@ void print_expr(struct ast *expr)
 	   tast= expr->l;
 	   d= (struct declarator *)tast;
 	   printf("(");
-	   printf("%s ", print_type(d->typespecifier));
+	   printf("%s ", print_type(d->tspe->type));
 	   print_decl((struct ast *)d);
 	   printf(")");
 	   print_expr(expr->r);
@@ -1327,7 +1329,7 @@ struct ast *new_decl(int typespecifier, declarator_list *dl)
 
 
     d->nodetype= DECL;
-    d->typespecifier= typespecifier;
+    d->tspe= &basic_types[typespecifier];
     d->dl=  dl;
 
     return  (struct ast *)d;
@@ -1401,7 +1403,7 @@ void print_simple_declarator(declarator *d)
 
 declarator *new_parameter_decl(int typespec, declarator *d)
 {   declarator *pd= emalloc(sizeof(struct declarator));
-    pd->typespecifier= typespec;
+    pd->tspe= &basic_types[typespec];
     if(d != NULL)
     {   pd->nodetype= d->nodetype;
         pd->next= d->next;
@@ -1428,7 +1430,7 @@ void print_parameter_list(parameter_list *plist)
         {
 
 	    case SIMPLE_DECLARATOR:
-               printf("%s ", print_type(plist->pd->typespecifier));
+               printf("%s ", print_type(plist->pd->tspe->type));
 	       if(plist->pd->id != NULL)
 	       {   printf("%s", plist->pd->id);
 	       }
@@ -1437,7 +1439,7 @@ void print_parameter_list(parameter_list *plist)
 
 
 	    case POINTER_DECLARATOR:
-               printf("%s ", print_type(plist->pd->typespecifier));
+               printf("%s ", print_type(plist->pd->tspe->type));
 	       d= plist->pd;
 
 	       do
@@ -1472,7 +1474,7 @@ void print_parameter_list(parameter_list *plist)
 
 
             case -1:  /* print type only */
-               printf("%s", print_type(plist->pd->typespecifier));
+               printf("%s", print_type(plist->pd->tspe->type));
 	       d= plist->pd;
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
@@ -1509,7 +1511,7 @@ void print_dad(declarator *d)
     {
         case PAREN_ENCLOSED:
            ad= d->adeclarator;
-           printf("%s ", print_type(d->typespecifier));
+           printf("%s ", print_type(d->tspe->type));
            printf("(");
            print_decl((struct ast *)ad);
            printf(")");
@@ -1517,13 +1519,13 @@ void print_dad(declarator *d)
 
 
         case BRACKET_NO_EXPR:
-	   printf("%s ", print_type(d->typespecifier));
+	   printf("%s ", print_type(d->tspe->type));
            printf("[]");
 	   break;
 
 
         case BRACKET_EXPR:
-	   printf("%s ", print_type(d->typespecifier));
+	   printf("%s ", print_type(d->tspe->type));
            printf("[");
 	   print_expr((struct ast *)d->exp);
            printf("]");
@@ -1531,7 +1533,7 @@ void print_dad(declarator *d)
 
 
         case DAD_LIST:
-           printf("%s ", print_type(d->typespecifier));
+           printf("%s ", print_type(d->tspe->type));
 	   d= reverse_declarators(d);
 	   do
 	   {   /* print the expression ending the dad_list */

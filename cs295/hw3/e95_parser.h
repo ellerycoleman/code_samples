@@ -134,9 +134,9 @@ struct expr
 
 /* All declarators are handled with a single declarator struct */
 typedef struct declarator
-{   ntype nodetype;       /* signifies what type of declarator this is  */
-    tspec typespecifier;  /* typespec for parameter_decl's              */
-    dadtype dadtype;      /* dadtype for direcect abstract declarators  */
+{   ntype nodetype;           /* signifies what type of declarator this is  */
+    struct basic_type *tspe;  /* typespec for parameter_decl's              */
+    dadtype dadtype;          /* dadtype for direcect abstract declarators  */
     char *id;
     struct declarator *next;
     struct declarator *adeclarator; /* for use with function/abstract declarators */
@@ -167,7 +167,7 @@ typedef struct declarator_list
 
 struct decl
 {   ntype nodetype;
-    tspec typespecifier;
+    struct basic_type *tspe;
     struct declarator_list *dl;
 };
 

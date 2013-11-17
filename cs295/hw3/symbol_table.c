@@ -12,7 +12,7 @@
  | symbol_table_init
  +---------------------------------------------*/
 void symbol_table_init(void)
-{   struct basic_type basic_types[9];
+{   extern struct basic_type basic_types[];
 
     basic_types[SIGNED_SHORT_INT].type     = SIGNED_SHORT_INT;
     basic_types[SIGNED_SHORT_INT].attrs[0] = INTEGRAL_T;
