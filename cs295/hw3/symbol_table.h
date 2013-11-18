@@ -8,7 +8,7 @@
 +===========================================================================*/
 
 
-#define NHASH 20
+#define NHASH 5
 
 
 void symbol_table_init(void);

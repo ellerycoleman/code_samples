@@ -13,6 +13,7 @@
  +---------------------------------------------*/
 void symbol_table_init(void)
 {   extern struct basic_type basic_types[];
+    int i;
 
     basic_types[SIGNED_SHORT_INT].type     = SIGNED_SHORT_INT;
     basic_types[SIGNED_SHORT_INT].attrs[0] = INTEGRAL_T;
@@ -72,6 +73,16 @@ void symbol_table_init(void)
     basic_types[OTHER].attrs[0] = OTHER;
     basic_types[OTHER].attrs[1] = OTHER;
     basic_types[OTHER].attrs[2] = OTHER;
+
+
+
+    /* initializing symbtab array */
+    printf("original symtab:\n");
+    printf("----------------\n");
+    for(i=0; i<NHASH; i++)
+    {   printf("symtab[%d]: %d\n", i, symtab[i]);   
+    }
+    printf("\n\n\n");
 }
 
 
@@ -81,10 +92,8 @@ void symbol_table_init(void)
 /*-----------------------------------------------
  | test_main
  +---------------------------------------------*/
-
 static int test_main(int argc, char **argv)
-{
-    int i;
+{   int i;
 
     if(argc < 2)
     {   /* we'll take input from stdin */
@@ -116,6 +125,8 @@ static int test_main(int argc, char **argv)
 
 
 
+
+
 /*-----------------------------------------------
  | symhash
  +---------------------------------------------*/
@@ -141,10 +152,12 @@ static unsigned symhash(char *sym)
  +---------------------------------------------*/
 struct declarator *lookup(struct declarator *sym)
 {
-
     struct declarator *sp;
+    struct declarator *symorig= sym;
 
-    /* fastforward to declarator name */
+
+    /* fastforward to declarator name
+     +---------------------------------*/
     while(sym->next != NULL)
     {   sym= sym->next;
     }
@@ -153,7 +166,8 @@ struct declarator *lookup(struct declarator *sym)
     }
 
 
-    /* calculate which symtab cell this symbol is supposed to be in */
+    /* calculate which symtab cell this symbol is supposed to be in
+     +--------------------------------------------------------------*/
     sp= (struct declarator *)&symtab[symhash(sym->id)%NHASH];
 
 
@@ -161,25 +175,39 @@ struct declarator *lookup(struct declarator *sym)
      | If the nodetype is set for our symbol pointer, it means
      | that this cell is already occupied; print an error and exit.
      +--------------------------------------------------------------*/
-    if(sp->nodetype)
-    {   printf("Error: Duplicate definition of '%s'.\n", sym->id);
-        exit(-1);
-    }
+
+
     int scount= NHASH;
-
-
     while(--scount >= 0)
     {
-        /* if the symbol is in this cell already, exit with error */
-        if(sp->id  &&  !strcmp(sp->id,sym->id))
-        {   printf("Error: the variable '%s' has already been defined.\n");
-            exit(-1);
+
+
+        /* if the symbol is in this cell already, exit with error
+	 +----------------------------------------------------------*/
+	if(symtab[symhash(sym->id)%NHASH] != 0)   /* cell is not empty */
+        {   
+	    sp= symtab[symhash(sym->id)%NHASH];
+
+            /* fastforward to declarator name */
+            while(sp->next != NULL)
+            {   sp= sp->next;
+            }
+            if(sp->nodetype == ARRAY_DECLARATOR || sp->nodetype == FUNCTION_DECLARATOR)
+            {   sp= sp->adeclarator;
+            }
+
+
+            if(sp->id  &&  !strcmp(sp->id,sym->id))
+	    {   printf("Error: the variable '%s' has already been defined.\n", sp->id);
+                exit(-1);
+            }
         }
 
 
-        /* in case hash not currently present in symtab */
+        /* in case symbol not currently present in symtab */
         if(!sp->id)
-        {   symtab[symhash(sym->id)%NHASH]= sym;
+        {   printf("DEBUG: this cell is empty, so storing sym here.\n");
+	    symtab[symhash(sym->id)%NHASH]= symorig;
             return sp;
         }
 
@@ -188,7 +216,8 @@ struct declarator *lookup(struct declarator *sym)
         /* Need to move ahead to the next entry, and be sure to wrap around  */
         /* to the front of the symtab if you happen to reach the back.       */
         if(++sp >= (struct declarator *)symtab+NHASH)
-        {   sp= (struct declarator *)symtab;
+        {   printf("DEBUG: this cell is taken, moving to next cell.\n");
+            sp= (struct declarator *)symtab;
         }
     }
 
@@ -204,13 +233,9 @@ struct declarator *lookup(struct declarator *sym)
  +---------------------------------------------*/
 void addref(char *filename, int lineno, struct declarator *dp)
 {
-    if(dp->nodetype == ARRAY_DECLARATOR)
-    {   lookup(dp->adeclarator);
-    }
-    else
-    {   lookup(dp);
-    }
+    lookup(dp);
 }
+
 
 
 
@@ -224,6 +249,7 @@ int symcompare(const void *xa, const void *xb)
     struct declarator *b= *(struct declarator * const *)xb;
 
 
+
     /* case that a and b are both NULL */
     if(!a && !b)
     {   return 0;
@@ -232,10 +258,14 @@ int symcompare(const void *xa, const void *xb)
 
     /* a is null, and b is not null */
     if(!a  &&  b)
-    {   /* fast forward to name of this declarator */
+    {   
+        /* fastforward to declarator name for b */
         while(b->next != NULL)
-	{   b= b->next;
-	}
+        {   b= b->next;
+        }
+        if(b->nodetype == ARRAY_DECLARATOR || b->nodetype == FUNCTION_DECLARATOR)
+        {   b= b->adeclarator;
+        }
 
         if(b->id)
         {   return 1;
@@ -244,10 +274,14 @@ int symcompare(const void *xa, const void *xb)
 
     /* b is null, and a is not null */
     if(!b && a)
-    {   /* fast forward to name of this declarator */
+    {   
+        /* fastforward to declarator name for a */
         while(a->next != NULL)
-	{   a= a->next;
-	}
+        {   a= a->next;
+        }
+        if(a->nodetype == ARRAY_DECLARATOR || a->nodetype == FUNCTION_DECLARATOR)
+        {   a= a->adeclarator;
+        }
 
         if(a->id)
         {   return -1;
@@ -255,15 +289,27 @@ int symcompare(const void *xa, const void *xb)
     }
 
 
-    /* neither a nor b is null */
+    /* neither a nor b is null:
+     | fastforward to declarator names for a and b 
+     +---------------------------------------------*/
     while(a->next != NULL)
     {   a= a->next;
     }
+    if(a->nodetype == ARRAY_DECLARATOR || a->nodetype == FUNCTION_DECLARATOR)
+    {   a= a->adeclarator;
+    }
+
+    /* fastforward to declarator name for b */
     while(b->next != NULL)
     {   b= b->next;
     }
+    if(b->nodetype == ARRAY_DECLARATOR || b->nodetype == FUNCTION_DECLARATOR)
+    {   b= b->adeclarator;
+    }
+
     return strcmp(a->id,b->id);
 }
+
 
 
 
@@ -283,20 +329,23 @@ void printrefs(void)
     {
 	if(symtab[i])
 	{   printf("symtab[%d]: ", i);
-            printf("%ld ", symtab[i]);
-	    printf("     name: %s\n", symtab[i]->id);
+            printf("(addr is %ld) ", symtab[i]);
+            
+	    sp= symtab[i];
+
+            /* fastforward to declarator name for sp */
+            while(sp->next != NULL)
+            {   sp= sp->next;
+            }
+            if(sp->nodetype == ARRAY_DECLARATOR || sp->nodetype == FUNCTION_DECLARATOR)
+            {   sp= sp->adeclarator;
+            }
+
+	    printf("     name: %s\n", sp->id);
 	}
     }
     printf("\n\n\n");
 
-
-    for(sp= (struct declarator *)symtab; sp->id && sp < (struct declarator *)symtab+NHASH; sp++)
-    {   char *prevfn= NULL;
-
-	/* print the word and its references */
-	printf("%20s", sp->id);
-	printf("\n");
-    }
 }
 
 
