@@ -35,5 +35,5 @@ struct declarator *symtab[NHASH];
 char *currfilename;
 
 
-struct basic_type basic_types[9];
+struct basic_type basic_types[10];
 

@@ -378,7 +378,7 @@ parameter_decl:  type_specifier declarator                { $$= new_parameter_de
 abstract_declarator:   pointer
 |                      direct_abstract_declarator
 |                      pointer direct_abstract_declarator
-                       {   /* $2->tspe->type= -1; */
+                       {   $2->tspecptr= (struct basic_type *) &basic_types[OTHER];
 		           $1->next= $2;
 		           $$= $1;
                        }

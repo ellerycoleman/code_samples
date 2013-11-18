@@ -83,8 +83,9 @@ typedef enum ntype {   DECL,
 		       COMMA_LIST,
 		       DIRECT_ABSTRACT_DECLARATOR
 
-
 		   } ntype;
+
+
 
 typedef enum tspec {   SIGNED_SHORT_INT,
 		       SIGNED_LONG_INT,
@@ -94,7 +95,8 @@ typedef enum tspec {   SIGNED_SHORT_INT,
 		       UNSIGNED_LONG_INT,
 		       UNSIGNED_INT,
 		       UNSIGNED_CHAR,
-		       VOID
+		       VOID,
+		       OTHER     /* needed in one case of direct abstract declarators and one case of parameter_decl */
                    } tspec;
 
 
@@ -102,8 +104,6 @@ enum type_attrs {INTEGRAL_T,ARITHMETIC_T,SCALAR_T,VOID_T};
 
 
 typedef enum dadtype {PAREN_ENCLOSED=900,BRACKET_NO_EXPR,BRACKET_EXPR,DAD_LIST} dadtype;
-
-
 
 
 struct ast
@@ -134,8 +134,8 @@ struct expr
 
 /* All declarators are handled with a single declarator struct */
 typedef struct declarator
-{   ntype nodetype;           /* signifies what type of declarator this is  */
-    struct basic_type *tspe;  /* typespec for parameter_decl's              */
+{   ntype nodetype;               /* signifies what type of declarator this is  */
+    struct basic_type *tspecptr;  /* typespec for parameter_decl's              */
     dadtype dadtype;          /* dadtype for direcect abstract declarators  */
     char *id;
     struct declarator *next;
@@ -167,7 +167,7 @@ typedef struct declarator_list
 
 struct decl
 {   ntype nodetype;
-    struct basic_type *tspe;
+    struct basic_type *tspecptr;
     struct declarator_list *dl;
 };
 

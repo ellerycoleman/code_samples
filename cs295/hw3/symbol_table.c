@@ -66,6 +66,12 @@ void symbol_table_init(void)
     basic_types[VOID].attrs[0] = VOID_T;
     basic_types[VOID].attrs[1] = VOID_T;
     basic_types[VOID].attrs[2] = VOID_T;
+
+    
+    basic_types[OTHER].type     = OTHER;
+    basic_types[OTHER].attrs[0] = OTHER;
+    basic_types[OTHER].attrs[1] = OTHER;
+    basic_types[OTHER].attrs[2] = OTHER;
 }
 
 
