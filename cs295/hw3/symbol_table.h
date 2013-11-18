@@ -32,6 +32,14 @@ struct basic_type
 struct declarator *symtab[NHASH];
 
 
+struct symtab
+{   char *name;
+    struct declarator *symtab[NHASH];
+    struct declarator *parent_symtab;
+    struct declarator *child_symtab;
+};
+
+
 char *currfilename;
 
 

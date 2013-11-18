@@ -67,7 +67,7 @@ void symbol_table_init(void)
     basic_types[VOID].attrs[1] = VOID_T;
     basic_types[VOID].attrs[2] = VOID_T;
 
-    
+
     basic_types[OTHER].type     = OTHER;
     basic_types[OTHER].attrs[0] = OTHER;
     basic_types[OTHER].attrs[1] = OTHER;
@@ -155,13 +155,21 @@ struct declarator *lookup(struct declarator *sym)
 
     /* calculate which symtab cell this symbol is supposed to be in */
     sp= (struct declarator *)&symtab[symhash(sym->id)%NHASH];
-    int scount= NHASH;
 
+
+    /* The nodetype is always set at declarator creation time.
+     | If the nodetype is set for our symbol pointer, it means
+     | that this cell is already occupied; print an error and exit.
+     +--------------------------------------------------------------*/
+    if(sp->nodetype)
+    {   printf("Error: Duplicate definition of '%s'.\n", sym->id);
+        exit(-1);
+    }
+    int scount= NHASH;
 
 
     while(--scount >= 0)
     {
-
         /* if the symbol is in this cell already, exit with error */
         if(sp->id  &&  !strcmp(sp->id,sym->id))
         {   printf("Error: the variable '%s' has already been defined.\n");
@@ -195,7 +203,7 @@ struct declarator *lookup(struct declarator *sym)
  | addref
  +---------------------------------------------*/
 void addref(char *filename, int lineno, struct declarator *dp)
-{   
+{
     if(dp->nodetype == ARRAY_DECLARATOR)
     {   lookup(dp->adeclarator);
     }
@@ -228,8 +236,8 @@ int symcompare(const void *xa, const void *xb)
         while(b->next != NULL)
 	{   b= b->next;
 	}
-    
-        if(b->id)   
+
+        if(b->id)
         {   return 1;
 	}
     }
@@ -241,7 +249,7 @@ int symcompare(const void *xa, const void *xb)
 	{   a= a->next;
 	}
 
-        if(a->id)   
+        if(a->id)
         {   return -1;
 	}
     }
@@ -272,7 +280,7 @@ void printrefs(void)
 
 
     for(i=0; i<NHASH; i++)
-    {   
+    {
 	if(symtab[i])
 	{   printf("symtab[%d]: ", i);
             printf("%ld ", symtab[i]);
