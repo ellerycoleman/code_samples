@@ -40,7 +40,8 @@ extern int yylineno;
 extern char e95_strbuf2[];
 
 
-int first_ptr; /* pretty print support */
+int global_allocation;  /* tracks memory allocation   */
+int first_ptr;          /* pretty print support       */
 
 
 
@@ -1315,8 +1316,8 @@ struct ast *new_decl(int typespecifier, declarator_list *dl)
     /*------------------------------------------------------*/
     /* add each item in declarator_list to the symbol table */
     /*------------------------------------------------------*/
-    dl= reverse_declarator_list(dl);  /* set the declarator_list in proper order                                  */
-    tmpdl= dl;                        /* copy the dl pointer to tmpdl to avoid having to reset where dl points to */
+    dl= reverse_declarator_list(dl);  /* set the declarator_list in proper order                                    */
+    tmpdl= dl;                        /* copy the dl parameter to tmpdl to avoid having to reset where dl points to */
 
 
 
@@ -1708,11 +1709,13 @@ struct ast *new_for_statement(struct ast *forinit,
 
 
 void * emalloc(int size)
-{   void *space= malloc(size);
+{   
+    void *space= malloc(size);
     if(space == NULL)
     {   printf("*** Parser ran out of memory! ***\n");
         exit(-1);
     }
+    global_allocation+= size;
     return space;
 }
 
