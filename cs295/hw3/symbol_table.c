@@ -159,16 +159,6 @@ struct declarator *lookup(struct declarator *sym)
 
 
 
-
-    /* DEBUG: display current symtabl */
-    for(i=0; i<NHASH; i++)
-    {   printf("(%ld) symtab[%d]: %d\n", &symtab[i], i, symtab[i]);   
-    }
-
-
-
-
-
     /* fastforward to the id of the declarator parameter
      +----------------------------------------------------*/
     while(sym->next != NULL)
@@ -192,7 +182,7 @@ struct declarator *lookup(struct declarator *sym)
 
     int scount= NHASH;
     while(--scount >= 0)
-    {   printf("DEBUG: while loop iteration %d\n", NHASH-scount);
+    {   
 
         /* fastforward to the the name of the declarator that we're currently
 	|  pointing to in the symbol table.
@@ -241,36 +231,14 @@ struct declarator *lookup(struct declarator *sym)
 	|  next cell.  Be sure to wrap around sure to the front of the symtab
 	|  if you happen to reach the back.     
 	+------------------------------------------------------------------*/
-	printf("DEBUG: spname '%s' and sym '%s' are both hashed to cell %d '\n", spname->id,sym->id,hash);
 	if( symtab[hash] != 0   &&   strcmp(spname->id,sym->id) )
-	{
-	    printf("DEBUG: Attempt to write to addr %ld...\n", sp);
-	    printf("         Current value of sp: %ld\n", sp);
-	    printf("Current addr of symtab[hash]: %ld\n", &symtab[hash]);
-	    printf("Current contents of symtab[hash]: %ld\n", symtab[hash]);
-	    printf("Current address of symtab[NHASH-1]: %ld\n", &symtab[NHASH-1]);
+	{   ++hash;
 
-           
-	    /* DEBUG: display current symtabl */
-            for(i=0; i<NHASH; i++)
-            {   printf("(%ld) symtab[%d]: %d\n", &symtab[i], i, symtab[i]);   
-            }
-            printf("\n\n\n");
-
-
-	    printf("DEBUG: this cell is taken, moving to next cell.\n\n");
-	    ++hash;
-	    printf("sp has been updated from %ld ", sp);
-	    sp= (struct declarator *) &symtab[hash];
-	    printf("to %ld.\n",sp);
-        }
-
-            if(sp > (struct declarator *)&symtab[NHASH-1] )
-            {   printf("WRAPAROUND: sp (%ld) > (%ld)\n", sp, &symtab[NHASH-1]);
-	        hash=0;
+            if(hash > NHASH-1)
+            {   hash=0;
 		sp= (struct declarator *) &symtab[hash];
-		printf("\n\n\n\n");
             }
+        }
     }
 
     printf("Symbol table overflow\n");
@@ -380,8 +348,8 @@ void printrefs(void)
     for(i=0; i<NHASH; i++)
     {
 	if(symtab[i])
-	{   printf("symtab[%d]: ", i);
-            printf("(addr is %ld) ", symtab[i]);
+	{   printf("(%ld) symtab[%d]: ", &symtab[i],i);
+            printf("(contents, %ld) ", symtab[i]);
             
 	    sp= symtab[i];
 
