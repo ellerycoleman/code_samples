@@ -80,7 +80,7 @@ void symbol_table_init(void)
     printf("original symtab:\n");
     printf("----------------\n");
     for(i=0; i<NHASH; i++)
-    {   printf("(%ld) symtab[%d]: %d\n", &symtab[i], i, symtab[i].nodetype);   
+    {   printf("(%ld) symtab[%d]: %d\n", &symtab[i], i, symtab[i]);   
     }
     printf("\n\n\n");
 }
@@ -151,15 +151,22 @@ static unsigned symhash(char *sym)
  | lookup
  +---------------------------------------------*/
 struct declarator *lookup(struct declarator *sym)
-{   extern global_allocation;
-    int i;
-    int hash= symhash(sym->id)%NHASH;
-    struct declarator *sp;              /* used to keep current place in symbol table     */
-    struct declarator *spname= sym;     /* used to investigate name of symbol in table    */
-    struct declarator *symorig= sym;    /* used to keep location of original param        */
+{   int i;
+    int hash;
+    struct declarator *sp;               /* used to keep current place in symbol table     */
+    struct declarator *spname= sym;      /* used to investigate name of symbol in table    */
+    struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
-    printf("DEBUG: lookup has been called, current mem allocation: %d\n", global_allocation);
+
+
+    /* DEBUG: display current symtabl */
+    for(i=0; i<NHASH; i++)
+    {   printf("(%ld) symtab[%d]: %d\n", &symtab[i], i, symtab[i]);   
+    }
+
+
+
 
 
     /* fastforward to the id of the declarator parameter
@@ -172,21 +179,25 @@ struct declarator *lookup(struct declarator *sym)
     }
 
 
-    /* calculate which symtab cell this symbol is supposed to be in
-     +--------------------------------------------------------------*/
+    /* hash the symbol name */
+    hash= symhash(sym->id) % NHASH;
+
+
+    /* set symbol pointer 'sp' to the address of the cell that
+    |  this symbol is supposed to be in.
+    +---------------------------------------------------------------*/
     sp= (struct declarator *)&symtab[hash];
 
 
 
     int scount= NHASH;
     while(--scount >= 0)
-    {
-
+    {   printf("DEBUG: while loop iteration %d\n", NHASH-scount);
 
         /* fastforward to the the name of the declarator that we're currently
 	|  pointing to in the symbol table.
 	+---------------------------------------------------------------------*/
-        spname= &symtab[hash];
+        spname= symtab[hash];
 
         /* fastforward to declarator name */
         while(spname && spname->next != NULL)
@@ -204,7 +215,7 @@ struct declarator *lookup(struct declarator *sym)
 
         /* if the symbol is in this cell already, exit with error
 	+-----------------------------------------------------------*/
-	if(symtab[hash].id != NULL)  /* if cell is not empty... */
+	if(symtab[hash] != 0)  /* if cell is not empty... */
         {   
             /* and if cell contains the same id as the declarator param, then it's a dup. */
             if(spname->id  &&  !strcmp(spname->id,sym->id))
@@ -217,28 +228,21 @@ struct declarator *lookup(struct declarator *sym)
 
 	/* if this cell is empty, store sym parameter there
 	 +--------------------------------------------------*/
-	if(symtab[symhash(sym->id)%NHASH].nodetype == 0)
-	{   symtab[symhash(sym->id)%NHASH].tspecptr    = symorig->tspecptr;
-	    symtab[symhash(sym->id)%NHASH].dadtype     = symorig->dadtype;
-	    symtab[symhash(sym->id)%NHASH].id          = symorig->id;
-	    symtab[symhash(sym->id)%NHASH].next        = symorig->next;
-	    symtab[symhash(sym->id)%NHASH].adeclarator = symorig->adeclarator;
-	    symtab[symhash(sym->id)%NHASH].exp         = symorig->exp;
-	    symtab[symhash(sym->id)%NHASH].plist       = symorig->plist;
-	    free(symorig);
+	if(symtab[hash] == 0)
+	{   symtab[hash]= symorig;
 	    return sp;
         }
 
 
 
 
-        /* if the cell is not empty, but doesn't store the current symbol,
+        /* if the cell is not empty and DOES NOT store the current symbol,
 	|  then a collision has occured and we need to move ahead to the
 	|  next cell.  Be sure to wrap around sure to the front of the symtab
 	|  if you happen to reach the back.     
 	+------------------------------------------------------------------*/
-	printf("DEBUG: last case.. spname is '%s' and sym is '%s'\n", spname->id,sym->id);
-	if( symtab[hash].nodetype  &&   strcmp(spname->id,sym->id) )
+	printf("DEBUG: spname '%s' and sym '%s' are both hashed to cell %d '\n", spname->id,sym->id,hash);
+	if( symtab[hash] != 0   &&   strcmp(spname->id,sym->id) )
 	{
 	    printf("DEBUG: Attempt to write to addr %ld...\n", sp);
 	    printf("         Current value of sp: %ld\n", sp);
@@ -246,19 +250,25 @@ struct declarator *lookup(struct declarator *sym)
 	    printf("Current contents of symtab[hash]: %ld\n", symtab[hash]);
 	    printf("Current address of symtab[NHASH-1]: %ld\n", &symtab[NHASH-1]);
 
+           
+	    /* DEBUG: display current symtabl */
             for(i=0; i<NHASH; i++)
             {   printf("(%ld) symtab[%d]: %d\n", &symtab[i], i, symtab[i]);   
             }
             printf("\n\n\n");
+
+
 	    printf("DEBUG: this cell is taken, moving to next cell.\n\n");
+	    ++hash;
 	    printf("sp has been updated from %ld ", sp);
-	    sp= (struct declarator *)sp + 1;
+	    sp= (struct declarator *) &symtab[hash];
 	    printf("to %ld.\n",sp);
         }
 
-            if(sp >= (struct declarator *)&symtab[NHASH-1] )
-            {   printf("WRAPAROUND: sp (%ld) >= (%ld)\n", sp, &symtab[NHASH-1]);
-	        sp= (struct declarator *) &symtab[0];
+            if(sp > (struct declarator *)&symtab[NHASH-1] )
+            {   printf("WRAPAROUND: sp (%ld) > (%ld)\n", sp, &symtab[NHASH-1]);
+	        hash=0;
+		sp= (struct declarator *) &symtab[hash];
 		printf("\n\n\n\n");
             }
     }
@@ -287,19 +297,19 @@ void addref(char *filename, int lineno, struct declarator *dp)
  | Note: Based on C FAQ: http://c-faq.com/lib/qsort2.html
  +---------------------------------------------*/
 int symcompare(const void *xa, const void *xb)
-{   const struct declarator *a= xa;
-    const struct declarator *b= xb;
+{   struct declarator *a= *(struct declarator * const *)xa;
+    struct declarator *b= *(struct declarator * const *)xb;
 
 
 
     /* case that a and b are both NULL */
-    if(!a->nodetype && !b->nodetype)
+    if(!a && !b)
     {   return 0;
     }
 
 
     /* a is null, and b is not null */
-    if(!a->nodetype  &&  b->nodetype)
+    if(!a  &&  b)
     {   
         /* fastforward to declarator name for b */
         while(b->next != NULL)
@@ -315,7 +325,7 @@ int symcompare(const void *xa, const void *xb)
     }
 
     /* b is null, and a is not null */
-    if(!b->nodetype && a->nodetype)
+    if(!b && a)
     {   
         /* fastforward to declarator name for a */
         while(a->next != NULL)
@@ -364,16 +374,16 @@ void printrefs(void)
     int i;
 
     /* sort the symbol table */
-    qsort(symtab, NHASH, sizeof(struct declarator), symcompare);
+    qsort(symtab, NHASH, sizeof(struct declarator *), symcompare);
 
 
     for(i=0; i<NHASH; i++)
     {
-	if(symtab[i].nodetype)
+	if(symtab[i])
 	{   printf("symtab[%d]: ", i);
             printf("(addr is %ld) ", symtab[i]);
             
-	    sp= &symtab[i];
+	    sp= symtab[i];
 
             /* fastforward to declarator name for sp */
             while(sp->next != NULL)

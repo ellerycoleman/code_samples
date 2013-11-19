@@ -29,7 +29,7 @@ struct basic_type
 };
     
 
-struct declarator symtab[NHASH];
+struct declarator *symtab[NHASH];
 
 
 struct symtab

@@ -19,7 +19,7 @@
 extern char *yytext;
 extern int num_of_tokens_processed;
 
-typedef enum ntype {   DECL=3000,
+typedef enum ntype {   DECL,
                        DECLARATOR,
 		       TLD,
 		       TLD_LIST,
