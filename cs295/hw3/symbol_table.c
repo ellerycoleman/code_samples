@@ -80,7 +80,7 @@ void symbol_table_init(void)
     printf("original symtab:\n");
     printf("----------------\n");
     for(i=0; i<NHASH; i++)
-    {   printf("symtab[%d]: %d\n", i, symtab[i]);   
+    {   printf("(%ld) symtab[%d]: %d\n", &symtab[i], i, symtab[i]);   
     }
     printf("\n\n\n");
 }
@@ -151,13 +151,14 @@ static unsigned symhash(char *sym)
  | lookup
  +---------------------------------------------*/
 struct declarator *lookup(struct declarator *sym)
-{
-    struct declarator *sp;
-    struct declarator *symorig= sym;
+{   int i;
+    struct declarator *sp;               /* used to keep current place in symbol table     */
+    struct declarator *spname= sym;      /* used to investigate name of symbol in table    */
+    struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
-    /* fastforward to declarator name
-     +---------------------------------*/
+    /* fastforward to the id of the declarator parameter
+     +----------------------------------------------------*/
     while(sym->next != NULL)
     {   sym= sym->next;
     }
@@ -171,54 +172,83 @@ struct declarator *lookup(struct declarator *sym)
     sp= (struct declarator *)&symtab[symhash(sym->id)%NHASH];
 
 
-    /* The nodetype is always set at declarator creation time.
-     | If the nodetype is set for our symbol pointer, it means
-     | that this cell is already occupied; print an error and exit.
-     +--------------------------------------------------------------*/
-
 
     int scount= NHASH;
     while(--scount >= 0)
     {
 
 
+        /* fastforward to the the name of the declarator that we're currently
+	|  pointing to in the symbol table.
+	+---------------------------------------------------------------------*/
+        spname= symtab[symhash(sym->id)%NHASH];
+
+        /* fastforward to declarator name */
+        while(spname && spname->next != NULL)
+        {   spname= spname->next;
+        }
+        if(spname && 
+	     (spname->nodetype == ARRAY_DECLARATOR || 
+	      spname->nodetype == FUNCTION_DECLARATOR
+	     ) 
+	  )
+        {   spname= spname->adeclarator;
+        }
+
+
+
         /* if the symbol is in this cell already, exit with error
-	 +----------------------------------------------------------*/
-	if(symtab[symhash(sym->id)%NHASH] != 0)   /* cell is not empty */
+	+-----------------------------------------------------------*/
+	if(symtab[symhash(sym->id)%NHASH] != 0)  /* if cell is not empty... */
         {   
-	    sp= symtab[symhash(sym->id)%NHASH];
-
-            /* fastforward to declarator name */
-            while(sp->next != NULL)
-            {   sp= sp->next;
-            }
-            if(sp->nodetype == ARRAY_DECLARATOR || sp->nodetype == FUNCTION_DECLARATOR)
-            {   sp= sp->adeclarator;
-            }
-
-
-            if(sp->id  &&  !strcmp(sp->id,sym->id))
-	    {   printf("Error: the variable '%s' has already been defined.\n", sp->id);
+            /* and if cell contains the same id as the declarator param, then it's a dup. */
+            if(spname->id  &&  !strcmp(spname->id,sym->id))
+	    {   printf("Error: the variable '%s' has already been defined.\n", spname->id);
                 exit(-1);
             }
         }
 
 
-        /* in case symbol not currently present in symtab */
-        if(!sp->id)
-        {   printf("DEBUG: this cell is empty, so storing sym here.\n");
-	    symtab[symhash(sym->id)%NHASH]= symorig;
-            return sp;
+
+	/* if this cell is empty, store sym parameter there
+	 +--------------------------------------------------*/
+	if(symtab[symhash(sym->id)%NHASH] == 0)
+	{   symtab[symhash(sym->id)%NHASH]= symorig;
+	    return sp;
         }
 
 
-        /* in case of hash pointing to symtab entry that's already taken.    */
-        /* Need to move ahead to the next entry, and be sure to wrap around  */
-        /* to the front of the symtab if you happen to reach the back.       */
-        if(++sp >= (struct declarator *)symtab+NHASH)
-        {   printf("DEBUG: this cell is taken, moving to next cell.\n");
-            sp= (struct declarator *)symtab;
+
+
+        /* if the cell is not empty, but doesn't store the current symbol,
+	|  then a collision has occured and we need to move ahead to the
+	|  next cell.  Be sure to wrap around sure to the front of the symtab
+	|  if you happen to reach the back.     
+	+------------------------------------------------------------------*/
+	printf("DEBUG: last case.. spname is '%s' and sym is '%s'\n", spname->id,sym->id);
+	if( symtab[symhash(sym->id)%NHASH] != 0   &&   strcmp(spname->id,sym->id) )
+	{
+	    printf("DEBUG: Attempt to write to addr %ld...\n", sp);
+	    printf("         Current value of sp: %ld\n", sp);
+	    printf("Current addr of symtab[hash]: %ld\n", &symtab[symhash(sym->id)%NHASH]);
+	    printf("Current contents of symtab[hash]: %ld\n", symtab[symhash(sym->id)%NHASH]);
+	    printf("Current address of symtab[NHASH-1]: %ld\n", &symtab[NHASH-1]);
+
+            for(i=0; i<NHASH; i++)
+            {   printf("(%ld) symtab[%d]: %d\n", &symtab[i], i, symtab[i]);   
+            }
+            printf("\n\n\n");
+	    printf("DEBUG: this cell is taken, moving to next cell.\n\n");
+	    printf("sp has been updated from %ld ", sp);
+	    sp= (struct declarator *)sp + 1;
+	    printf("to %ld.\n",sp);
         }
+
+            if(sp >= (struct declarator *)&symtab[NHASH-1] )
+            {   printf("WRAPAROUND: sp (%ld) >= (%ld)\n", sp, &symtab[NHASH-1]);
+	        sp= (struct declarator *) &symtab[0];
+		printf("\n\n\n\n");
+            }
     }
 
     printf("Symbol table overflow\n");
