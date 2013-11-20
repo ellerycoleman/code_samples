@@ -22,11 +22,8 @@ struct basic_type
 };
     
 
-struct declarator *symtab[NHASH];
-
-
-struct symtab
-{   char *name;
+struct symtabl
+{   char *id;
     struct declarator *symtab[NHASH];
     struct declarator *parent_symtab;
     struct declarator *child_symtab;
@@ -35,6 +32,6 @@ struct symtab
 
 char *currfilename;
 
-
 struct basic_type basic_types[10];
 
+struct symtabl *symtab;

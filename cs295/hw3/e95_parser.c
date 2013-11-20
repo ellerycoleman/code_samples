@@ -257,7 +257,7 @@ void print_tree(struct ast *nodeptr)
     }while( (tldlist= tldlist->next) != NULL );
     printf("\n\n\n\n\n\n\n");
     printf("=====================================================\n");
-    printf("                    Symbol Table                     \n");
+    printf(" Symbol Table '%s'\n", symtab->id);
     printf("=====================================================\n");
     printrefs();
 }
