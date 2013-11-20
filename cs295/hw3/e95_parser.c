@@ -269,7 +269,8 @@ void print_tree(struct ast *nodeptr)
 
 
     /* print symbol tables */
-    printrefs();
+    printrefs(global_top_level);
+    printf("\n\nTotal amount of memory dynamically allocated by parser: %d bytes\n", global_allocation);
 }
 
 

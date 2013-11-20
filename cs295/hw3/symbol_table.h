@@ -8,37 +8,43 @@
 +===========================================================================*/
 
 
-#define NHASH 5
-
-
-/*------------------------------- 
-| Function Prototypes
-+------------------------------*/
-void basic_types_init(void);
-void printrefs(void);
-void addref(char *filename, int lineno, struct declarator *);
-struct declarator *lookup(declarator *sym);
-void create_symbol_tables(struct ast *parse_tree);
-void decl_to_symtab(struct decl *tdecl);
+#define NHASH 15
+#define ROOT 1001
 
 
 
-/*------------------------------- 
+/*-------------------------------
 | Data Structures
 +------------------------------*/
 struct basic_type
 {   int type;
     int attrs[3];
 };
-    
+
 
 struct symtabl
-{   char *id;
+{   int sid;
+    char *id;
     struct declarator *symtab[NHASH];
     struct symtabl *parent;
     struct symtabl *child;
-    struct symtabl *sibling;
+    struct symtabl *lsibling;
+    struct symtabl *rsibling;
 };
+
+
+
+
+/*-------------------------------
+| Function Prototypes
++------------------------------*/
+void basic_types_init(void);
+void printrefs(struct symtabl *curr_symtab);
+void addref(struct declarator *dp, struct symtabl *curr_symtab);
+struct declarator *lookup(declarator *sym, struct symtabl *curr_symtab);
+void create_symbol_tables(struct ast *parse_tree);
+void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab);
+void print_symtab(struct symtabl *curr_symtab);
 
 
 
@@ -51,3 +57,5 @@ char *currfilename;
 struct basic_type basic_types[10];
 
 struct symtabl *curr_symtab;
+struct symtabl *global_top_level;
+int symtab_sid;
