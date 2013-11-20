@@ -66,18 +66,28 @@ int main(int argc, char **argv)
      yyin= input;
 
 
-    /* Initialize token definition map           */
-    /* init_token_definition_map();              */
-    /* Initialize symbol table basic_types array */
-    symbol_table_init();
-
-
     printf("in e95_parser.c::main() about to run yyparse()\n\n\n");
 
-    /* Parse Input */
+
+    /* Parse Input
+    +---------------*/
     yyparse();
+
+
+    /* Store parsed input in parse tree
+    +------------------------------------*/
     parse_tree= (struct ast *) reverse_tld_list((struct tld_list *)parse_tree);
+
+
+    /* traverse parse tree to construct symbol tables
+    +--------------------------------------------------*/
+    create_symbol_tables(parse_tree);
+
+
+    /* traverse parse tree to generate pretty print
+    +-------------------------------------------------*/
     print_tree(parse_tree);
+
 
     return 0;
 
@@ -1321,11 +1331,13 @@ struct ast *new_decl(int typespecifier, declarator_list *dl)
 
 
     /* iterate through all declarators */
+    /*
     char *filename="(stdin)";
     do
-    {   dp= tmpdl->d;   /* point to the current declarator */
+    {   dp= tmpdl->d;
         addref(filename,yylineno,dp); 
     }while(tmpdl= tmpdl->next);
+    */
 
 
 

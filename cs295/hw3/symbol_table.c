@@ -7,18 +7,39 @@
 | Revision: $Id$
 +===========================================================================*/
 
+extern struct basic_type basic_types[];
+extern struct symtabl *symtab;
+
+
+
+/*-----------------------------------------------
+ | create_symbol_tables
+ +---------------------------------------------*/
+void create_symbol_tables(struct ast *parse_tree)
+{   symbol_table_init();
+
+
+}
+
+
+
 
 /*-----------------------------------------------
  | symbol_table_init
  +---------------------------------------------*/
 void symbol_table_init(void)
 {   int i;
-    extern struct basic_type basic_types[];
-    extern struct symtabl *symtab;
 
+
+    /* Initialize global symbol table */
     symtab= emalloc(sizeof(struct symtabl));
     symtab->id= "global_top_level";
+    symtab->parent= NULL;
+    symtab->sibling= NULL;
 
+
+
+    /* Initialize basic types */
     basic_types[SIGNED_SHORT_INT].type     = SIGNED_SHORT_INT;
     basic_types[SIGNED_SHORT_INT].attrs[0] = INTEGRAL_T;
     basic_types[SIGNED_SHORT_INT].attrs[1] = ARITHMETIC_T;

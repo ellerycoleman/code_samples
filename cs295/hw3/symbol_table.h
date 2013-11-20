@@ -15,6 +15,7 @@ void symbol_table_init(void);
 void printrefs(void);
 void addref(char *filename, int lineno, struct declarator *);
 struct declarator *lookup(declarator *sym);
+void create_symbol_tables(struct ast *parse_tree);
 
 struct basic_type
 {   int type;
@@ -25,8 +26,9 @@ struct basic_type
 struct symtabl
 {   char *id;
     struct declarator *symtab[NHASH];
-    struct declarator *parent_symtab;
-    struct declarator *child_symtab;
+    struct declarator *parent;
+    struct declarator *child;
+    struct declarator *sibling;
 };
 
 
