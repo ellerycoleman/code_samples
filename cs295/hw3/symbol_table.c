@@ -8,7 +8,7 @@
 +===========================================================================*/
 
 extern struct basic_type basic_types[];
-extern struct symtabl *symtab;
+extern struct symtabl *curr_symtab;
 
 
 
@@ -16,9 +16,113 @@ extern struct symtabl *symtab;
  | create_symbol_tables
  +---------------------------------------------*/
 void create_symbol_tables(struct ast *parse_tree)
-{   symbol_table_init();
+{   
+
+    printf("DEBUG create_symbol_tables(): invoked.\n");
 
 
+    /* Initialize basic_types data structure
+    +-----------------------------------------*/
+    basic_types_init();
+    
+
+
+    /* Initialize global symbol table
+    +----------------------------------*/
+    curr_symtab= emalloc(sizeof(struct symtabl));
+    curr_symtab->id= "global_top_level";
+    curr_symtab->parent= NULL;
+    curr_symtab->sibling= NULL;
+    curr_symtab->child= NULL;
+
+
+
+    /* The only type of AST that is passed to print_tree is a *tld_list,
+    |  so we'll cast the AST into a *tld_list.
+    +-------------------------------------------------------------------*/
+    struct tld_list *tldlist= (struct tld_list *)parse_tree;
+
+
+
+    /* A tld_list has a series of tld nodes; each node pointing to either
+    |  a decl or a funcdef.
+    +---------------------------------------------------------------------*/
+    struct decl *tdecl;
+    struct function_def *funcdef;
+    int i=1;
+    struct declarator *d;
+
+
+    
+    do  /* cycle through all of the TLD's */
+    {
+        /*--------------------------------------------+
+        |            if TLD is a DECL
+        +---------------------------------------------*/
+        if(tldlist->tld->datatype == DECL)
+        {   tdecl= (struct decl *)tldlist->tld->d;
+            printf("DEBUG create_symbol_tables(): TLD is a decl...\n");
+
+            /* Add decl to symbol table */
+            decl_to_symtab(tdecl);
+	}
+
+
+
+
+        /*--------------------------------------------+
+        |      if TLD is a FUNCTION_DEFINITION
+        +---------------------------------------------*/
+        if(tldlist->tld->datatype == FUNCTION_DEFINITION  &&  0  )
+        {
+
+	    /* retrieve function definition */
+	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
+
+            /* a function defintion is composed of a
+	     * fuction_defspec and a compound statement.
+	     */
+	    struct function_defspec *fdspec= funcdef->fdspec;
+	    struct ast *cstmt= funcdef->cstmt;
+	    struct decostat_list *dlist;
+
+
+	    /* print function return type */
+	    printf("\n\n%s ", print_type(fdspec->typespec));
+	    printf("%s(", fdspec->d->adeclarator->id);
+	    print_parameter_list(fdspec->d->plist);
+	    printf(")");
+	    printf("\n{\n");
+
+
+            /* display compound statement block */
+	    dlist= (struct decostat_list *) cstmt->l;
+	    do
+	    {   print_expr(dlist->decostat);
+	        printf(";\n");
+	    } while( (dlist= dlist->next) != NULL);
+
+
+	    printf("\n}\n\n");
+	}
+
+
+
+    }while( (tldlist= tldlist->next) != NULL );
+}
+
+
+
+void decl_to_symtab(struct decl *tdecl)
+{   struct declarator_list *tmpdl;
+    struct declarator *dp;
+
+    tmpdl= tdecl->dl;
+    do
+    {   dp= tmpdl->d;
+        addref("stdin",yylineno,dp);
+    }while(tmpdl= tmpdl->next);
+        
 }
 
 
@@ -27,15 +131,8 @@ void create_symbol_tables(struct ast *parse_tree)
 /*-----------------------------------------------
  | symbol_table_init
  +---------------------------------------------*/
-void symbol_table_init(void)
+void basic_types_init(void)
 {   int i;
-
-
-    /* Initialize global symbol table */
-    symtab= emalloc(sizeof(struct symtabl));
-    symtab->id= "global_top_level";
-    symtab->parent= NULL;
-    symtab->sibling= NULL;
 
 
 
@@ -99,15 +196,6 @@ void symbol_table_init(void)
     basic_types[OTHER].attrs[1] = OTHER;
     basic_types[OTHER].attrs[2] = OTHER;
 
-
-
-    /* initializing symbtab array */
-    printf("original symtab:\n");
-    printf("----------------\n");
-    for(i=0; i<NHASH; i++)
-    {   printf("(%ld) symtab[%d]: %d\n", &symtab->symtab[i], i, symtab->symtab[i]);   
-    }
-    printf("\n\n\n");
 }
 
 
@@ -201,7 +289,7 @@ struct declarator *lookup(struct declarator *sym)
     /* set symbol pointer 'sp' to the address of the cell that
     |  this symbol is supposed to be in.
     +---------------------------------------------------------------*/
-    sp= (struct declarator *)&symtab->symtab[hash];
+    sp= (struct declarator *)&curr_symtab->symtab[hash];
 
 
 
@@ -212,7 +300,7 @@ struct declarator *lookup(struct declarator *sym)
         /* fastforward to the the name of the declarator that we're currently
 	|  pointing to in the symbol table.
 	+---------------------------------------------------------------------*/
-        spname= symtab->symtab[hash];
+        spname= curr_symtab->symtab[hash];
 
         /* fastforward to declarator name */
         while(spname && spname->next != NULL)
@@ -230,7 +318,7 @@ struct declarator *lookup(struct declarator *sym)
 
         /* if the symbol is in this cell already, exit with error
 	+-----------------------------------------------------------*/
-	if(symtab->symtab[hash] != 0)  /* if cell is not empty... */
+	if(curr_symtab->symtab[hash] != 0)  /* if cell is not empty... */
         {   
             /* and if cell contains the same id as the declarator param, then it's a dup. */
             if(spname->id  &&  !strcmp(spname->id,sym->id))
@@ -243,8 +331,8 @@ struct declarator *lookup(struct declarator *sym)
 
 	/* if this cell is empty, store sym parameter there
 	 +--------------------------------------------------*/
-	if(symtab->symtab[hash] == 0)
-	{   symtab->symtab[hash]= symorig;
+	if(curr_symtab->symtab[hash] == 0)
+	{   curr_symtab->symtab[hash]= symorig;
 	    return sp;
         }
 
@@ -255,12 +343,12 @@ struct declarator *lookup(struct declarator *sym)
 	|  next cell.  Be sure to wrap around sure to the front of the symtab
 	|  if you happen to reach the back.     
 	+------------------------------------------------------------------*/
-	if( symtab->symtab[hash] != 0   &&   strcmp(spname->id,sym->id) )
+	if( curr_symtab->symtab[hash] != 0   &&   strcmp(spname->id,sym->id) )
 	{   ++hash;
 
             if(hash > NHASH-1)
             {   hash=0;
-		sp= (struct declarator *) &symtab->symtab[hash];
+		sp= (struct declarator *) &curr_symtab->symtab[hash];
             }
         }
     }
@@ -362,33 +450,60 @@ int symcompare(const void *xa, const void *xb)
  | printrefs
  +---------------------------------------------*/
 void printrefs(void)
-{   struct declarator *sp;
+{   extern int global_allocation;
+    struct declarator *sp;
     int i;
 
-    /* sort the symbol table */
-    qsort(symtab->symtab, NHASH, sizeof(struct declarator *), symcompare);
 
-
-    for(i=0; i<NHASH; i++)
-    {
-	if(symtab->symtab[i])
-	{   printf("(%ld) symtab[%d]: ", &symtab->symtab[i],i);
-            printf("(contents %ld) ", symtab->symtab[i]);
-            
-	    sp= symtab->symtab[i];
-
-            /* fastforward to declarator name for sp */
-            while(sp->next != NULL)
-            {   sp= sp->next;
-            }
-            if(sp->nodetype == ARRAY_DECLARATOR || sp->nodetype == FUNCTION_DECLARATOR)
-            {   sp= sp->adeclarator;
-            }
-
-	    printf("     name: %s\n", sp->id);
-	}
+    
+    /* ascend to top level, global symbol table
+    +--------------------------------------------*/
+    while(curr_symtab->parent != NULL)
+    {   curr_symtab= curr_symtab->parent;
     }
-    printf("\n\n\n");
+
+
+    /* Recurse all symbol tables, printing them to STDOUT
+    +-----------------------------------------------------*/
+    do
+    {
+
+        printf("\n\n\n\n\n\n\n");
+        printf("=====================================================\n");
+        printf(" Symbol Table '%s'\n", curr_symtab->id);
+        printf("=====================================================\n");
+
+
+        /* sort the symbol table
+        |------------------------*/
+        qsort(curr_symtab->symtab, NHASH, sizeof(struct declarator *), symcompare);
+
+
+        for(i=0; i<NHASH; i++)
+        {
+    	if(curr_symtab->symtab[i])
+    	{   printf("(%ld) symtab[%d]: ", &curr_symtab->symtab[i],i);
+                printf("(contents %ld) ", curr_symtab->symtab[i]);
+                
+    	    sp= curr_symtab->symtab[i];
+    
+                /* fastforward to declarator name for sp */
+                while(sp->next != NULL)
+                {   sp= sp->next;
+                }
+                if(sp->nodetype == ARRAY_DECLARATOR || sp->nodetype == FUNCTION_DECLARATOR)
+                {   sp= sp->adeclarator;
+                }
+    
+    	    printf("     name: %s\n", sp->id);
+    	}
+        }
+        printf("\n\n\n");
+    }while(curr_symtab= curr_symtab->child);
+
+
+
+    printf("\n\nTotal amount of memory dynamically allocated by parser: %d bytes\n", global_allocation);
 
 }
 

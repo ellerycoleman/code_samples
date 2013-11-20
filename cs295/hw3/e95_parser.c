@@ -40,7 +40,8 @@ extern int yylineno;
 extern char e95_strbuf2[];
 
 
-int first_ptr; /* pretty print support */
+int first_ptr;          /* pretty print support */
+int global_allocation;  /* keeps track of dynamic memory allocation */
 
 
 
@@ -265,10 +266,9 @@ void print_tree(struct ast *nodeptr)
 
 
     }while( (tldlist= tldlist->next) != NULL );
-    printf("\n\n\n\n\n\n\n");
-    printf("=====================================================\n");
-    printf(" Symbol Table '%s'\n", symtab->id);
-    printf("=====================================================\n");
+
+
+    /* print symbol tables */
     printrefs();
 }
 
@@ -1308,46 +1308,16 @@ struct decostat_list *reverse_decostat_list(struct decostat_list *dlist)
 
 struct ast *new_decl(int typespecifier, declarator_list *dl)
 {
-    /*--------------------------------------------*/
-    /*  Each declarator in the declarator_list    */
-    /*  needs to be added to the symbol table.    */
-    /*  The declarator struct for each declarator */
-    /*  should maintain a pointer to the symbol   */
-    /*  table.                                    */
-    /*--------------------------------------------*/
-
     struct decl *d= emalloc(sizeof(struct decl));  /* this is the decl we'll populate and return */
-    struct declarator *dp;                         /* we'll use this variable to interface with each declarator in the list    */
-    struct declarator_list *tmpdl;                 /* we'll iterate through a copy of the dl pointer passed into the function  */
 
-
-
-    /*------------------------------------------------------*/
-    /* add each item in declarator_list to the symbol table */
-    /*------------------------------------------------------*/
-    dl= reverse_declarator_list(dl);  /* set the declarator_list in proper order                                  */
-    tmpdl= dl;                        /* copy the dl pointer to tmpdl to avoid having to reset where dl points to */
-
-
-
-    /* iterate through all declarators */
-    /*
-    char *filename="(stdin)";
-    do
-    {   dp= tmpdl->d;
-        addref(filename,yylineno,dp); 
-    }while(tmpdl= tmpdl->next);
-    */
-
-
-
-
+    dl= reverse_declarator_list(dl);  /* set the declarator_list in proper order  */
     d->nodetype= DECL;
     d->tspecptr= &basic_types[typespecifier];
     d->dl=  dl;
 
     return  (struct ast *)d;
 }
+
 
 
 struct ast *new_tld(int datatype, struct ast *tld)
@@ -1363,6 +1333,7 @@ struct ast *new_tld(int datatype, struct ast *tld)
 
     return (struct ast *)t;
 }
+
 
 
 char * print_type(int type)
@@ -1725,6 +1696,7 @@ void * emalloc(int size)
     {   printf("*** Parser ran out of memory! ***\n");
         exit(-1);
     }
+    global_allocation += size;
     return space;
 }
 

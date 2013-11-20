@@ -11,12 +11,21 @@
 #define NHASH 5
 
 
-void symbol_table_init(void);
+/*------------------------------- 
+| Function Prototypes
++------------------------------*/
+void basic_types_init(void);
 void printrefs(void);
 void addref(char *filename, int lineno, struct declarator *);
 struct declarator *lookup(declarator *sym);
 void create_symbol_tables(struct ast *parse_tree);
+void decl_to_symtab(struct decl *tdecl);
 
+
+
+/*------------------------------- 
+| Data Structures
++------------------------------*/
 struct basic_type
 {   int type;
     int attrs[3];
@@ -26,14 +35,19 @@ struct basic_type
 struct symtabl
 {   char *id;
     struct declarator *symtab[NHASH];
-    struct declarator *parent;
-    struct declarator *child;
-    struct declarator *sibling;
+    struct symtabl *parent;
+    struct symtabl *child;
+    struct symtabl *sibling;
 };
 
 
+
+
+/*-------------------------------
+| Global Variables
++------------------------------*/
 char *currfilename;
 
 struct basic_type basic_types[10];
 
-struct symtabl *symtab;
+struct symtabl *curr_symtab;
