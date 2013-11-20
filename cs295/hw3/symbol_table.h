@@ -16,13 +16,6 @@ void printrefs(void);
 void addref(char *filename, int lineno, struct declarator *);
 struct declarator *lookup(declarator *sym);
 
-
-struct symbol
-{   char *name;
-    struct ref *reflist;
-};
-
-
 struct basic_type
 {   int type;
     int attrs[3];
