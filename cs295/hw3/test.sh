@@ -29,16 +29,16 @@ unsigned long  ul;
 void veee,vee,ve,v;
 
 
-short ***q,*r,*s;
-int **i, *j;
-char *a, *b;
+short ***qx,*rx,*sx;
+int **ix, *jx;
+char *ax, *bx;
 
 
-int/* this is a test of the comments */a;
+int/* this is a test of the comments */az;
 int add(int i, int j);
 char sub(int **p, int ***r);
 int f1(char, int, void, long);
-int main(void)
+int main1(char abc)
 {   ;
     ;
     ;
@@ -55,7 +55,7 @@ int main(void)
   1,2,3,4,5;
 }
 
-int main(void)
+int main2(long xzy)
 {   1,2,3,4,5;
     1+2-3+4-5;
     1*2/3%4*5;
