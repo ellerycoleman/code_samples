@@ -1,14 +1,14 @@
 #-----------------------------------------------------------------------------
 # File:		README.txt
-# Date:		Thu Oct 10 23:54:39 EDT 2013
+# Date:		Thu Nov 21 01:40:49 EST 2013
 # Author:	Ellery Coleman <ellery.coleman@fas.harvard.edu>
-# Abstract:	README file for hw2.
+# Abstract:	README file for hw3.
 #-----------------------------------------------------------------------------
 # Revision: $Id$
 #-----------------------------------------------------------------------------
 
 
-1st cut of parser... more to come.
+1st cut of symbol table... more to come.
 
 
 
