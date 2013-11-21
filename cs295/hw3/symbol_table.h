@@ -24,7 +24,7 @@ struct basic_type
 
 struct symtabl
 {   int sid;
-    char *id;
+    char id[100];
     struct declarator *symtab[NHASH];
     struct symtabl *parent;
     struct symtabl *child;

@@ -32,7 +32,7 @@ void create_symbol_tables(struct ast *parse_tree)
     +----------------------------------*/
     curr_symtab= emalloc(sizeof(struct symtabl));
     curr_symtab->sid= ROOT;
-    curr_symtab->id= "global_top_level";
+    strcpy(curr_symtab->id,"global_top_level");
     curr_symtab->parent= NULL;
     curr_symtab->child= NULL;
     curr_symtab->lsibling= NULL;
@@ -59,6 +59,7 @@ void create_symbol_tables(struct ast *parse_tree)
     int i=1;
     int tldloop=0;
     struct declarator *d;
+    char symtab_name[100];
 
 
 
@@ -102,6 +103,8 @@ void create_symbol_tables(struct ast *parse_tree)
 	    struct function_defspec *fdspec= funcdef->fdspec;
 	    struct ast *cstmt= funcdef->cstmt;
 	    struct decostat_list *dlist;
+	    struct parameter_list *plist;
+	    struct ast *dstat;
 
 
             printf("DEBUG create_symbol_tables(): the function encountered is '%s'...\n", fdspec->d->adeclarator->id);
@@ -135,25 +138,48 @@ void create_symbol_tables(struct ast *parse_tree)
                 printf("DEBUG create_symbol_tables(): added new symtab as sibling...\n");
             }
 
-	    curr_symtab->id= fdspec->d->adeclarator->id;
+            
+
+	    /* Generate and apply appropriate name and sid to
+	    |  newly created symbol table.
+	    +------------------------------------------------*/
+	    strcpy(symtab_name,fdspec->d->adeclarator->id);
+	    strcat(symtab_name,"_funcdef");
+	    printf("\t\t\tSYMTAB_NAME: %s\n", symtab_name);
+	    strcpy(curr_symtab->id,symtab_name);
 	    curr_symtab->sid= ++symtab_sid;
 
-            /*
-	    print_parameter_list(fdspec->d->plist);
-	    */
 
 
-            /* display compound statement block */
-	    /*
+
+            /* Add the parameters to the newly created symtab
+	    +-------------------------------------------------*/
+	    plist= fdspec->d->plist;
+	    printf("DEBUG create:  Here are the function parameters...\n");
+	    while(plist)
+	    {   d= plist->pd;
+	        addref(d,curr_symtab);
+	        plist= plist->next;
+	    }
+
+
+
+            /* search the compound statement block for decls or labels.
+	    |  Add decls to the symtab.  If labels are found, create
+	    |  a sibling symtab to store them.
+	    +-----------------------------------------------------------*/
 	    dlist= (struct decostat_list *) cstmt->l;
 	    do
-	    {   print_expr(dlist->decostat);
-	        printf(";\n");
+	    {   dstat= dlist->decostat;
+	        if(dstat->nodetype == DECL)
+		{   ast_to_symtab(dstat,curr_symtab);
+		}
+	        printf("\t\tdecostat type: %d\n", dstat->nodetype);
+	        printf("\n");
 	    } while( (dlist= dlist->next) != NULL);
 
 
 	    printf("\n}\n\n");
-	    */
 	}
 
 
