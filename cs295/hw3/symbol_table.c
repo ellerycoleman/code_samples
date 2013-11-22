@@ -18,6 +18,14 @@ extern int symtab_sid;
  +---------------------------------------------*/
 void create_symbol_tables(struct ast *parse_tree)
 {
+    struct decl *tdecl;
+    struct function_def *funcdef;
+    int i=1;
+    int tldloop=0;
+    struct declarator *d;
+    char symtab_name[100];
+
+
 
     printf("DEBUG create_symbol_tables(): invoked.\n");
 
@@ -44,8 +52,9 @@ void create_symbol_tables(struct ast *parse_tree)
 
 
 
-    /* The only type of AST that is passed to print_tree is a *tld_list,
-    |  so we'll cast the AST into a *tld_list.
+    /* create_symbol_table accepts the root of parse tree as a param.
+    |  The root of the parse tree is a *tld_list so we'll cast the AST
+    |  into a *tld_list.
     +-------------------------------------------------------------------*/
     struct tld_list *tldlist= (struct tld_list *)parse_tree;
 
@@ -54,21 +63,13 @@ void create_symbol_tables(struct ast *parse_tree)
     /* A tld_list has a series of tld nodes; each node pointing to either
     |  a decl or a funcdef.
     +---------------------------------------------------------------------*/
-    struct decl *tdecl;
-    struct function_def *funcdef;
-    int i=1;
-    int tldloop=0;
-    struct declarator *d;
-    char symtab_name[100];
-
-
 
     do  /* cycle through all of the TLD's */
     {   curr_symtab= global_top_level;
 
         printf("DEBUG create_symbol_tables(): TLD while loop iter: %d...\n", ++tldloop);
 
-      
+
         /*--------------------------------------------+
         |            if TLD is a DECL
         +---------------------------------------------*/
@@ -87,7 +88,7 @@ void create_symbol_tables(struct ast *parse_tree)
         |      if TLD is a FUNCTION_DEFINITION
         +---------------------------------------------*/
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
-        {   
+        {
 
             printf("DEBUG create_symbol_tables(): TLD is a function definition...\n");
 
@@ -138,7 +139,7 @@ void create_symbol_tables(struct ast *parse_tree)
                 printf("DEBUG create_symbol_tables(): added new symtab as sibling...\n");
             }
 
-            
+
 
 	    /* Generate and apply appropriate name and sid to
 	    |  newly created symbol table.
@@ -218,7 +219,7 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
 
     else
-    {   
+    {
         printf("DEBUG: ast_to_symtab(): ast type %d\n", sym->nodetype);
     }
 }
@@ -357,12 +358,113 @@ static unsigned symhash(char *sym)
 
 
 
+/*---------------------------------------------------
+ | lookup - returns the address of the symtab cell
+ |          holding the specified declarator.
+ +-------------------------------------------------*/
+struct declarator *lookup(struct declarator *sym, struct symtabl *curr_symtab)
+{   int i;
+    int hash;
+    struct declarator *sp;               /* used to keep current place in symbol table     */
+    struct declarator *spname= sym;      /* used to investigate name of symbol in table    */
+    struct declarator *symorig= sym;     /* used to keep location of original param        */
+
+
+
+    /* fastforward to the id of the declarator parameter
+     +----------------------------------------------------*/
+    while(sym->next != NULL)
+    {   sym= sym->next;
+    }
+    if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
+    {   sym= sym->adeclarator;
+    }
+
+
+    /* hash the symbol name */
+    hash= symhash(sym->id) % NHASH;
+
+
+    /* set symbol pointer 'sp' to the address of the cell that
+    |  this symbol hashed to.
+    +---------------------------------------------------------------*/
+    sp= (struct declarator *)&curr_symtab->symtab[hash];
+
+
+
+    int scount= NHASH;
+    while(--scount >= 0)
+    {
+
+        /* fastforward to the the name of the symbol that we're currently
+	|  pointing to in the symbol table.
+	+---------------------------------------------------------------------*/
+        spname= curr_symtab->symtab[hash];
+
+        /* fastforward to declarator name */
+        while(spname && spname->next != NULL)
+        {   spname= spname->next;
+        }
+        if(spname &&
+	     (spname->nodetype == ARRAY_DECLARATOR ||
+	      spname->nodetype == FUNCTION_DECLARATOR
+	     )
+	  )
+        {   spname= spname->adeclarator;
+        }
+
+
+
+        /* if a symbol is in this cell already, check the name of
+	|  the symbol.
+	+-----------------------------------------------------------*/
+	if(curr_symtab->symtab[hash] != 0)  /* if cell is not empty... */
+        {
+            /* if the cell contains the same symbol as the declarator param,
+	     * then we've found what we were looking for; return the address.
+             */
+            if(spname->id  &&  !strcmp(spname->id,sym->id))
+	    {   return (struct declarator *) &curr_symtab->symtab[hash];
+            }
+        }
+
+
+
+	/* if this cell is empty, return NULL because the symbol
+	|  was not found.
+	+--------------------------------------*/
+	if(curr_symtab->symtab[hash] == 0)
+	{   return NULL;
+        }
+
+
+
+        /* if the cell is not empty and DOES NOT store the current symbol,
+	|  then a collision has occured and we need to move ahead to the
+	|  next cell.  Be sure to wrap around sure to the front of the symtab
+	|  if you happen to reach the back.
+	+------------------------------------------------------------------*/
+	if( curr_symtab->symtab[hash] != 0   &&   strcmp(spname->id,sym->id) )
+	{   ++hash;
+
+            if(hash > NHASH-1)
+            {   hash=0;
+		sp= (struct declarator *) &curr_symtab->symtab[hash];
+            }
+        }
+    }
+
+    printf("Symbol table overflow\n");
+    exit(-1);
+}
+
+
 
 
 /*-----------------------------------------------
- | lookup
+ | addref
  +---------------------------------------------*/
-struct declarator *lookup(struct declarator *sym, struct symtabl *curr_symtab)
+struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
 {   int i;
     int hash;
     struct declarator *sp;               /* used to keep current place in symbol table     */
@@ -454,17 +556,6 @@ struct declarator *lookup(struct declarator *sym, struct symtabl *curr_symtab)
 
     printf("Symbol table overflow\n");
     exit(-1);
-}
-
-
-
-
-/*-----------------------------------------------
- | addref
- +---------------------------------------------*/
-void addref(struct declarator *dp, struct symtabl *curr_symtab)
-{
-    lookup(dp,curr_symtab);
 }
 
 
