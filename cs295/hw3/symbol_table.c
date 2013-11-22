@@ -267,8 +267,8 @@ static unsigned symhash(char *sym)
 
 
 /*---------------------------------------------------
- | lookup - returns the address of the symtab cell
- |          holding the specified declarator.
+ | lookup - returns the address of the declarator
+ |          in the symtab cell.
  +-------------------------------------------------*/
 struct declarator *lookup(struct declarator *sym, struct symtabl *curr_symtab)
 {   int i;
@@ -332,7 +332,7 @@ struct declarator *lookup(struct declarator *sym, struct symtabl *curr_symtab)
 	     * then we've found what we were looking for; return the address.
              */
             if(spname->id  &&  !strcmp(spname->id,sym->id))
-	    {   return (struct declarator *) &curr_symtab->symtab[hash];
+	    {   return (struct declarator *) curr_symtab->symtab[hash];
             }
         }
 
@@ -637,9 +637,10 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
 
     /* a function defintion is composed of a
-     * fuction_defspec and a compound statement.
-     * A compound statement has a decostat_list.
-     */
+    |  fuction_defspec and a compound statement.
+    |  A compound statement has a decostat_list.
+    +---------------------------------------------*/
+
     struct function_defspec *fdspec= funcdef->fdspec;
     struct ast *cstmt= funcdef->cstmt;
     struct decostat_list *dlist;
@@ -647,9 +648,42 @@ void funcdef_to_symtab(struct function_def *funcdef)
     struct ast *dstat;
     char symtab_name[100];
     struct declarator *d;
+    struct declarator *fproto;
+    char *funcname= fdspec->d->adeclarator->id;
 
 
-    printf("DEBUG funcdef_to_symtab(): the function encountered is '%s'...\n", fdspec->d->adeclarator->id);
+    printf("DEBUG funcdef_to_symtab(): the function encountered is '%s'...\n", funcname);
+
+
+    /* Check to see if the function name is already in the
+    |  symbol table from a previous function prototype.
+    |  If so, make sure that the types from the function
+    |  prototype and the function defintion are the same.
+    +------------------------------------------------------*/
+    d= funcdef->fdspec->d;
+
+    if(fproto= lookup(d,curr_symtab))
+    {   struct parameter_list *fplist;
+
+
+        fplist= fproto->plist;
+        printf("***** %ld\n",fproto->nodetype);
+	printf("***** fplist 1st param nodetype: %ld\n", fplist->pd->tspecptr->type);
+	printf("***** fplist 1st param name: %ld\n", fplist->pd->id);
+
+
+
+	do
+	{   struct declarator *tmpd;
+	    tmpd= fplist->pd;
+	    printf("\t\t*%s\n", tmpd->id);
+	}while(plist= plist->next);
+
+	printf("Address of fproto->plist: %s\n", fproto->adeclarator->id);
+    }
+    else
+    {   printf("funcanme IS NOT in table\n");
+    }
 
 
     /* Add the function name to current symbol table

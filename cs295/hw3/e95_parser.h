@@ -152,11 +152,6 @@ typedef struct parameter_list
 } parameter_list;
 
 
-struct funcdef
-{   ntype nodetype;
-};
-
-
 typedef struct declarator_list
 {   ntype nodetype;
     declarator *d;
