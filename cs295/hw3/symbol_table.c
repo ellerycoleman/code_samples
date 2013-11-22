@@ -26,14 +26,9 @@ void create_symbol_tables(struct ast *parse_tree)
     char symtab_name[100];
 
 
-
-    printf("DEBUG create_symbol_tables(): invoked.\n");
-
-
     /* Initialize basic_types data structure
     +-----------------------------------------*/
     basic_types_init();
-
 
 
     /* Initialize global symbol table
@@ -41,23 +36,22 @@ void create_symbol_tables(struct ast *parse_tree)
     global_symtab_init();
 
 
-    /* create_symbol_table accepts the root of parse tree as a param.
-    |  The root of the parse tree is a *tld_list so we'll cast the AST
+    /* create_symbol_table() accepts the root of parse tree as its param.
+    |  The root of the parse tree is a *tld_list so we'll cast the param
     |  into a *tld_list.
-    +-------------------------------------------------------------------*/
+    +--------------------------------------------------------------------*/
     struct tld_list *tldlist= (struct tld_list *)parse_tree;
 
 
 
     /* A tld_list has a series of tld nodes; each node pointing to either
-    |  a decl or a funcdef.
+    |  a decl or a funcdef.  We'll create and populate symtabs as We cycle
+    |  through all of the TLD's in a do-while loop.
     +---------------------------------------------------------------------*/
-
-    do  /* cycle through all of the TLD's */
-    {   curr_symtab= global_top_level;
+    do
+    {   curr_symtab= global_top_level; /* always start with the global symtab */
 
         printf("DEBUG create_symbol_tables(): TLD while loop iter: %d...\n", ++tldloop);
-
 
         /*--------------------------------------------+
         |            if TLD is a DECL
@@ -72,113 +66,27 @@ void create_symbol_tables(struct ast *parse_tree)
 
 
 
-
         /*--------------------------------------------+
         |      if TLD is a FUNCTION_DEFINITION
         +---------------------------------------------*/
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
         {
-
-            printf("DEBUG create_symbol_tables(): TLD is a function definition...\n");
-
-
 	    /* retrieve function definition */
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
 
-
-            /* a function defintion is composed of a
-	     * fuction_defspec and a compound statement.
-	     * A compound statement has a decostat_list.
-	     */
-	    struct function_defspec *fdspec= funcdef->fdspec;
-	    struct ast *cstmt= funcdef->cstmt;
-	    struct decostat_list *dlist;
-	    struct parameter_list *plist;
-	    struct ast *dstat;
-
-
-            printf("DEBUG create_symbol_tables(): the function encountered is '%s'...\n", fdspec->d->adeclarator->id);
-
-
-	    /* Add the function name to current symbol table
-	    +----------------------------------------------------------*/
-	    ast_to_symtab((struct ast *)fdspec, curr_symtab);
-
-
-
-	    /* Allocate a new symbol table.  If this is the first
-	    |  child of the global symbol table, then attach the new
-	    |  symbol table as a child of the global symbol table.
-	    |
-	    |  Otherwise, this symbol table should be a sibling of
-	    |  the current symbol table.
-	    +---------------------------------------------------------*/
-	    if(  (curr_symtab->sid == ROOT)  &&  (curr_symtab->child == NULL) )
-	    {   curr_symtab->child= emalloc(sizeof(struct symtabl));
-	        curr_symtab= curr_symtab->child;
-                printf("DEBUG create_symbol_tables(): added new symtab as child...\n");
-            }
-	    else
-	    {   while(curr_symtab->rsibling != NULL)
-	        {   curr_symtab= curr_symtab->rsibling;
-		}
-
-		curr_symtab->rsibling= emalloc(sizeof(struct symtabl));
-	        curr_symtab= curr_symtab->rsibling;
-                printf("DEBUG create_symbol_tables(): added new symtab as sibling...\n");
-            }
-
-
-
-	    /* Generate and apply appropriate name and sid to
-	    |  newly created symbol table.
-	    +------------------------------------------------*/
-	    strcpy(symtab_name,fdspec->d->adeclarator->id);
-	    strcat(symtab_name,"_funcdef");
-	    printf("\t\t\tSYMTAB_NAME: %s\n", symtab_name);
-	    strcpy(curr_symtab->id,symtab_name);
-	    curr_symtab->sid= ++symtab_sid;
-
-
-
-
-            /* Add the parameters to the newly created symtab
-	    +-------------------------------------------------*/
-	    plist= fdspec->d->plist;
-	    printf("DEBUG create:  Here are the function parameters...\n");
-	    while(plist)
-	    {   d= plist->pd;
-	        addref(d,curr_symtab);
-	        plist= plist->next;
-	    }
-
-
-
-            /* search the compound statement block for decls or labels.
-	    |  Add decls to the symtab.  If labels are found, create
-	    |  a sibling symtab to store them.
-	    +-----------------------------------------------------------*/
-	    dlist= (struct decostat_list *) cstmt->l;
-	    do
-	    {   dstat= dlist->decostat;
-	        if(dstat->nodetype == DECL)
-		{   ast_to_symtab(dstat,curr_symtab);
-		}
-	        printf("\t\tdecostat type: %d\n", dstat->nodetype);
-	        printf("\n");
-	    } while( (dlist= dlist->next) != NULL);
-
-
-	    printf("\n}\n\n");
+	    /* add funcdef to symtab */
+	    funcdef_to_symtab(funcdef);
 	}
-
-
 
     }while( (tldlist= tldlist->next) != NULL );
 }
 
 
 
+
+/*-----------------------------------------------
+ | ast_to_symtab
+ +---------------------------------------------*/
 void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 {   struct declarator_list *tmpdl;
     struct declarator *dp;
@@ -223,62 +131,73 @@ void basic_types_init(void)
 {   int i;
 
 
-
     /* Initialize basic types */
+
+
+    /* type 0 */
     basic_types[SIGNED_SHORT_INT].type     = SIGNED_SHORT_INT;
     basic_types[SIGNED_SHORT_INT].attrs[0] = INTEGRAL_T;
     basic_types[SIGNED_SHORT_INT].attrs[1] = ARITHMETIC_T;
     basic_types[SIGNED_SHORT_INT].attrs[2] = SCALAR_T;
 
 
+    /* type 1 */
     basic_types[SIGNED_LONG_INT].type     = SIGNED_LONG_INT;
     basic_types[SIGNED_LONG_INT].attrs[0] = INTEGRAL_T;
     basic_types[SIGNED_LONG_INT].attrs[1] = ARITHMETIC_T;
     basic_types[SIGNED_LONG_INT].attrs[2] = SCALAR_T;
 
 
+    /* type 2 */
     basic_types[SIGNED_INT].type     = SIGNED_INT;
     basic_types[SIGNED_INT].attrs[0] = INTEGRAL_T;
     basic_types[SIGNED_INT].attrs[1] = ARITHMETIC_T;
     basic_types[SIGNED_INT].attrs[2] = SCALAR_T;
 
 
+    /* type 3 */
     basic_types[SIGNED_CHAR].type     = SIGNED_CHAR;
     basic_types[SIGNED_CHAR].attrs[0] = INTEGRAL_T;
     basic_types[SIGNED_CHAR].attrs[1] = ARITHMETIC_T;
     basic_types[SIGNED_CHAR].attrs[2] = SCALAR_T;
 
 
+    /* type 4 */
     basic_types[UNSIGNED_SHORT_INT].type     = UNSIGNED_SHORT_INT;
     basic_types[UNSIGNED_SHORT_INT].attrs[0] = INTEGRAL_T;
     basic_types[UNSIGNED_SHORT_INT].attrs[1] = ARITHMETIC_T;
     basic_types[UNSIGNED_SHORT_INT].attrs[2] = SCALAR_T;
 
 
+    /* type 5 */
     basic_types[UNSIGNED_LONG_INT].type     = UNSIGNED_LONG_INT;
     basic_types[UNSIGNED_LONG_INT].attrs[0] = INTEGRAL_T;
     basic_types[UNSIGNED_LONG_INT].attrs[1] = ARITHMETIC_T;
     basic_types[UNSIGNED_LONG_INT].attrs[2] = SCALAR_T;
 
 
+    /* type 6 */
     basic_types[UNSIGNED_INT].type     = UNSIGNED_INT;
     basic_types[UNSIGNED_INT].attrs[0] = INTEGRAL_T;
     basic_types[UNSIGNED_INT].attrs[1] = ARITHMETIC_T;
     basic_types[UNSIGNED_INT].attrs[2] = SCALAR_T;
 
 
+    /* type 7 */
     basic_types[UNSIGNED_CHAR].type     = UNSIGNED_CHAR;
     basic_types[UNSIGNED_CHAR].attrs[0] = INTEGRAL_T;
     basic_types[UNSIGNED_CHAR].attrs[1] = ARITHMETIC_T;
     basic_types[UNSIGNED_CHAR].attrs[2] = SCALAR_T;
 
 
+    /* type 8 */
     basic_types[VOID].type     = VOID;
     basic_types[VOID].attrs[0] = VOID_T;
     basic_types[VOID].attrs[1] = VOID_T;
     basic_types[VOID].attrs[2] = VOID_T;
 
 
+    /* type 9 */
     basic_types[OTHER].type     = OTHER;
     basic_types[OTHER].attrs[0] = OTHER;
     basic_types[OTHER].attrs[1] = OTHER;
@@ -698,3 +617,98 @@ void global_symtab_init(void)
     symtab_sid= ROOT;
 }
 
+
+void funcdef_to_symtab(struct function_def *funcdef)
+{
+
+    printf("DEBUG funcdef_to_symtab(): TLD is a function definition...\n");
+
+
+    /* a function defintion is composed of a
+     * fuction_defspec and a compound statement.
+     * A compound statement has a decostat_list.
+     */
+    struct function_defspec *fdspec= funcdef->fdspec;
+    struct ast *cstmt= funcdef->cstmt;
+    struct decostat_list *dlist;
+    struct parameter_list *plist;
+    struct ast *dstat;
+    char symtab_name[100];
+    struct declarator *d;
+
+
+    printf("DEBUG funcdef_to_symtab(): the function encountered is '%s'...\n", fdspec->d->adeclarator->id);
+
+
+    /* Add the function name to current symbol table
+    +-------------------------------------------------*/
+    ast_to_symtab((struct ast *)fdspec, curr_symtab);
+
+
+
+    /* Allocate a new symbol table.  If this is the first
+    |  child of the global symbol table, then attach the new
+    |  symbol table as a child of the global symbol table.
+    |
+    |  Otherwise, this symbol table should be a sibling of
+    |  the current symbol table.
+    +---------------------------------------------------------*/
+    if(  (curr_symtab->sid == ROOT)  &&  (curr_symtab->child == NULL) )
+    {   curr_symtab->child= emalloc(sizeof(struct symtabl));
+        curr_symtab= curr_symtab->child;
+        printf("DEBUG funcdef_to_symtab(): added new symtab as child...\n");
+    }
+    else
+    {   while(curr_symtab->rsibling != NULL)
+        {   curr_symtab= curr_symtab->rsibling;
+	}
+
+        curr_symtab->rsibling= emalloc(sizeof(struct symtabl));
+        curr_symtab= curr_symtab->rsibling;
+        printf("DEBUG funcdef_to_symtab(): added new symtab as sibling...\n");
+    }
+
+
+
+    /* Generate and apply appropriate name and sid to
+    |  newly created symbol table.
+    +------------------------------------------------*/
+    strcpy(symtab_name,fdspec->d->adeclarator->id);
+    strcat(symtab_name,"_funcdef");
+    printf("\t\t\tSYMTAB_NAME: %s\n", symtab_name);
+    strcpy(curr_symtab->id,symtab_name);
+    curr_symtab->sid= ++symtab_sid;
+
+
+
+    /* Add the parameters to the newly created symtab
+    +-------------------------------------------------*/
+    plist= fdspec->d->plist;
+    printf("DEBUG funcdef_to_symtab():  Here are the function parameters...\n");
+    while(plist)
+    {   d= plist->pd;
+        if(d->tspecptr->type != VOID)
+        {   addref(d,curr_symtab);
+	}
+        plist= plist->next;
+    }
+
+
+
+    /* search the compound statement block for decls or labels.
+    |  Add decls to the symtab.  If labels are found, create
+    |  a sibling symtab to store them.
+    +-----------------------------------------------------------*/
+    dlist= (struct decostat_list *) cstmt->l;
+    do
+    {   dstat= dlist->decostat;
+        if(dstat->nodetype == DECL)
+	{   ast_to_symtab(dstat,curr_symtab);
+	}
+        printf("\t\tdecostat type: %d\n", dstat->nodetype);
+        printf("\n");
+    } while( (dlist= dlist->next) != NULL);
+
+
+    printf("\n}\n\n");
+}
