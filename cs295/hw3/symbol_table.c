@@ -237,7 +237,7 @@ static int test_main(int argc, char **argv)
 	}
     }	
     /*
-    printrefs();
+    printtabs();
     */
     return 0;
 }
@@ -545,14 +545,14 @@ int symcompare(const void *xa, const void *xb)
 
 
 /*-----------------------------------------------
- | printrefs
+ | printtabs
  +---------------------------------------------*/
-void printrefs(struct symtabl *curr_symtab)
+void printtabs(struct symtabl *curr_symtab)
 {
     if(curr_symtab != NULL)
     {   print_symtab(curr_symtab);
-        printrefs(curr_symtab->rsibling);
-        printrefs(curr_symtab->child);
+        printtabs(curr_symtab->rsibling);
+        printtabs(curr_symtab->child);
     }
 }
 
@@ -603,6 +603,10 @@ void print_symtab(struct symtabl *curr_symtab)
 
 
 
+
+/*-----------------------------------------------
+ | global_symtab_init
+ +---------------------------------------------*/
 void global_symtab_init(void)
 {
     curr_symtab= emalloc(sizeof(struct symtabl));
@@ -618,6 +622,14 @@ void global_symtab_init(void)
 }
 
 
+
+
+
+
+
+/*-----------------------------------------------
+ | funcdef_to_symtab
+ +---------------------------------------------*/
 void funcdef_to_symtab(struct function_def *funcdef)
 {
 
