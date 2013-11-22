@@ -38,18 +38,7 @@ void create_symbol_tables(struct ast *parse_tree)
 
     /* Initialize global symbol table
     +----------------------------------*/
-    curr_symtab= emalloc(sizeof(struct symtabl));
-    curr_symtab->sid= ROOT;
-    strcpy(curr_symtab->id,"global_top_level");
-    curr_symtab->parent= NULL;
-    curr_symtab->child= NULL;
-    curr_symtab->lsibling= NULL;
-    curr_symtab->rsibling= NULL;
-
-    global_top_level= curr_symtab;
-    symtab_sid= ROOT;
-
-
+    global_symtab_init();
 
 
     /* create_symbol_table accepts the root of parse tree as a param.
@@ -695,9 +684,17 @@ void print_symtab(struct symtabl *curr_symtab)
 
 
 
+void global_symtab_init(void)
+{
+    curr_symtab= emalloc(sizeof(struct symtabl));
+    curr_symtab->sid= ROOT;
+    strcpy(curr_symtab->id,"global_top_level");
+    curr_symtab->parent= NULL;
+    curr_symtab->child= NULL;
+    curr_symtab->lsibling= NULL;
+    curr_symtab->rsibling= NULL;
 
-
-
-
-
+    global_top_level= curr_symtab;
+    symtab_sid= ROOT;
+}
 

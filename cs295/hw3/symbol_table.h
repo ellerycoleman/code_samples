@@ -45,6 +45,7 @@ struct declarator *lookup(declarator *sym, struct symtabl *curr_symtab);
 void create_symbol_tables(struct ast *parse_tree);
 void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab);
 void print_symtab(struct symtabl *curr_symtab);
+void global_symtab_init();
 
 
 
