@@ -405,7 +405,10 @@ direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
 
 
 array_declarator:  direct_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
-                   {    $$= new_array_declarator(ARRAY_DECLARATOR,$1,$3);
+                   {   $$= new_array_declarator(ARRAY_DECLARATOR,$1,$3);
+		   }
+|                  direct_declarator SEP_LEFT_BRACKET SEP_RIGHT_BRACKET
+                   {   $$= new_array_declarator(ARRAY_DECLARATOR,$1,new_constant(INTEGER_CONSTANT,0));
 		   }
 ;
 
