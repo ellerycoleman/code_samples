@@ -1173,6 +1173,9 @@ declarator *new_direct_abstract_declarator(int type, struct ast *data, declarato
     {   d->exp= (struct expr *)data;
         d->next= next;
     }
+    else if(type == BRACKET_NO_EXPR)
+    {   printf("TYPE BRACKET_NO_EXPR...\n");
+    }
 
     return d;
 }
@@ -1408,7 +1411,15 @@ declarator *new_parameter_decl(int typespec, declarator *d)
 
 
 void print_parameter_list(parameter_list *plist)
-{   declarator *d;
+{
+    /*
+    printf("DEBUG: print_plist(): invoked\n");
+    printf("plist->pd->nodetype: %d\n", plist->pd->nodetype);
+    */
+ 
+
+    int tcount=0;
+    declarator *d;
     declarator *ad;
     do
     {   printf("(");
@@ -1425,6 +1436,24 @@ void print_parameter_list(parameter_list *plist)
 
 
 	    case POINTER_DECLARATOR:
+               printf("");
+	       struct declarator *tmpd;
+	       struct parameter_list *tmplist;
+	       
+	       tmplist= plist;
+	       do
+	       {   printf("\ntmplist iter %d...\n", ++tcount);
+	           tmpd= tmplist->pd;
+	           if(tmpd != NULL)
+		   {   do
+		       {   printf("\n\n\n* tmpd type is: %d\n", tmpd->nodetype);
+		           tmpd= tmpd->next;
+                       }while(tmpd);
+		   }
+	       }while(tmplist= tmplist->next);
+
+
+
                printf("%s ", print_type(plist->pd->tspecptr->type));
 	       d= plist->pd;
 

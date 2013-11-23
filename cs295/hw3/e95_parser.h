@@ -31,7 +31,7 @@ typedef enum ntype {   DECL,
 		       FUNCTION_DECLARATOR,
 		       DAD_PAREN_SINGLE_ARG,
 		       ARRAY_DECLARATOR,
-
+/* ^11 */
 
 		       STATEMENT,
 		       EXPRESSION_STATEMENT,
@@ -50,7 +50,7 @@ typedef enum ntype {   DECL,
 		       FOR_STATEMENT,
 		       LABELED_STATEMENT,
 		       LABEL,
-
+/* ^28 */
 
 		       COMMA_EXPR,
 		       CAST_EXPR,
@@ -72,7 +72,7 @@ typedef enum ntype {   DECL,
 		       BITWISE_OR_EXPR,
 		       BITWISE_XOR_EXPR,
 		       BITWISE_AND_EXPR,
-
+/* ^48 */
 
 
 

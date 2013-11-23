@@ -670,6 +670,9 @@ void funcdef_to_symtab(struct function_def *funcdef)
         printf("***** %ld\n",fproto->nodetype);
 	printf("***** fplist 1st param nodetype: %ld\n", fplist->pd->tspecptr->type);
 	printf("***** fplist 1st param name: %ld\n", fplist->pd->id);
+	printf("\n\n------------\n");
+	print_parameter_list(fplist);
+	printf("\n\n------------\n");
 
 
 
@@ -677,7 +680,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	{   struct declarator *tmpd;
 	    tmpd= fplist->pd;
 	    printf("\t\t*%s\n", tmpd->id);
-	}while(plist= plist->next);
+	}while(0);
 
 	printf("Address of fproto->plist: %s\n", fproto->adeclarator->id);
     }

@@ -378,8 +378,24 @@ parameter_decl:  type_specifier declarator                { $$= new_parameter_de
 abstract_declarator:   pointer
 |                      direct_abstract_declarator
 |                      pointer direct_abstract_declarator
-                       {   $2->tspecptr= (struct basic_type *) &basic_types[OTHER];
-		           $1->next= $2;
+                       {   struct declarator *tmpdp;
+		           tmpdp= $1;
+
+			   if($1 && $2)
+			   {   
+			       /* fast forward to end of pointer list */
+			       while(tmpdp->next)
+			       {   printf("tmpdp->nodetype: %d\n", tmpdp->nodetype);
+	 		           printf("tmpdp->typespec: %d\n", tmpdp->tspecptr);
+			           tmpdp= tmpdp->next;
+                               }
+
+			       /* append direct abstract declarator to end of pointer list */
+			       tmpdp->next= $2;
+			   }
+		       
+		           $2->tspecptr= (struct basic_type *) &basic_types[OTHER];
+		           /* $1->next= $2; */
 		           $$= $1;
                        }
 ;
@@ -387,18 +403,22 @@ abstract_declarator:   pointer
 
 direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
                               {   /*  foo(int (*));    */
+			          printf("\ndad case 1\n");
 			          $$= new_direct_abstract_declarator(PAREN_ENCLOSED,(struct ast *)$2,NULL);
 			      }
 |                             SEP_LEFT_BRACKET SEP_RIGHT_BRACKET
                               {   /*  foo(int []);     */
+			          printf("\ndad case 2\n");
 			          $$= new_direct_abstract_declarator(BRACKET_NO_EXPR,NULL,NULL);
 			      }
 |                             SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
                               {   /*  foo(int [4]);    */
+			          printf("\ndad case 3\n");
 			          $$= new_direct_abstract_declarator(BRACKET_EXPR,$2,NULL);
 			      }
 |                             direct_abstract_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
                               {   /*  foo(int [][4]);  */
+			          printf("\ndad case 4\n");
 			          $$= new_direct_abstract_declarator(DAD_LIST,$3,$1);
 			      }
 ;
@@ -406,9 +426,11 @@ direct_abstract_declarator:   SEP_LEFT_PAREN abstract_declarator SEP_RIGHT_PAREN
 
 array_declarator:  direct_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BRACKET
                    {   $$= new_array_declarator(ARRAY_DECLARATOR,$1,$3);
+		       printf("\narray declarator case 1\n");
 		   }
 |                  direct_declarator SEP_LEFT_BRACKET SEP_RIGHT_BRACKET
                    {   $$= new_array_declarator(ARRAY_DECLARATOR,$1,new_constant(INTEGER_CONSTANT,0));
+		       printf("\narray declarator case 2\n");
 		   }
 ;
 
