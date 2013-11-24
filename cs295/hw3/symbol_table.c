@@ -640,16 +640,17 @@ void funcdef_to_symtab(struct function_def *funcdef)
     |  fuction_defspec and a compound statement.
     |  A compound statement has a decostat_list.
     +---------------------------------------------*/
-
     struct function_defspec *fdspec= funcdef->fdspec;
     struct ast *cstmt= funcdef->cstmt;
     struct decostat_list *dlist;
     struct parameter_list *plist;
     struct ast *dstat;
     char symtab_name[100];
+    char tmpstr[1024];
     struct declarator *d;
     struct declarator *fproto;
     char *funcname= fdspec->d->adeclarator->id;
+
 
 
     printf("DEBUG funcdef_to_symtab(): the function encountered is '%s'...\n", funcname);
@@ -667,11 +668,10 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
 
         fplist= fproto->plist;
-        printf("***** %ld\n",fproto->nodetype);
-	printf("***** fplist 1st param nodetype: %ld\n", fplist->pd->tspecptr->type);
-	printf("***** fplist 1st param name: %ld\n", fplist->pd->id);
 	printf("\n\n------------\n");
-	print_parameter_list(fplist);
+	/* print_parameter_list(fplist); */
+	funcdef_to_string(funcdef,tmpstr);
+	printf("tmpstr: %s\n", tmpstr);
 	printf("\n\n------------\n");
 
 

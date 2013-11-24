@@ -262,7 +262,7 @@ void print_decl(struct ast *expr);
 
 declarator *new_direct_abstract_declarator(int type, struct ast *data, struct declarator *next);
 declarator *new_array_declarator(int type, struct declarator *arrydec, struct ast *expr);
-void print_dad(declarator *d);
+char * print_dad(declarator *d,char *dadstr);
 struct ast *new_flow(struct ast *cond, struct ast *thendo, struct ast *els);
 struct ast *new_conditional_expr(struct ast *cond, struct ast *return1, struct ast *return2);
 struct ast *new_if_statement(struct ast *cond, struct ast *thendo, struct ast *elsedo);
@@ -276,7 +276,8 @@ struct ast *new_for_statement(struct ast *forinit,
                              );
 
 void * emalloc(int size);
-
+char * funcdef_to_string(struct function_def *funcdef,char fdef[]);
+char * funcdecl_to_string(struct declarator *fdecl);
 
 
 
