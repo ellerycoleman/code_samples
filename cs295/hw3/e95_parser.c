@@ -606,7 +606,7 @@ void print_expr(struct ast *expr)
 
 	   do
 	   {   d= dl->d;
-	       print_decl((struct ast *)d);
+	       print_decl((struct ast *)d,tmpstr);
 	       if(dl->next != NULL)
 	       {   printf(", ");
 	       }
@@ -615,7 +615,7 @@ void print_expr(struct ast *expr)
 
 
         case SIMPLE_DECLARATOR:
-	   print_decl(expr);
+	   print_decl(expr,tmpstr);
 	   break;
 
 
@@ -718,7 +718,7 @@ void print_expr(struct ast *expr)
 	   d= (struct declarator *)tast;
 	   printf("(");
 	   printf("%s ", print_type(d->tspecptr->type));
-	   print_decl((struct ast *)d);
+	   print_decl((struct ast *)d,tmpstr);
 	   printf(")");
 	   print_expr(expr->r);
 	   break;
@@ -1021,7 +1021,7 @@ void print_expr(struct ast *expr)
  * Abstract: writes a struct decl to STDOUT
  *===============================================================
  */
-void print_decl(struct ast *expr)
+char * print_decl(struct ast *expr, char *declstr)
 {
     struct declarator_list *dl;
     struct declarator *d;
@@ -1035,7 +1035,7 @@ void print_decl(struct ast *expr)
     
         case  SIMPLE_DECLARATOR:
            d= (struct declarator *)expr;
-           printf("%s", d->id);
+           sprintf(&declstr[strlen(declstr)],"%s", d->id);
            break;
 
 
@@ -1053,37 +1053,37 @@ void print_decl(struct ast *expr)
 		       {   dview= dview->next;
 		       }
 		       if(dview->next != NULL  &&  dview->next->nodetype == SIMPLE_DECLARATOR)
-		       {   printf(") ");
+		       {   sprintf(&declstr[strlen(declstr)],") ");
 		           first_ptr=0;
 		       }
 	           }
-	           printf("*");
+	           sprintf(&declstr[strlen(declstr)],"*");
                }
 
 	       else if( d->nodetype == SIMPLE_DECLARATOR )
-	       {   printf("%s", d->id);
+	       {   sprintf(&declstr[strlen(declstr)],"%s", d->id);
 	       }
 
 	       else if( d->nodetype == ARRAY_DECLARATOR )
-	       {   printf(" (%s", d->adeclarator->id);
-                   printf("[");
+	       {   sprintf(&declstr[strlen(declstr)]," (%s", d->adeclarator->id);
+                   sprintf(&declstr[strlen(declstr)],"[");
 	           print_expr((struct ast *)d->exp);
-         	   printf("])");
+         	   sprintf(&declstr[strlen(declstr)],"])");
 	       }
 
 	       else if( d->nodetype == FUNCTION_DECLARATOR )
 	       {
 	           /* print function name */
-	           printf(") ");
-	           printf("%s(", d->adeclarator->id);
+	           sprintf(&declstr[strlen(declstr)],") ");
+	           sprintf(&declstr[strlen(declstr)],"%s(", d->adeclarator->id);
 
                    /* print parameter list */
 	           print_parameter_list(d->plist);
-	           printf(")");
+	           sprintf(&declstr[strlen(declstr)],")");
 	       }
 
 	       if(d->next != NULL   &&   d->next->nodetype == ARRAY_DECLARATOR)
-	       {   printf(")");
+	       {   sprintf(&declstr[strlen(declstr)],")");
 	       }
 
             }while( (d= d->next) != NULL);
@@ -1093,24 +1093,24 @@ void print_decl(struct ast *expr)
          case FUNCTION_DECLARATOR:
 	 /* print function name */
 	    d= (struct declarator *)expr;
-	    printf(") %s(", d->adeclarator->id);
+	    sprintf(&declstr[strlen(declstr)],") %s(", d->adeclarator->id);
 
          /* print parameter list */
 	    print_parameter_list(d->plist);
-	    printf(")");
+	    sprintf(&declstr[strlen(declstr)],")");
             break;
 
 
         case ARRAY_DECLARATOR:
 	   if(need_array_paren)
-	   {   printf(")");
+	   {   sprintf(&declstr[strlen(declstr)],")");
 	       need_array_paren=0;
            }
            d= (struct declarator *)expr;
-	   printf(" %s", d->adeclarator->id);
-	   printf("[");
+	   sprintf(&declstr[strlen(declstr)]," %s", d->adeclarator->id);
+	   sprintf(&declstr[strlen(declstr)],"[");
 	   print_expr((struct ast *)d->exp);
-	   printf("]");
+	   sprintf(&declstr[strlen(declstr)],"]");
 	   break;
 
 
@@ -1119,9 +1119,10 @@ void print_decl(struct ast *expr)
 	   break;
 
         default:
-	   printf("PRINT_DECL: not sure what to do with nodetype: %d\n",expr->nodetype);
+	   sprintf(&declstr[strlen(declstr)],"PRINT_DECL: not sure what to do with nodetype: %d\n",expr->nodetype);
 	   break;
     }
+    return declstr;
 }
 
 
@@ -1482,7 +1483,7 @@ void print_parameter_list(parameter_list *plist)
 
 	    case DECL:
 	       d= plist->pd;
-	       print_decl((struct ast *)d);
+	       print_decl((struct ast *)d,tmpstr);
 
 
             case OTHER:  /* print type only */
@@ -1525,7 +1526,7 @@ char * print_dad(declarator *d,char *dadstr)
            ad= d->adeclarator;
            sprintf(dadstr,"%s ", print_type(d->tspecptr->type));
            sprintf(dadstr,"(");
-           print_decl((struct ast *)ad);
+           print_decl((struct ast *)ad,tmpstr);
            sprintf(dadstr,")");
            break;
 
@@ -1569,7 +1570,7 @@ char * print_dad(declarator *d,char *dadstr)
 	               case PAREN_ENCLOSED:
                        ad= d->adeclarator;
                        sprintf(dadstr,"(");
-		       print_decl((struct ast *)ad);
+		       print_decl((struct ast *)ad,tmpstr);
                        sprintf(dadstr,")");
 		       break;
 
@@ -1809,7 +1810,7 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 
 	    case DECL:
 	       d= plist->pd;
-	       print_decl((struct ast *)d);
+	       print_decl((struct ast *)d,tmpstr);
 
 
             case OTHER:  /* print type only */

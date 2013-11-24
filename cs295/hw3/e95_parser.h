@@ -256,7 +256,7 @@ struct ast *new_decostat_list(struct ast *decostat, struct ast *next);
 struct decostat_list *reverse_decostat_list(struct decostat_list *dlist);
 
 void print_expr(struct ast *expr);
-void print_decl(struct ast *expr);
+char * print_decl(struct ast *expr,char *declstr);
 
 
 
