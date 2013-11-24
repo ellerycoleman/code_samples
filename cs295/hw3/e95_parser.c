@@ -17,6 +17,7 @@
 #define INT_MAX       2147483647
 #define LONG_MAX      2147483647
 #define ULONG_MAX     4294967295
+#define TMPSTRSZ      1024
 
 
 void connect_io(int,char **);
@@ -38,7 +39,7 @@ int num_of_tokens_processed=0;
 int need_array_paren;
 extern int yylineno;
 extern char e95_strbuf2[];
-char tmpstr[1024];
+char tmpstr[TMPSTRSZ];
 
 
 int first_ptr;          /* pretty print support */
@@ -220,7 +221,8 @@ void print_tree(struct ast *nodeptr)
         {   tdecl= (struct decl *)tldlist->tld->d;
 
             /* print declarator list */
-            print_expr((struct ast *)tdecl,tmpstr);
+	    clear_tmpstr();
+            printf("%s", print_expr((struct ast *)tdecl,tmpstr));
 
 	    printf(";\n");
 	}
@@ -248,7 +250,7 @@ void print_tree(struct ast *nodeptr)
 	    /* print function return type */
 	    printf("\n\n%s ", print_type(fdspec->typespec));
 	    printf("%s(", fdspec->d->adeclarator->id);
-	    print_parameter_list(fdspec->d->plist,tmpstr);
+	    printf("%s",print_parameter_list(fdspec->d->plist,tmpstr));
 	    printf(")");
 	    printf("\n{\n");
 
@@ -256,7 +258,7 @@ void print_tree(struct ast *nodeptr)
             /* display compound statement block */
 	    dlist= (struct decostat_list *) cstmt->l;
 	    do
-	    {   print_expr(dlist->decostat,tmpstr);
+	    {   printf("%s",print_expr(dlist->decostat,tmpstr));
 	        printf(";\n");
 	    } while( (dlist= dlist->next) != NULL);
 
@@ -1865,6 +1867,13 @@ char * funcdecl_to_string(struct declarator *fdecl)
 }
 
 
+
+void clear_tmpstr(void)
+{   int i;
+    for(i=0; i<TMPSTRSZ; i++)
+    {   tmpstr[i]='\0';
+    }
+}
 
 
 
