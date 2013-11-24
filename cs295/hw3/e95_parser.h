@@ -236,7 +236,7 @@ declarator *reverse_declarators(declarator *dp);
 declarator *new_parameter_decl(int typespec, declarator *d);
 parameter_list *new_parameter_list(declarator *pd, parameter_list *next);
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist);
-void print_parameter_list(parameter_list *plist);
+char * print_parameter_list(parameter_list *plist, char *plistr);
 parameter_list *reverse_parameter_list(parameter_list *plist);
 
 struct ast *new_constant(int type, void *value);

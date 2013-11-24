@@ -248,7 +248,7 @@ void print_tree(struct ast *nodeptr)
 	    /* print function return type */
 	    printf("\n\n%s ", print_type(fdspec->typespec));
 	    printf("%s(", fdspec->d->adeclarator->id);
-	    print_parameter_list(fdspec->d->plist);
+	    print_parameter_list(fdspec->d->plist,tmpstr);
 	    printf(")");
 	    printf("\n{\n");
 
@@ -1080,7 +1080,7 @@ char * print_decl(struct ast *expr, char *declstr)
 	           sprintf(&declstr[strlen(declstr)],"%s(", d->adeclarator->id);
 
                    /* print parameter list */
-	           print_parameter_list(d->plist);
+	           print_parameter_list(d->plist,tmpstr);
 	           sprintf(&declstr[strlen(declstr)],")");
 	       }
 
@@ -1098,7 +1098,7 @@ char * print_decl(struct ast *expr, char *declstr)
 	    sprintf(&declstr[strlen(declstr)],") %s(", d->adeclarator->id);
 
          /* print parameter list */
-	    print_parameter_list(d->plist);
+	    print_parameter_list(d->plist,tmpstr);
 	    sprintf(&declstr[strlen(declstr)],")");
             break;
 
@@ -1396,6 +1396,8 @@ void print_simple_declarator(declarator *d)
 
 
 
+
+
 declarator *new_parameter_decl(int typespec, declarator *d)
 {   declarator *pd= emalloc(sizeof(struct declarator));
     pd->tspecptr= &basic_types[typespec];
@@ -1416,37 +1418,39 @@ declarator *new_parameter_decl(int typespec, declarator *d)
 
 
 
-void print_parameter_list(parameter_list *plist)
+
+
+char * print_parameter_list(parameter_list *plist,char *plistr)
 {
     int tcount=0;
     declarator *d;
     declarator *ad;
     do
-    {   printf("(");
+    {   sprintf(&plistr[strlen(plistr)],"(");
         switch(plist->pd->nodetype)
         {
 
 	    case SIMPLE_DECLARATOR:
-               printf("%s ", print_type(plist->pd->tspecptr->type));
+               sprintf(&plistr[strlen(plistr)],"%s ", print_type(plist->pd->tspecptr->type));
 	       if(plist->pd->id != NULL)
-	       {   printf("%s", plist->pd->id);
+	       {   sprintf(&plistr[strlen(plistr)],"%s", plist->pd->id);
 	       }
 	       break;
 
 
 
 	    case POINTER_DECLARATOR:
-               printf("");
+               sprintf(&plistr[strlen(plistr)],"");
 	       struct declarator *tmpd;
 	       struct parameter_list *tmplist;
 
 	       tmplist= plist;
 	       do
-	       {   printf("\ntmplist iter %d...\n", ++tcount);
+	       {   sprintf(&plistr[strlen(plistr)],"\ntmplist iter %d...\n", ++tcount);
 	           tmpd= tmplist->pd;
 	           if(tmpd != NULL)
 		   {   do
-		       {   printf("\n\n\n* tmpd type is: %d\n", tmpd->nodetype);
+		       {   sprintf(&plistr[strlen(plistr)],"\n\n\n* tmpd type is: %d\n", tmpd->nodetype);
 		           tmpd= tmpd->next;
                        }while(tmpd);
 		   }
@@ -1454,24 +1458,24 @@ void print_parameter_list(parameter_list *plist)
 
 
 
-               printf("%s ", print_type(plist->pd->tspecptr->type));
+               sprintf(&plistr[strlen(plistr)],"%s ", print_type(plist->pd->tspecptr->type));
 	       d= plist->pd;
 
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
-	           {   printf("*");
+	           {   sprintf(&plistr[strlen(plistr)],"*");
 		   }
 		   else if( d->nodetype == SIMPLE_DECLARATOR )
-	           {   printf("%s", d->id);
+	           {   sprintf(&plistr[strlen(plistr)],"%s", d->id);
 		   }
 		   else if( d->nodetype == DIRECT_ABSTRACT_DECLARATOR )
 		   {   print_dad(d,tmpstr);
 		   }
 	           else if( d->nodetype == ARRAY_DECLARATOR )
-		   {   printf(" (%s", d->adeclarator->id);
-         	       printf("[");
+		   {   sprintf(&plistr[strlen(plistr)]," (%s", d->adeclarator->id);
+         	       sprintf(&plistr[strlen(plistr)],"[");
 	               print_expr((struct ast *)d->exp,tmpstr);
-         	       printf("])");
+         	       sprintf(&plistr[strlen(plistr)],"])");
 		   }
                }while( (d= d->next) != NULL);
 	       break;
@@ -1489,14 +1493,14 @@ void print_parameter_list(parameter_list *plist)
 
 
             case OTHER:  /* print type only */
-               printf("%s", print_type(plist->pd->tspecptr->type));
+               sprintf(&plistr[strlen(plistr)],"%s", print_type(plist->pd->tspecptr->type));
 	       d= plist->pd;
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
-	           {   printf("*");
+	           {   sprintf(&plistr[strlen(plistr)],"*");
 		   }
 		   else if( d->nodetype == SIMPLE_DECLARATOR )
-		   {   printf("%s", d->id);
+		   {   sprintf(&plistr[strlen(plistr)],"%s", d->id);
 		   }
                }while( (d= d->next) != NULL);
 	       break;
@@ -1504,18 +1508,25 @@ void print_parameter_list(parameter_list *plist)
 
            default:
 	      d= plist->pd;
-	      printf("PRINT_PARAMETER_LIST: not sure what to do with nodetype: %d\n",d->nodetype);
+	      sprintf(&plistr[strlen(plistr)],"PRINT_PARAMETER_LIST: not sure what to do with nodetype: %d\n",d->nodetype);
 	      break;
 
         }
-        printf(")");
+        sprintf(&plistr[strlen(plistr)],")");
 
 
         if(plist->next != NULL)
-        {   printf(", ");
+        {   sprintf(&plistr[strlen(plistr)],", ");
         }
     }while((plist= plist->next) != NULL);
+
+
+    return plistr;
 }
+
+
+
+
 
 
 char * print_dad(declarator *d,char *dadstr)
