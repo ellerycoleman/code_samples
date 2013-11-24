@@ -220,7 +220,7 @@ void print_tree(struct ast *nodeptr)
         {   tdecl= (struct decl *)tldlist->tld->d;
 
             /* print declarator list */
-            print_expr((struct ast *)tdecl);
+            print_expr((struct ast *)tdecl,tmpstr);
 
 	    printf(";\n");
 	}
@@ -256,7 +256,7 @@ void print_tree(struct ast *nodeptr)
             /* display compound statement block */
 	    dlist= (struct decostat_list *) cstmt->l;
 	    do
-	    {   print_expr(dlist->decostat);
+	    {   print_expr(dlist->decostat,tmpstr);
 	        printf(";\n");
 	    } while( (dlist= dlist->next) != NULL);
 
@@ -276,12 +276,13 @@ void print_tree(struct ast *nodeptr)
 
 
 
+
 /*===============================================================
  * Function: print_expr
  * Abstract: writes a struct expr to STDOUT
  *===============================================================
  */
-void print_expr(struct ast *expr)
+char * print_expr(struct ast *expr,char *exprstr)
 {   struct constant *k;
     int i=0;
     int initial_typespec=1;
@@ -300,17 +301,17 @@ void print_expr(struct ast *expr)
 
         case INTEGER_CONSTANT:
 	   k= (struct constant *)expr;
-	   printf("%d", k->value);
+	   sprintf(&exprstr[strlen(exprstr)],"%d", k->value);
 	   break;
 
         case CHARACTER_CONSTANT:
 	   k= (struct constant *)expr;
-	   printf("'%c'", k->value);
+	   sprintf(&exprstr[strlen(exprstr)],"'%c'", k->value);
 	   break;
 
         case CHARACTER_CONSTANT_OCTAL:
 	   k= (struct constant *)expr;
-	   printf("%s", k->value);
+	   sprintf(&exprstr[strlen(exprstr)],"%s", k->value);
 	   break;
 
         case STRING_CONSTANT:
@@ -319,7 +320,7 @@ void print_expr(struct ast *expr)
 	   putchar('"');
 	   for(i=0; i<=strlen(c); i++)
 	   {   if(c[i] == '\n')  /* unescape return chars */
-	       {   printf("\\n");
+	       {   sprintf(&exprstr[strlen(exprstr)],"\\n");
 	       }
 	       else
 	       {   putchar(c[i]);
@@ -330,31 +331,31 @@ void print_expr(struct ast *expr)
 
         case LABEL:
 	   k= (struct constant *)expr;
-	   printf("%s", k->value);
+	   sprintf(&exprstr[strlen(exprstr)],"%s", k->value);
 	   break;
 
         case RW_GOTO:
-	   printf("goto ");
-	   printf("%s", expr->l);
+	   sprintf(&exprstr[strlen(exprstr)],"goto ");
+	   sprintf(&exprstr[strlen(exprstr)],"%s", expr->l);
 	   break;
 
         case RW_CONTINUE:
-	   printf("continue");
+	   sprintf(&exprstr[strlen(exprstr)],"continue");
 	   break;
 
         case RW_BREAK:
-	   printf("break");
+	   sprintf(&exprstr[strlen(exprstr)],"break");
 	   break;
 
 
         case COMPOUND_STATEMENT:
 	    dlist= (struct decostat_list *)expr->l;
-	    printf("{ ");
+	    sprintf(&exprstr[strlen(exprstr)],"{ ");
 	    do
-	    {   print_expr(dlist->decostat);
-	        printf(";\n");
+	    {   print_expr(dlist->decostat,exprstr);
+	        sprintf(&exprstr[strlen(exprstr)],";\n");
             }while( (dlist= dlist->next) != NULL);
-	    printf("}\n\n");
+	    sprintf(&exprstr[strlen(exprstr)],"}\n\n");
 	   break;
 
 
@@ -362,220 +363,220 @@ void print_expr(struct ast *expr)
 	    dlist= (struct decostat_list *)expr;
 	    dlist= reverse_decostat_list(dlist);
 	    while(dlist->next != NULL)
-	    {   print_expr(dlist->decostat);
-	        printf(", ");
+	    {   print_expr(dlist->decostat,exprstr);
+	        sprintf(&exprstr[strlen(exprstr)],", ");
 	        dlist= dlist->next;
 	    }
-	    print_expr(dlist->decostat);
+	    print_expr(dlist->decostat,exprstr);
 	    break;
 
 
         case PLUS_SIGN:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("+");
+	   sprintf(&exprstr[strlen(exprstr)],"+");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case MINUS_SIGN:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("-");
+	   sprintf(&exprstr[strlen(exprstr)],"-");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case ASTERISK:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("*");
+	   sprintf(&exprstr[strlen(exprstr)],"*");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_DIVISION:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("/");
+	   sprintf(&exprstr[strlen(exprstr)],"/");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_REMAINDER:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
 	   putchar('%');
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("=");
+	   sprintf(&exprstr[strlen(exprstr)],"=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT_ADD:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("+=");
+	   sprintf(&exprstr[strlen(exprstr)],"+=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT_SUBTRACT:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("-=");
+	   sprintf(&exprstr[strlen(exprstr)],"-=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT_MULTIPLY:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("*=");
+	   sprintf(&exprstr[strlen(exprstr)],"*=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
 
         case OP_ASSIGNMENT_DIVIDE:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("/=");
+	   sprintf(&exprstr[strlen(exprstr)],"/=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT_REMAINDER:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("%=");
+	   sprintf(&exprstr[strlen(exprstr)],"%=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT_LEFT_BITSHIFT:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("<<=");
+	   sprintf(&exprstr[strlen(exprstr)],"<<=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT_RIGHT_BITSHIFT:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(">>=");
+	   sprintf(&exprstr[strlen(exprstr)],">>=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT_BITWISE_AND:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("&=");
+	   sprintf(&exprstr[strlen(exprstr)],"&=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT_BITWISE_OR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("|=");
+	   sprintf(&exprstr[strlen(exprstr)],"|=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_ASSIGNMENT_BITWISE_XOR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf("^=");
+	   sprintf(&exprstr[strlen(exprstr)],"^=");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
@@ -587,20 +588,20 @@ void print_expr(struct ast *expr)
 
            /* print declarator list */
 	   if( dl->d->nodetype == SIMPLE_DECLARATOR)
-	   {   printf("(%s) ",print_type(tdecl->tspecptr->type));
+	   {   sprintf(&exprstr[strlen(exprstr)],"(%s) ",print_type(tdecl->tspecptr->type));
 	   }
 
 	   else if( dl->d->nodetype == POINTER_DECLARATOR)
 	   {   if( dl->d->next != NULL  &&  dl->d->next->nodetype != SIMPLE_DECLARATOR)
-	       {   printf("(%s ",print_type(tdecl->tspecptr->type));
+	       {   sprintf(&exprstr[strlen(exprstr)],"(%s ",print_type(tdecl->tspecptr->type));
 	           first_ptr=1;
 	       }
 	       else
-	       {   printf("(%s) ",print_type(tdecl->tspecptr->type));
+	       {   sprintf(&exprstr[strlen(exprstr)],"(%s) ",print_type(tdecl->tspecptr->type));
 	       }
 	   }
 	   else
-	   {   printf("(%s",print_type(tdecl->tspecptr->type));
+	   {   sprintf(&exprstr[strlen(exprstr)],"(%s",print_type(tdecl->tspecptr->type));
 	   }
 
 
@@ -608,7 +609,7 @@ void print_expr(struct ast *expr)
 	   {   d= dl->d;
 	       print_decl((struct ast *)d,tmpstr);
 	       if(dl->next != NULL)
-	       {   printf(", ");
+	       {   sprintf(&exprstr[strlen(exprstr)],", ");
 	       }
 	   }while( (dl= dl->next) != NULL);
 	   break;
@@ -620,384 +621,384 @@ void print_expr(struct ast *expr)
 
 
         case UNARY_MINUS_EXPR:
-	   printf("-");
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"-");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case UNARY_PLUS_EXPR:
-	   printf("+");
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"+");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case PREDECREMENT_EXPR:
-	   printf("--");
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"--");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case POSTDECREMENT_EXPR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
-	   printf("--");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
+	   sprintf(&exprstr[strlen(exprstr)],"--");
 	   break;
 
 
         case PREINCREMENT_EXPR:
-	   printf("++");
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"++");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case POSTINCREMENT_EXPR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
-	   printf("++");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
+	   sprintf(&exprstr[strlen(exprstr)],"++");
 	   break;
 
 
         case INDIRECTION_EXPR:
-	   printf("*");
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"*");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case ADDRESS_EXPR:
-	   printf("&");
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"&");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case BITWISE_NEGATION_EXPR:
-	   printf("~");
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"~");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case LOGICAL_NEGATION_EXPR:
-	   printf("!");
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"!");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case LABELED_STATEMENT:
-	   print_expr(expr->l);
-	   printf(":   ");
-	   print_expr(expr->r);
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],":   ");
+	   print_expr(expr->r,exprstr);
 	   break;
 
 
         case PARENTHESIZED_EXPR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case CAST_EXPR:
 	   tast= expr->l;
 	   d= (struct declarator *)tast;
-	   printf("(");
-	   printf("%s ", print_type(d->tspecptr->type));
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   sprintf(&exprstr[strlen(exprstr)],"%s ", print_type(d->tspecptr->type));
 	   print_decl((struct ast *)d,tmpstr);
-	   printf(")");
-	   print_expr(expr->r);
+	   sprintf(&exprstr[strlen(exprstr)],")");
+	   print_expr(expr->r,exprstr);
 	   break;
 
 
         case SUBSCRIPT_EXPR:
-	   print_expr(expr->l);
-	   printf("[");
-	   print_expr(expr->r);
-	   printf("]");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],"[");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],"]");
 	   break;
 
 
         case CONDITIONAL_EXPR:
 	   cexpr= (struct cond_expr *)expr;
 
-	   printf("(");
-	   print_expr(cexpr->cond);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(cexpr->cond,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" ? ");
+	   sprintf(&exprstr[strlen(exprstr)]," ? ");
 
 
-	   printf("(");
-	   print_expr(cexpr->return1);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(cexpr->return1,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" : ");
+	   sprintf(&exprstr[strlen(exprstr)]," : ");
 
-	   printf("(");
-	   print_expr(cexpr->return2);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(cexpr->return2,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case LOGICAL_OR_EXPR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" || ");
+	   sprintf(&exprstr[strlen(exprstr)]," || ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case LOGICAL_AND_EXPR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" && ");
+	   sprintf(&exprstr[strlen(exprstr)]," && ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case BITWISE_OR_EXPR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" | ");
+	   sprintf(&exprstr[strlen(exprstr)]," | ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case BITWISE_XOR_EXPR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" ^ ");
+	   sprintf(&exprstr[strlen(exprstr)]," ^ ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case BITWISE_AND_EXPR:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" & ");
+	   sprintf(&exprstr[strlen(exprstr)]," & ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_EQUALITY:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" == ");
+	   sprintf(&exprstr[strlen(exprstr)]," == ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_NON_EQUALITY:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" != ");
+	   sprintf(&exprstr[strlen(exprstr)]," != ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_RELATIONAL_LT:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" < ");
+	   sprintf(&exprstr[strlen(exprstr)]," < ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_RELATIONAL_LTE:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" <= ");
+	   sprintf(&exprstr[strlen(exprstr)]," <= ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case GREATER_THAN_SYMBOL:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" > ");
+	   sprintf(&exprstr[strlen(exprstr)]," > ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_RELATIONAL_GTE:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" >= ");
+	   sprintf(&exprstr[strlen(exprstr)]," >= ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_LEFT_BITSHIFT:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" << ");
+	   sprintf(&exprstr[strlen(exprstr)]," << ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case OP_RIGHT_BITSHIFT:
-	   printf("(");
-	   print_expr(expr->l);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 
-	   printf(" >> ");
+	   sprintf(&exprstr[strlen(exprstr)]," >> ");
 
-	   printf("(");
-	   print_expr(expr->r);
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],"(");
+	   print_expr(expr->r,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case FUNCTION_CALL:
-	   print_expr(expr->l);
-	   printf("(");
+	   print_expr(expr->l,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],"(");
 	   if(expr->r != NULL)
-	   {   print_expr(expr->r);
+	   {   print_expr(expr->r,exprstr);
 	   }
-	   printf(")");
+	   sprintf(&exprstr[strlen(exprstr)],")");
 	   break;
 
 
         case IF_STATEMENT:
 	   tflow= (struct flow *)expr;
-	   printf("if(");
-	   print_expr(tflow->cond);
-	   printf(")\n");
-	   print_expr(tflow->thendo);
+	   sprintf(&exprstr[strlen(exprstr)],"if(");
+	   print_expr(tflow->cond,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")\n");
+	   print_expr(tflow->thendo,exprstr);
 	   break;
 
 
         case IF_ELSE_STATEMENT:
 	   tflow= (struct flow *)expr;
-	   printf("if(");
-	   print_expr(tflow->cond);
-	   printf(")\n");
-	   print_expr(tflow->thendo);
-	   printf("else ");
-	   print_expr(tflow->elsedo);
+	   sprintf(&exprstr[strlen(exprstr)],"if(");
+	   print_expr(tflow->cond,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")\n");
+	   print_expr(tflow->thendo,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],"else ");
+	   print_expr(tflow->elsedo,exprstr);
 	   break;
 
 
         case WHILE_STATEMENT:
 	   tflow= (struct flow *)expr;
-	   printf("while(");
-	   print_expr(tflow->cond);
-	   printf(")\n");
-	   print_expr(tflow->thendo);
+	   sprintf(&exprstr[strlen(exprstr)],"while(");
+	   print_expr(tflow->cond,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")\n");
+	   print_expr(tflow->thendo,exprstr);
 	   break;
 
 
         case DO_STATEMENT:
 	   tflow= (struct flow *)expr;
-	   printf("do");
-	   print_expr(tflow->thendo);
-	   printf(" while(");
-	   print_expr(tflow->cond);
-	   printf(")\n");
+	   sprintf(&exprstr[strlen(exprstr)],"do");
+	   print_expr(tflow->thendo,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)]," while(");
+	   print_expr(tflow->cond,exprstr);
+	   sprintf(&exprstr[strlen(exprstr)],")\n");
 	   break;
 
 
         case FOR_STATEMENT:
 	   tflow= (struct flow *)expr;
-	   printf("for(");
+	   sprintf(&exprstr[strlen(exprstr)],"for(");
 	   if(tflow->forinit != NULL)
-	   {   print_expr(tflow->forinit);
+	   {   print_expr(tflow->forinit,exprstr);
 	       putchar(';');
 	   }
 	   if(tflow->cond != NULL)
-	   {   print_expr(tflow->cond);
+	   {   print_expr(tflow->cond,exprstr);
 	       putchar(';');
 	   }
 	   if(tflow->forupdate)
-	   {   print_expr(tflow->forupdate);
-	       printf(")\n");
+	   {   print_expr(tflow->forupdate,exprstr);
+	       sprintf(&exprstr[strlen(exprstr)],")\n");
 	   }
-	   print_expr(tflow->thendo);
+	   print_expr(tflow->thendo,exprstr);
 	   break;
 
 
         case RW_RETURN:
-	   printf("return");
+	   sprintf(&exprstr[strlen(exprstr)],"return");
 	   if( (expr->l) != NULL)
-	   {   printf(" ");
-	       printf("(");
-	       print_expr(expr->l);
-	       printf(")");
+	   {   sprintf(&exprstr[strlen(exprstr)]," ");
+	       sprintf(&exprstr[strlen(exprstr)],"(");
+	       print_expr(expr->l,exprstr);
+	       sprintf(&exprstr[strlen(exprstr)],")");
 	   }
 	   break;
 
@@ -1006,10 +1007,11 @@ void print_expr(struct ast *expr)
 
 
         default:
-	   printf("PRINT_EXPR: not sure what to do with nodetype: %d\n",expr->nodetype);
+	   sprintf(&exprstr[strlen(exprstr)],"PRINT_EXPR: not sure what to do with nodetype: %d\n",expr->nodetype);
 	   break;
 
     }
+    return exprstr;
 
 }
 
@@ -1067,7 +1069,7 @@ char * print_decl(struct ast *expr, char *declstr)
 	       else if( d->nodetype == ARRAY_DECLARATOR )
 	       {   sprintf(&declstr[strlen(declstr)]," (%s", d->adeclarator->id);
                    sprintf(&declstr[strlen(declstr)],"[");
-	           print_expr((struct ast *)d->exp);
+	           print_expr((struct ast *)d->exp,declstr);
          	   sprintf(&declstr[strlen(declstr)],"])");
 	       }
 
@@ -1109,7 +1111,7 @@ char * print_decl(struct ast *expr, char *declstr)
            d= (struct declarator *)expr;
 	   sprintf(&declstr[strlen(declstr)]," %s", d->adeclarator->id);
 	   sprintf(&declstr[strlen(declstr)],"[");
-	   print_expr((struct ast *)d->exp);
+	   print_expr((struct ast *)d->exp,declstr);
 	   sprintf(&declstr[strlen(declstr)],"]");
 	   break;
 
@@ -1468,7 +1470,7 @@ void print_parameter_list(parameter_list *plist)
 	           else if( d->nodetype == ARRAY_DECLARATOR )
 		   {   printf(" (%s", d->adeclarator->id);
          	       printf("[");
-	               print_expr((struct ast *)d->exp);
+	               print_expr((struct ast *)d->exp,tmpstr);
          	       printf("])");
 		   }
                }while( (d= d->next) != NULL);
@@ -1540,7 +1542,7 @@ char * print_dad(declarator *d,char *dadstr)
         case BRACKET_EXPR:
 	   sprintf(dadstr,"%s ", print_type(d->tspecptr->type));
            sprintf(dadstr,"[");
-	   print_expr((struct ast *)d->exp);
+	   print_expr((struct ast *)d->exp,dadstr);
            sprintf(dadstr,"]");
 	   break;
 
@@ -1552,13 +1554,13 @@ char * print_dad(declarator *d,char *dadstr)
 	   {   /* print the expression ending the dad_list */
 	       if(d->exp != NULL && d->next == NULL)
 	       {   sprintf(dadstr,"[");
-	           print_expr((struct ast *)d->exp);
+	           print_expr((struct ast *)d->exp,dadstr);
                    sprintf(dadstr,"]");
                }
 	       else if(d->exp != NULL && d->next != NULL)
 	       {
 	           sprintf(dadstr,"[");
-	           print_expr((struct ast *)d->exp);
+	           print_expr((struct ast *)d->exp,dadstr);
                    sprintf(dadstr,"]");
                }
 
@@ -1582,7 +1584,7 @@ char * print_dad(declarator *d,char *dadstr)
 
                        case BRACKET_EXPR:
                           sprintf(dadstr,"[");
-		          print_expr((struct ast *)d->exp);
+		          print_expr((struct ast *)d->exp,dadstr);
                           sprintf(dadstr,"]");
 		          break;
 
@@ -1795,7 +1797,7 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 	           else if( d->nodetype == ARRAY_DECLARATOR )
 		   {   /* sprintf(&fdef[strlen(fdef)]," (%s", d->adeclarator->id); */
          	       sprintf(&fdef[strlen(fdef)],"[");
-	               print_expr((struct ast *)d->exp);
+	               print_expr((struct ast *)d->exp,fdef);
          	       sprintf(&fdef[strlen(fdef)],"])");
 		   }
                }while( (d= d->next) != NULL);
