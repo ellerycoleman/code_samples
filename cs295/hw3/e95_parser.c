@@ -1817,12 +1817,12 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 	           {   sprintf(&fdef[strlen(fdef)],"%s", d->id);
 		   }
 		   else if( d->nodetype == DIRECT_ABSTRACT_DECLARATOR )
-		   {   sprintf(&fdef[strlen(fdef)], "%s", print_dad(d,tmpstr));
+		   {   print_dad(d,&fdef[strlen(fdef)]);
 		   }
 	           else if( d->nodetype == ARRAY_DECLARATOR )
 		   {   /* sprintf(&fdef[strlen(fdef)]," (%s", d->adeclarator->id); */
          	       sprintf(&fdef[strlen(fdef)],"[");
-	               print_expr((struct ast *)d->exp,fdef);
+	               print_expr((struct ast *)d->exp,&fdef[strlen(fdef)]);
          	       sprintf(&fdef[strlen(fdef)],"])");
 		   }
                }while( (d= d->next) != NULL);
@@ -1886,7 +1886,6 @@ void clearstr(char *str)
     {   str[i]='\0';
     }
 }
-
 
 
 
