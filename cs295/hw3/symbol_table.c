@@ -51,14 +51,12 @@ void create_symbol_tables(struct ast *parse_tree)
     do
     {   curr_symtab= global_top_level; /* always start with the global symtab */
 
-        printf("DEBUG create_symbol_tables(): TLD while loop iter: %d...\n", ++tldloop);
 
         /*--------------------------------------------+
         |            if TLD is a DECL
         +---------------------------------------------*/
         if(tldlist->tld->datatype == DECL)
         {   tdecl= (struct decl *)tldlist->tld->d;
-            printf("DEBUG create_symbol_tables(): TLD is a decl...\n");
 
             /* Add decl to symbol table */
             ast_to_symtab((struct ast *)tdecl,curr_symtab);
@@ -94,10 +92,8 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
     struct function_defspec *fdspec;
 
 
-    printf("DEBUG: ast_to_symtab(): invoked\n");
     if(sym->nodetype == DECL)
     {   tdecl= (struct decl *)sym;
-        printf("DEBUG: ast_to_symtab(): ast type DECL\n");
         tmpdl= tdecl->dl;
         do
         {   dp= tmpdl->d;
@@ -108,7 +104,6 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
     else if(sym->nodetype == FUNCTION_DEF_SPECIFIER)
     {   fdspec= (struct function_defspec *)sym;
-        printf("DEBUG: ast_to_symtab(): ast type FUNCTION_DEF_SPECIFIER\n");
 	dp= fdspec->d;
 	addref(dp,curr_symtab);
     }
@@ -117,7 +112,6 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
     else
     {
-        printf("DEBUG: ast_to_symtab(): ast type %d\n", sym->nodetype);
     }
 }
 
@@ -633,7 +627,6 @@ void global_symtab_init(void)
 void funcdef_to_symtab(struct function_def *funcdef)
 {
 
-    printf("DEBUG funcdef_to_symtab(): TLD is a function definition...\n");
 
 
     /* a function defintion is composed of a
@@ -653,7 +646,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
 
 
-    printf("DEBUG funcdef_to_symtab(): the function encountered is '%s'...\n", funcname);
 
 
     /* Check to see if the function name is already in the
@@ -705,7 +697,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
     if(  (curr_symtab->sid == ROOT)  &&  (curr_symtab->child == NULL) )
     {   curr_symtab->child= emalloc(sizeof(struct symtabl));
         curr_symtab= curr_symtab->child;
-        printf("DEBUG funcdef_to_symtab(): added new symtab as child...\n");
     }
     else
     {   while(curr_symtab->rsibling != NULL)
@@ -714,7 +705,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
         curr_symtab->rsibling= emalloc(sizeof(struct symtabl));
         curr_symtab= curr_symtab->rsibling;
-        printf("DEBUG funcdef_to_symtab(): added new symtab as sibling...\n");
     }
 
 
@@ -733,7 +723,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
     /* Add the parameters to the newly created symtab
     +-------------------------------------------------*/
     plist= fdspec->d->plist;
-    printf("DEBUG funcdef_to_symtab():  Here are the function parameters...\n");
     while(plist)
     {   d= plist->pd;
         if(d->tspecptr->type != VOID)
