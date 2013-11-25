@@ -278,7 +278,7 @@ struct ast *new_for_statement(struct ast *forinit,
 void * emalloc(int size);
 char * funcdef_to_string(struct function_def *funcdef,char fdef[]);
 char * funcdecl_to_string(struct declarator *fdecl);
-void clear_tmpstr(void);
+void clearstr(char *str);
 
 
 

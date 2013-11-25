@@ -17,7 +17,7 @@
 #define INT_MAX       2147483647
 #define LONG_MAX      2147483647
 #define ULONG_MAX     4294967295
-#define TMPSTRSZ      1024
+#define TMPSTRSZ      10240
 
 
 void connect_io(int,char **);
@@ -212,7 +212,7 @@ void print_tree(struct ast *nodeptr)
 
 
     do  /* cycle through all of the TLD's */
-    {
+    {       clearstr(tmpstr);
 
             /*--------------------------------------------+
 	     |            if TLD is a DECL
@@ -221,8 +221,9 @@ void print_tree(struct ast *nodeptr)
         {   tdecl= (struct decl *)tldlist->tld->d;
 
             /* print declarator list */
-	    clear_tmpstr();
+	    clearstr(tmpstr);
             printf("%s", print_expr((struct ast *)tdecl,tmpstr));
+	    clearstr(tmpstr);
 
 	    printf(";\n");
 	}
@@ -249,17 +250,24 @@ void print_tree(struct ast *nodeptr)
 
 	    /* print function return type */
 	    printf("\n\n%s ", print_type(fdspec->typespec));
-	    printf("%s(", fdspec->d->adeclarator->id);
-	    printf("%s",print_parameter_list(fdspec->d->plist,tmpstr));
-	    printf(")");
-	    printf("\n{\n");
+
+	    /* print function name */
+	    sprintf(&tmpstr[strlen(tmpstr)],"%s(", fdspec->d->adeclarator->id);
+	    printf("%s", tmpstr); clearstr(tmpstr);
+
+            /* print parameter list */
+	    print_parameter_list(fdspec->d->plist,tmpstr);
+	    sprintf(&tmpstr[strlen(tmpstr)],")");
+	    sprintf(&tmpstr[strlen(tmpstr)],"\n{\n");
+	    printf("%s",tmpstr); clearstr(tmpstr);
 
 
             /* display compound statement block */
 	    dlist= (struct decostat_list *) cstmt->l;
 	    do
-	    {   printf("%s",print_expr(dlist->decostat,tmpstr));
-	        printf(";\n");
+	    {   print_expr(dlist->decostat,tmpstr);
+	        sprintf(&tmpstr[strlen(tmpstr)],";\n");
+		printf("%s",tmpstr); clearstr(tmpstr);
 	    } while( (dlist= dlist->next) != NULL);
 
 
@@ -351,13 +359,17 @@ char * print_expr(struct ast *expr,char *exprstr)
 
 
         case COMPOUND_STATEMENT:
+	    ;
+	    char tstr[TMPSTRSZ];
 	    dlist= (struct decostat_list *)expr->l;
-	    sprintf(&exprstr[strlen(exprstr)],"{ ");
+	    sprintf(&tstr[strlen(tstr)],"{ ");
 	    do
-	    {   print_expr(dlist->decostat,exprstr);
-	        sprintf(&exprstr[strlen(exprstr)],";\n");
+	    {   print_expr(dlist->decostat,tstr);
+	        sprintf(&tstr[strlen(tstr)],";\n");
+		printf("%s",tstr); clearstr(tstr);
             }while( (dlist= dlist->next) != NULL);
-	    sprintf(&exprstr[strlen(exprstr)],"}\n\n");
+	    sprintf(&tstr[strlen(tstr)],"}\n\n");
+	    printf("%s",tstr); clearstr(tstr);
 	   break;
 
 
@@ -609,7 +621,7 @@ char * print_expr(struct ast *expr,char *exprstr)
 
 	   do
 	   {   d= dl->d;
-	       print_decl((struct ast *)d,tmpstr);
+	       print_decl((struct ast *)d,exprstr);
 	       if(dl->next != NULL)
 	       {   sprintf(&exprstr[strlen(exprstr)],", ");
 	       }
@@ -618,7 +630,7 @@ char * print_expr(struct ast *expr,char *exprstr)
 
 
         case SIMPLE_DECLARATOR:
-	   print_decl(expr,tmpstr);
+	   printf("%s",print_decl(expr,exprstr));
 	   break;
 
 
@@ -721,7 +733,7 @@ char * print_expr(struct ast *expr,char *exprstr)
 	   d= (struct declarator *)tast;
 	   sprintf(&exprstr[strlen(exprstr)],"(");
 	   sprintf(&exprstr[strlen(exprstr)],"%s ", print_type(d->tspecptr->type));
-	   print_decl((struct ast *)d,tmpstr);
+	   print_decl((struct ast *)d,exprstr);
 	   sprintf(&exprstr[strlen(exprstr)],")");
 	   print_expr(expr->r,exprstr);
 	   break;
@@ -1035,8 +1047,8 @@ char * print_decl(struct ast *expr, char *declstr)
 
 
     switch(expr->nodetype)
-    {   
-    
+    {
+
         case  SIMPLE_DECLARATOR:
            d= (struct declarator *)expr;
            sprintf(&declstr[strlen(declstr)],"%s", d->id);
@@ -1100,7 +1112,7 @@ char * print_decl(struct ast *expr, char *declstr)
 	    sprintf(&declstr[strlen(declstr)],") %s(", d->adeclarator->id);
 
          /* print parameter list */
-	    print_parameter_list(d->plist,tmpstr);
+	    print_parameter_list(d->plist,declstr);
 	    sprintf(&declstr[strlen(declstr)],")");
             break;
 
@@ -1119,7 +1131,7 @@ char * print_decl(struct ast *expr, char *declstr)
 
 
         case DIRECT_ABSTRACT_DECLARATOR:
-	   print_dad(d,tmpstr);
+	   print_dad(d,declstr);
 	   break;
 
         default:
@@ -1868,10 +1880,10 @@ char * funcdecl_to_string(struct declarator *fdecl)
 
 
 
-void clear_tmpstr(void)
+void clearstr(char *str)
 {   int i;
     for(i=0; i<TMPSTRSZ; i++)
-    {   tmpstr[i]='\0';
+    {   str[i]='\0';
     }
 }
 
