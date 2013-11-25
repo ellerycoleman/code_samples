@@ -86,7 +86,7 @@ void create_symbol_tables(struct ast *parse_tree)
  | ast_to_symtab
  +---------------------------------------------*/
 void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
-{   struct declarator_list *tmpdl;
+{   struct declarator_list *dlist;
     struct declarator *dp;
     struct decl *tdecl;
     struct function_defspec *fdspec;
@@ -94,16 +94,16 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
     if(sym->nodetype == DECL)
     {   tdecl= (struct decl *)sym;
-        tmpdl= tdecl->dl;
+        dlist= tdecl->dl;
         do
-        {   dp= tmpdl->d;
+        {   dp= dlist->d;
 
 	    /* copy declarator type to function declarators */
 	    if(dp->nodetype == FUNCTION_DECLARATOR)
 	    {   dp->tspecptr= (struct basic_type *)tdecl->tspecptr;
 	    }
             addref(dp,curr_symtab);
-        }while(tmpdl= tmpdl->next);
+        }while(dlist= dlist->next);
     }
 
 
@@ -280,11 +280,19 @@ struct declarator *lookup(struct declarator *sym, struct symtabl *curr_symtab)
 
     /* fastforward to the id of the declarator parameter
      +----------------------------------------------------*/
-    while(sym->next != NULL)
-    {   sym= sym->next;
-    }
     if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
     {   sym= sym->adeclarator;
+    }
+    if(sym->nodetype == FUNCTION_DECLARATOR)
+    {   sym= sym->adeclarator;
+    }
+    if(sym->nodetype == POINTER_DECLARATOR)
+    {   while(sym->next)
+        {   sym= sym->next;
+	}
+	if(!sym->id)
+	{   sym= sym->adeclarator;
+	}
     }
 
 
@@ -379,14 +387,31 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
     struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
+/*
+    printf("DEBUG addref(): invoked...\n");
+    printf("DEBUG addref(): param nodetype: %d\n", sym->nodetype);
+*/
+
 
     /* fastforward to the id of the declarator parameter
      +----------------------------------------------------*/
+     /*
     while(sym->next != NULL)
     {   sym= sym->next;
     }
+     */
+
+
     if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
     {   sym= sym->adeclarator;
+    }
+    if(sym->nodetype == POINTER_DECLARATOR)
+    {   while(sym->next)
+        {   sym= sym->next;
+	}
+	if(!sym->id)
+	{   sym= sym->adeclarator;
+	}
     }
 
 
@@ -424,9 +449,9 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
 
 
 
-        /* if the symbol is in this cell already, exit with error
+        /* if the symbol is in this cell already...
 	+-----------------------------------------------------------*/
-	if(curr_symtab->symtab[hash] != 0)  /* if cell is not empty... */
+	if(curr_symtab->symtab[hash] != 0)
         {
             /* and if cell contains the same id as the declarator param, then it's a dup. */
             if(spname->id  &&  !strcmp(spname->id,sym->id))
@@ -544,7 +569,7 @@ void remref(struct declarator *sym, struct symtabl *curr_symtab)
 	/* if this cell is empty, then there's nothing to do
 	 +--------------------------------------------------*/
 	if(curr_symtab->symtab[hash] == 0)
-	{  ;   
+	{  ;
         }
 
 
@@ -736,8 +761,8 @@ void global_symtab_init(void)
 void funcdef_to_symtab(struct function_def *funcdef)
 {
 
-    printf("DEBUG: funcdef_to_symtab(): invoked...\n");
-    printf("DEBUG: funcdef_to_symtab(): node type is %d...\n", funcdef->nodetype );
+    printf("\nDEBUG: funcdef_to_symtab(): invoked...\n");
+    printf("\nDEBUG: funcdef_to_symtab(): node type is %d...\n", funcdef->nodetype );
 
 
     /* a function defintion is composed of a
@@ -746,23 +771,40 @@ void funcdef_to_symtab(struct function_def *funcdef)
     +---------------------------------------------*/
     struct function_defspec *fdspec= funcdef->fdspec;
     struct ast *cstmt= funcdef->cstmt;
+
+
     struct decostat_list *dlist;
     struct parameter_list *plist;
     struct ast *dstat;
     char symtab_name[100];
-    char tmpstr[1024];
+    char tmpstr[TMPSTRSZ];
     struct declarator *d;
+    struct declarator *dporig;
     struct declarator *func;
     char *funcname;
-    
-    
-    
-    /* retrieve the function name from the function declarator.
-    |  Consider that there may be function pointers involved.
+
+
+
+
+
+    /* A function defspec contains a typespec (needs to be changed)
+    |  and a declarator.  Retrieve the declarator.
     +-----------------------------------------------------------*/
     d= fdspec->d;
-    while(d->next)
-    {   d=d->next;
+    dporig= fdspec->d;
+
+
+
+    /* Retrieve the function name from this declarator, considering
+    |  that pointers may be present.
+    +---------------------------------------------------------------*/
+    if(d->nodetype == POINTER_DECLARATOR)
+    {   while(d->next)
+        {   d= d->next;
+	}
+	if(!d->id)
+	{   d= d->adeclarator;
+	}
     }
     funcname= d->id;
 
@@ -775,17 +817,29 @@ void funcdef_to_symtab(struct function_def *funcdef)
     |  If so, make sure that the types from the function
     |  prototype and the function defintion are the same.
     +------------------------------------------------------*/
-    d= funcdef->fdspec->d;
-
 
     /* if function name is in symbol table...
     +-------------------------------------------*/
-    if(func= lookup(d,curr_symtab))
-    {   
+    if(func= lookup(dporig,curr_symtab))
+    {
+        /* fast forward to the function declarator
+	+-------------------------------------------*/
+        if(func->nodetype == POINTER_DECLARATOR)
+        {   while(func->next)
+            {   func= func->next;
+	    }
+	    if(!func->id)
+	    {   func= func->adeclarator;
+	    }
+        }
+
 
         /* if the symbol references a function definition...  exit with error
 	+---------------------------------------------------------------------*/
-        if(func->adeclarator->funcdef_true)
+	printf("DEBUG funcdef_to_symtab(): lookup returned :%ld\n", func);
+	printf("DEBUG funcdef_to_symtab(): func nodetype :%ld\n", func->nodetype);
+
+        if(func->funcdef_true)
 	{   printf("Error: redefinition of function '%s' not allowed\n", func->adeclarator->id);
 	    exit(-1);
         }
