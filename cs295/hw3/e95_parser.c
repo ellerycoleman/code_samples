@@ -1766,6 +1766,15 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
     struct parameter_list *plist;
     plist= funcdef->fdspec->d->plist;
     fdef[0]= 0;
+    struct function_defspec *fdspec= funcdef->fdspec;
+
+
+    /* print type and name of function */
+    sprintf(fdef,print_type(fdspec->typespec));  /*DEBUG: this needs to be updated */
+    sprintf(&fdef[strlen(fdef)]," %s(", fdspec->d->adeclarator->id);
+
+
+
 
     do
     {   sprintf(&fdef[strlen(fdef)],"(");
@@ -1773,12 +1782,10 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
         {
 
 	    case SIMPLE_DECLARATOR:
-	       /*
                sprintf(&fdef[strlen(fdef)],"%s ", print_type(plist->pd->tspecptr->type));
 	       if(plist->pd->id != NULL)
 	       {   sprintf(&fdef[strlen(fdef)],"%s", plist->pd->id);
 	       }
-	       */
 	       break;
 
 
@@ -1787,22 +1794,6 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
                sprintf(&fdef[strlen(fdef)],"");
 	       struct declarator *tmpd;
 	       struct parameter_list *tmplist;
-
-
-               /*  DEBUG  */
-	       /*
-	       tmplist= plist;
-	       do
-	       {   printf("\ntmplist iter %d...\n", ++tcount);
-	           tmpd= tmplist->pd;
-	           if(tmpd != NULL)
-		   {   do
-		       {   printf("\n\n\n* tmpd type is: %d\n", tmpd->nodetype);
-		           tmpd= tmpd->next;
-                       }while(tmpd);
-		   }
-	       }while(tmplist= tmplist->next);
-	       */
 
 
 
@@ -1867,6 +1858,7 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
         {   printf(", ");
         }
     }while((plist= plist->next) != NULL);
+    sprintf(&fdef[strlen(fdef)],")");
 
     return fdef;
 }
@@ -1874,9 +1866,118 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 
 
 
-char * funcdecl_to_string(struct declarator *fdecl)
-{   return "hello";
+char * funcdecl_to_string(struct declarator *fdecl,char *fdef)
+{
+    int tcount=0;
+    declarator *d;
+    declarator *ad;
+    struct parameter_list *plist;
+    plist= fdecl->plist;
+    fdef[0]= 0;
+
+
+    /* print type and name of function */
+    printf("DEBUG fdecl_to_str(): I've been passed a decl...\n");
+    printf("DEBUG fdecl_to_str(): decl type: %d\n", fdecl->nodetype);
+    printf("DEBUG fdecl_to_str(): tspecptr: %ld\n", fdecl->tspecptr);
+
+    sprintf(fdef,print_type(fdecl->tspecptr->type));
+    sprintf(&fdef[strlen(fdef)]," %s(", fdecl->adeclarator->id);
+
+
+
+
+    do
+    {   sprintf(&fdef[strlen(fdef)],"(");
+        switch(plist->pd->nodetype)
+        {
+
+	    case SIMPLE_DECLARATOR:
+               sprintf(&fdef[strlen(fdef)],"%s ", print_type(plist->pd->tspecptr->type));
+	       if(plist->pd->id != NULL)
+	       {   sprintf(&fdef[strlen(fdef)],"%s", plist->pd->id);
+	       }
+	       break;
+
+
+
+	    case POINTER_DECLARATOR:
+               sprintf(&fdef[strlen(fdef)],"");
+	       struct declarator *tmpd;
+	       struct parameter_list *tmplist;
+
+
+
+               sprintf(&fdef[strlen(fdef)], "%s ", print_type(plist->pd->tspecptr->type));
+	       d= plist->pd;
+
+	       do
+	       {   if( d->nodetype == POINTER_DECLARATOR )
+	           {   sprintf(&fdef[strlen(fdef)],"*");
+		   }
+		   else if( d->nodetype == SIMPLE_DECLARATOR )
+	           {   sprintf(&fdef[strlen(fdef)],"%s", d->id);
+		   }
+		   else if( d->nodetype == DIRECT_ABSTRACT_DECLARATOR )
+		   {   print_dad(d,&fdef[strlen(fdef)]);
+		   }
+	           else if( d->nodetype == ARRAY_DECLARATOR )
+		   {   /* sprintf(&fdef[strlen(fdef)]," (%s", d->adeclarator->id); */
+         	       sprintf(&fdef[strlen(fdef)],"[");
+	               print_expr((struct ast *)d->exp,&fdef[strlen(fdef)]);
+         	       sprintf(&fdef[strlen(fdef)],"])");
+		   }
+               }while( (d= d->next) != NULL);
+	       break;
+
+
+	    case DIRECT_ABSTRACT_DECLARATOR:
+	       d= plist->pd;
+	       print_dad(d,tmpstr);
+	       break;
+
+
+	    case DECL:
+	       d= plist->pd;
+	       print_decl((struct ast *)d,tmpstr);
+
+
+            case OTHER:  /* print type only */
+               sprintf(&fdef[strlen(fdef)],"%s", print_type(plist->pd->tspecptr->type));
+	       d= plist->pd;
+	       do
+	       {   if( d->nodetype == POINTER_DECLARATOR )
+	           {   sprintf(&fdef[strlen(fdef)],"*");
+		   }
+		   else if( d->nodetype == SIMPLE_DECLARATOR )
+		   {   sprintf(&fdef[strlen(fdef)],"%s", d->id);
+		   }
+               }while( (d= d->next) != NULL);
+	       break;
+
+
+           default:
+	      d= plist->pd;
+	      sprintf(&fdef[strlen(fdef)],"PRINT_PARAMETER_LIST: not sure what to do with nodetype: %d\n",d->nodetype);
+	      break;
+
+        }
+        sprintf(&fdef[strlen(fdef)],")");
+
+
+        if(plist->next != NULL)
+        {   printf(", ");
+        }
+    }while((plist= plist->next) != NULL);
+    sprintf(&fdef[strlen(fdef)],")");
+
+    return fdef;
 }
+
+
+
+
+
 
 
 

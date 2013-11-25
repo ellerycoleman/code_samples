@@ -97,6 +97,11 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
         tmpdl= tdecl->dl;
         do
         {   dp= tmpdl->d;
+
+	    /* copy declarator type to function declarators */
+	    if(dp->nodetype == FUNCTION_DECLARATOR)
+	    {   dp->tspecptr= (struct basic_type *)tdecl->tspecptr;
+	    }
             addref(dp,curr_symtab);
         }while(tmpdl= tmpdl->next);
     }
@@ -111,7 +116,7 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
 
     else
-    {
+    {   printf("WARNING: ast_to_symtab(): called with unknown nodetype: %d\n", sym->nodetype);
     }
 }
 
@@ -464,6 +469,110 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
 
 
 
+
+
+
+/*-----------------------------------------------
+ | remref - removes a reference from the symtab
+ +---------------------------------------------*/
+void remref(struct declarator *sym, struct symtabl *curr_symtab)
+{   int i;
+    int hash;
+    struct declarator *sp;               /* used to keep current place in symbol table     */
+    struct declarator *spname= sym;      /* used to investigate name of symbol in table    */
+    struct declarator *symorig= sym;     /* used to keep location of original param        */
+
+
+
+    /* fastforward to the id of the declarator parameter
+     +----------------------------------------------------*/
+    while(sym->next != NULL)
+    {   sym= sym->next;
+    }
+    if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
+    {   sym= sym->adeclarator;
+    }
+
+
+    /* hash the symbol name */
+    hash= symhash(sym->id) % NHASH;
+
+
+    /* set symbol pointer 'sp' to the address of the cell that
+    |  this symbol is supposed to be in.
+    +---------------------------------------------------------------*/
+    sp= (struct declarator *)&curr_symtab->symtab[hash];
+
+
+
+    int scount= NHASH;
+    while(--scount >= 0)
+    {
+
+        /* fastforward to the the name of the declarator that we're currently
+	|  pointing to in the symbol table.
+	+---------------------------------------------------------------------*/
+        spname= curr_symtab->symtab[hash];
+
+        /* fastforward to declarator name */
+        while(spname && spname->next != NULL)
+        {   spname= spname->next;
+        }
+        if(spname &&
+	     (spname->nodetype == ARRAY_DECLARATOR ||
+	      spname->nodetype == FUNCTION_DECLARATOR
+	     )
+	  )
+        {   spname= spname->adeclarator;
+        }
+
+
+
+        /* if the symbol is in this cell already...
+	+------------------------------------------*/
+	if(curr_symtab->symtab[hash] != 0)
+        {
+            /* and if cell contains the same id as the declarator param, then it's a dup. */
+            if(spname->id  &&  !strcmp(spname->id,sym->id))
+	    {   curr_symtab->symtab[hash]=0;
+	        return;
+            }
+        }
+
+
+
+	/* if this cell is empty, then there's nothing to do
+	 +--------------------------------------------------*/
+	if(curr_symtab->symtab[hash] == 0)
+	{  ;   
+        }
+
+
+
+        /* if the cell is not empty and DOES NOT store the current symbol,
+	|  then a collision has occured and we need to move ahead to the
+	|  next cell.  Be sure to wrap around sure to the front of the symtab
+	|  if you happen to reach the back.
+	+------------------------------------------------------------------*/
+	if( curr_symtab->symtab[hash] != 0   &&   strcmp(spname->id,sym->id) )
+	{   ++hash;
+
+            if(hash > NHASH-1)
+            {   hash=0;
+		sp= (struct declarator *) &curr_symtab->symtab[hash];
+            }
+        }
+    }
+
+    printf("Error trying to remove symbol '%s'\n", spname->id);
+    exit(-1);
+}
+
+
+
+
+
+
 /*-----------------------------------------------
  | symcompare
  | Note: Based on C FAQ: http://c-faq.com/lib/qsort2.html
@@ -627,6 +736,8 @@ void global_symtab_init(void)
 void funcdef_to_symtab(struct function_def *funcdef)
 {
 
+    printf("DEBUG: funcdef_to_symtab(): invoked...\n");
+    printf("DEBUG: funcdef_to_symtab(): node type is %d...\n", funcdef->nodetype );
 
 
     /* a function defintion is composed of a
@@ -641,8 +752,19 @@ void funcdef_to_symtab(struct function_def *funcdef)
     char symtab_name[100];
     char tmpstr[1024];
     struct declarator *d;
-    struct declarator *fproto;
-    char *funcname= fdspec->d->adeclarator->id;
+    struct declarator *func;
+    char *funcname;
+    
+    
+    
+    /* retrieve the function name from the function declarator.
+    |  Consider that there may be function pointers involved.
+    +-----------------------------------------------------------*/
+    d= fdspec->d;
+    while(d->next)
+    {   d=d->next;
+    }
+    funcname= d->id;
 
 
 
@@ -655,34 +777,54 @@ void funcdef_to_symtab(struct function_def *funcdef)
     +------------------------------------------------------*/
     d= funcdef->fdspec->d;
 
-    if(fproto= lookup(d,curr_symtab))
-    {   struct parameter_list *fplist;
+
+    /* if function name is in symbol table...
+    +-------------------------------------------*/
+    if(func= lookup(d,curr_symtab))
+    {   
+
+        /* if the symbol references a function definition...  exit with error
+	+---------------------------------------------------------------------*/
+        if(func->adeclarator->funcdef_true)
+	{   printf("Error: redefinition of function '%s' not allowed\n", func->adeclarator->id);
+	    exit(-1);
+        }
 
 
-        fplist= fproto->plist;
-	printf("\n\n------------\n");
-	/* print_parameter_list(fplist); */
-	funcdef_to_string(funcdef,tmpstr);
-	printf("tmpstr: %s\n", tmpstr);
-	printf("\n\n------------\n");
+        /* if the symbol references a function prototype,
+	|  make sure the prototype matches the function definition.
+	+----------------------------------------------------------*/
+	struct parameter_list *fplist;
+	if(func->nodetype == FUNCTION_DECLARATOR)
+	{
+            fplist= func->plist;
+	    printf("\n\n------------\n");
+	
+	    char tmp1[TMPSTRSZ];
+	    char tmp2[TMPSTRSZ];
+
+	    funcdef_to_string(funcdef,tmp1);
+	    funcdecl_to_string(func,tmp2);
+
+	    printf(" funcdef: %s\n", tmp1);
+	    printf("funcdecl: %s\n", tmp2);
 
 
+	    printf("\n\n------------\n");
+	}
 
-	do
-	{   struct declarator *tmpd;
-	    tmpd= fplist->pd;
-	    printf("\t\t*%s\n", tmpd->id);
-	}while(0);
+	remref(func,curr_symtab);
 
-	printf("Address of fproto->plist: %s\n", fproto->adeclarator->id);
+
     }
     else
-    {   printf("funcanme IS NOT in table\n");
+    {   printf("funcname IS NOT in table\n");
     }
 
 
     /* Add the function name to current symbol table
     +-------------------------------------------------*/
+    funcdef->fdspec->d->adeclarator->funcdef_true=1;
     ast_to_symtab((struct ast *)fdspec, curr_symtab);
 
 
@@ -714,7 +856,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
     +------------------------------------------------*/
     strcpy(symtab_name,fdspec->d->adeclarator->id);
     strcat(symtab_name,"_funcdef");
-    printf("\t\t\tSYMTAB_NAME: %s\n", symtab_name);
     strcpy(curr_symtab->id,symtab_name);
     curr_symtab->sid= ++symtab_sid;
 
@@ -743,8 +884,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
         if(dstat->nodetype == DECL)
 	{   ast_to_symtab(dstat,curr_symtab);
 	}
-        printf("\t\tdecostat type: %d\n", dstat->nodetype);
-        printf("\n");
     } while( (dlist= dlist->next) != NULL);
 
 

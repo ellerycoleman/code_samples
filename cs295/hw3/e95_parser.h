@@ -142,6 +142,7 @@ typedef struct declarator
     struct declarator *adeclarator; /* for use with function/abstract declarators */
     struct expr *exp;
     struct parameter_list *plist;
+    int funcdef_true;   /* set by symbol table generator */
 } declarator;
 
 
@@ -277,7 +278,7 @@ struct ast *new_for_statement(struct ast *forinit,
 
 void * emalloc(int size);
 char * funcdef_to_string(struct function_def *funcdef,char fdef[]);
-char * funcdecl_to_string(struct declarator *fdecl);
+char * funcdecl_to_string(struct declarator *fdecl,char *fdef);
 void clearstr(char *str);
 
 

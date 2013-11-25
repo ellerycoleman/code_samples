@@ -47,6 +47,7 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab);
 void print_symtab(struct symtabl *curr_symtab);
 void global_symtab_init();
 void funcdef_to_symtab(struct function_def *funcdef);
+void remref(struct declarator *sym, struct symtabl *curr_symtab);
 
 
 
