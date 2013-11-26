@@ -359,6 +359,8 @@ char * print_expr(struct ast *expr,char *exprstr)
     struct cond_expr *cexpr;
     struct flow *tflow;
 
+
+
     switch(expr->nodetype)
     {   case SEP_SEMICOLON:
 	   break;
@@ -437,7 +439,7 @@ char * print_expr(struct ast *expr,char *exprstr)
 	    dlist= (struct decostat_list *)expr;
 	    dlist= reverse_decostat_list(dlist);
 	    while(dlist->next != NULL)
-	    {   print_expr(dlist->decostat,exprstr);
+	    {   print_expr(dlist->decostat,&exprstr[strlen(exprstr)]);
 	        sprintf(&exprstr[strlen(exprstr)],", ");
 	        dlist= dlist->next;
 	    }
@@ -690,7 +692,7 @@ char * print_expr(struct ast *expr,char *exprstr)
 
 
         case SIMPLE_DECLARATOR:
-	   printf("%s",print_decl(expr,exprstr));
+	   print_decl(expr,exprstr);
 	   break;
 
 
