@@ -61,7 +61,6 @@ union e95_int_union
 char e95_strbuf[16000];
 char e95_strbuf2[16000];
 int  e95_strbuf_idx;
-int indent;
 
 
 /* function prototypes */

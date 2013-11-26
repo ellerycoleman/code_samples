@@ -122,8 +122,8 @@ extern YYSTYPE yylval;
 
 "("     { return SEP_LEFT_PAREN;    }
 ")"     { return SEP_RIGHT_PAREN;   }
-"{"     { ++indent; return SEP_LEFT_BRACE;    }
-"}"     { --indent; return SEP_RIGHT_BRACE;   }
+"{"     { return SEP_LEFT_BRACE;    }
+"}"     { return SEP_RIGHT_BRACE;   }
 "["     { return SEP_LEFT_BRACKET;  }
 "]"     { return SEP_RIGHT_BRACKET; }
 ";"     { return SEP_SEMICOLON;     }

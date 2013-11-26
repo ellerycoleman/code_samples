@@ -753,9 +753,6 @@ void global_symtab_init(void)
 void funcdef_to_symtab(struct function_def *funcdef)
 {
 
-    printf("\nDEBUG: funcdef_to_symtab(): invoked...\n");
-    printf("\nDEBUG: funcdef_to_symtab(): node type is %d...\n", funcdef->nodetype );
-
 
     /* a function defintion is composed of a
     |  fuction_defspec and a compound statement.
@@ -812,9 +809,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
         /* if the symbol references a function definition...  exit with error
 	+---------------------------------------------------------------------*/
-	printf("DEBUG funcdef_to_symtab(): lookup returned :%ld\n", func);
-	printf("DEBUG funcdef_to_symtab(): func nodetype :%ld\n", func->nodetype);
-
         if(func->funcdef_true)
 	{   printf("Error: redefinition of function '%s' not allowed\n", func->adeclarator->id);
 	    exit(-1);
@@ -925,7 +919,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
         {   addref(d,curr_symtab);
 	}
         plist= plist->next;
-	printf("DEBUG: adding 1 parameter to symtabl\n");
     }
 
 

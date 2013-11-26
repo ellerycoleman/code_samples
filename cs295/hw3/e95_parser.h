@@ -247,6 +247,7 @@ struct ast *new_expr(int type,struct ast *l, struct ast *r);
 char *print_type(int type);
 struct ast *parse_tree;
 int debug_counter;
+int indent_count;
 
 
 struct ast *new_function_def_specifier(int type, struct declarator *d);
@@ -280,6 +281,7 @@ void * emalloc(int size);
 char * funcdef_to_string(struct function_def *funcdef,char fdef[]);
 char * funcdecl_to_string(struct declarator *fdecl,char *fdef);
 void clearstr(char *str);
+char * indent(char *str);
 
 
 

@@ -40,6 +40,7 @@ int need_array_paren;
 extern int yylineno;
 extern char e95_strbuf2[];
 char tmpstr[TMPSTRSZ];
+extern int indent_count;
 
 
 int first_ptr;          /* pretty print support */
@@ -89,6 +90,7 @@ int main(int argc, char **argv)
 
     /* traverse parse tree to generate pretty print
     +-------------------------------------------------*/
+    indent_count=0;
     print_tree(parse_tree);
 
 
@@ -203,8 +205,8 @@ void print_tree(struct ast *nodeptr)
 
 
     /* A tld_list has a series of tld nodes; each node pointing to either
-     | a decl or a funcdef.
-     +-----------------------------------------------------------------*/
+    |  a decl or a funcdef.
+    +-----------------------------------------------------------------*/
     struct decl *tdecl;
     struct function_def *funcdef;
     int i=1;
@@ -240,7 +242,7 @@ void print_tree(struct ast *nodeptr)
 	    clearstr(tmpstr);
 
 
-	    /* retrieve function definition 
+	    /* retrieve function definition
 	    +---------------------------------*/
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
 
@@ -279,7 +281,7 @@ void print_tree(struct ast *nodeptr)
 		    sprintf(&tmpstr[strlen(tmpstr)],"*");
 	        }
 
-                
+
 		plist= d->plist;
 
 
@@ -306,11 +308,14 @@ void print_tree(struct ast *nodeptr)
 
             /* display compound statement block */
 	    dlist= (struct decostat_list *) cstmt->l;
+	    ++indent_count;
 	    do
-	    {   print_expr(dlist->decostat,tmpstr);
+	    {   indent(tmpstr);
+	        print_expr(dlist->decostat,tmpstr);
 	        sprintf(&tmpstr[strlen(tmpstr)],";\n");
 		printf("%s",tmpstr); clearstr(tmpstr);
 	    } while( (dlist= dlist->next) != NULL);
+	    --indent_count;
 
 
 	    printf("\n}\n\n");
@@ -401,7 +406,7 @@ char * print_expr(struct ast *expr,char *exprstr)
 
 
         case COMPOUND_STATEMENT:
-	    ;
+	    ++indent_count;
 	    char tstr[TMPSTRSZ];
 	    dlist= (struct decostat_list *)expr->l;
 	    sprintf(&tstr[strlen(tstr)],"{ ");
@@ -412,6 +417,7 @@ char * print_expr(struct ast *expr,char *exprstr)
             }while( (dlist= dlist->next) != NULL);
 	    sprintf(&tstr[strlen(tstr)],"}\n\n");
 	    printf("%s",tstr); clearstr(tstr);
+	    --indent_count;
 	   break;
 
 
@@ -2017,14 +2023,24 @@ char * funcdecl_to_string(struct declarator *fdecl,char *fdef)
 
 
 
-
-
-
 void clearstr(char *str)
 {   int i;
     for(i=0; i<TMPSTRSZ; i++)
     {   str[i]='\0';
     }
+}
+
+
+char * indent(char *str)
+{
+    extern int indent_count;
+    int i;
+
+    for(i=0; i<indent_count; i++)
+    {   sprintf(&str[strlen(str)],"%s","    ");
+    }
+
+    return str;
 }
 
 
