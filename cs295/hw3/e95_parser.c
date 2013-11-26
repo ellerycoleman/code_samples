@@ -239,6 +239,7 @@ void print_tree(struct ast *nodeptr)
 
 	    clearstr(tmpstr);
 
+
 	    /* retrieve function definition 
 	    +---------------------------------*/
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
@@ -263,7 +264,9 @@ void print_tree(struct ast *nodeptr)
 
 
 	    /* print function return type */
-	    printf("\n\n%s ", print_type(fdspec->typespec));
+	    printf("\n\n(%s ", print_type(fdspec->typespec));
+
+
 
 
             /* Retrieve and print function name from this declarator,
@@ -275,7 +278,6 @@ void print_tree(struct ast *nodeptr)
                 {   d= d->next;
 		    sprintf(&tmpstr[strlen(tmpstr)],"*");
 	        }
-		sprintf(&tmpstr[strlen(tmpstr)]," ");
 
                 
 		plist= d->plist;
@@ -288,8 +290,10 @@ void print_tree(struct ast *nodeptr)
             char *funcname= d->id;
 
 
-	    sprintf(&tmpstr[strlen(tmpstr)],"%s(", funcname);
+
+	    sprintf(&tmpstr[strlen(tmpstr)],") %s(", funcname);
 	    printf("%s", tmpstr); clearstr(tmpstr);
+
 
 
             /* print parameter list */
