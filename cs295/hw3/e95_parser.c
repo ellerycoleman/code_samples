@@ -41,6 +41,7 @@ extern int yylineno;
 extern char e95_strbuf2[];
 char tmpstr[TMPSTRSZ];
 extern int indent_count;
+extern int symtab_sid;
 
 
 int first_ptr;          /* pretty print support */
@@ -336,6 +337,7 @@ void print_tree(struct ast *nodeptr)
     /* print symbol tables */
     printtabs(global_top_level);
     printf("\n\nTotal amount of memory dynamically allocated by this compiler: %d bytes\n", global_allocation);
+    printf("Current symtab sid: %ld\n\n", symtab_sid);
 }
 
 

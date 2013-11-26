@@ -19,10 +19,12 @@ extern int symtab_sid;
 void create_symbol_tables(struct ast *parse_tree)
 {
     struct decl *tdecl;
+    struct declarator_list *dlist;
     struct function_def *funcdef;
     int i=1;
     int tldloop=0;
     struct declarator *d;
+    struct declarator *dporig;
     char symtab_name[100];
 
 
@@ -78,6 +80,55 @@ void create_symbol_tables(struct ast *parse_tree)
 	}
 
     }while( (tldlist= tldlist->next) != NULL );
+
+
+
+
+    /* Cycle through all symbols in the global_top_level symtab and
+    |  verify that there are no more function declarators left.
+    +------------------------------------------------------------------*/
+    for(i=0; i<NHASH; i++)
+    {   /*printf("global_top_level->symtab[%d]: %ld\n",    i,global_top_level->symtab[i]); */
+
+        if(global_top_level->symtab[i])
+	{   d= global_top_level->symtab[i];
+	    dporig= d;
+
+
+            /* ffwd pointer declarators */
+            if(d->nodetype == POINTER_DECLARATOR)
+            {   /* fast_forward */
+	        while(d->next)
+	        {   d= d->next;
+	        }
+            }
+ 
+
+            /* if this is a function declarator...
+            +---------------------------------------*/
+            if(d->nodetype == FUNCTION_DECLARATOR)
+            {   
+
+                /* if this declarator doesn't belong to a function def,
+                |  then it's a declarator that has not been defined.
+	        |  Exit with an error.
+	        +--------------------------------------------------------*/
+		/*
+                printf("\nDEBUG: we have a function declarator with addr: %ld\n", d);
+                printf("\nDEBUG: content of d: %ld\n", d);
+                printf("\nDEBUG: content of d->funcdef_true: %ld\n", d->funcdef_true);
+                printf("\nDEBUG: content of dlist->d: %ld\n", dlist->d);
+                printf("\nDEBUG: content of dlist->d->funcdef_true: %ld\n", dlist->d->funcdef_true);
+		*/
+	        if(!dporig->funcdef_true)
+	        {   printf("\nError: function prototype for '%s' was never defined.\n", d->adeclarator->id);
+		    exit(-1);
+	        }
+
+            }
+            printf("\nDEBUG: create_symtabs: tdecl type: %ld\n", d->nodetype);
+        }
+    }
 }
 
 
@@ -89,8 +140,28 @@ void create_symbol_tables(struct ast *parse_tree)
 void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 {   struct declarator_list *dlist;
     struct declarator *dp;
+    struct declarator *dporig;
     struct decl *tdecl;
     struct function_defspec *fdspec;
+
+
+
+                                    /* BEGIN DEBUG */
+/*
+    printf("\nDEBUG ast_to_symtab(): invoked with nodetype: %ld!!\n", sym->nodetype);
+
+    if(sym->nodetype == POINTER_DECLARATOR  ||
+       sym->nodetype == FUNCTION_DECLARATOR
+      )
+    {   dp= (struct declarator *)sym;
+        printf("\n\tsym is declarator with funcdef_true == %ld and address %ld (%ld)\n", dp->funcdef_true,dp,sym);
+
+    }
+*/
+                                    /*  END  DEBUG */
+
+
+
 
 
     if(sym->nodetype == DECL)
@@ -103,9 +174,11 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 	    if(dp->nodetype == FUNCTION_DECLARATOR)
 	    {   dp->tspecptr= (struct basic_type *)tdecl->tspecptr;
 	    }
+            printf("\n\tabout to addref with funcdef_true == %ld\n", dp->funcdef_true);
             addref(dp,curr_symtab);
         }while(dlist= dlist->next);
     }
+
 
 
     else if(sym->nodetype == FUNCTION_DEF_SPECIFIER)
@@ -115,22 +188,42 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
     }
 
 
+
     else if(sym->nodetype == POINTER_DECLARATOR)
     {   dp= (struct declarator *)sym;
 	addref(dp,curr_symtab);
     }
 
 
+
     else if(sym->nodetype == FUNCTION_DECLARATOR)
     {   dp= (struct declarator *)sym;
 	addref(dp,curr_symtab);
     }
-        
+
+
 
     else
     {   printf("WARNING: ast_to_symtab(): called with unknown nodetype: %d\n", sym->nodetype);
     }
+
+
+    /* debug */
+    int i, j=0;
+    for(i=0; i<NHASH; i++)
+    {   if(global_top_level->symtab[i])
+        {   printf("\tDEBUG: symtab has %ld element(s)\n", ++j);
+            printf("\tDEBUG: address of element is: %ld\n", global_top_level->symtab[i]);
+	    dp= global_top_level->symtab[i];
+	    printf("\tDEBUG: This element has funcdecl_true set to %ld\n", dp->funcdef_true);
+
+	}
+    }
+
+
 }
+
+
 
 
 
@@ -399,6 +492,8 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
     struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
+    printf("\nDEBUG addref(): invoked with nodetype: %ld!!\n", sym->nodetype);
+
 
     if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
     {   sym= sym->adeclarator;
@@ -448,7 +543,7 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
 
 
         /* if the symbol is in this cell already...
-	+-----------------------------------------------------------*/
+	+----------------------------------------------------*/
 	if(curr_symtab->symtab[hash] != 0)
         {
             /* and if cell contains the same id as the declarator param, then it's a dup. */
@@ -557,7 +652,8 @@ void remref(struct declarator *sym, struct symtabl *curr_symtab)
         {
             /* and if cell contains the same id as the declarator param, then it's a dup. */
             if(spname->id  &&  !strcmp(spname->id,sym->id))
-	    {   curr_symtab->symtab[hash]=0;
+	    {   printf("\nDEBUG remref(): about to remove '%s' from symtab\n", sym->id);
+	        curr_symtab->symtab[hash]=0;
 	        return;
             }
         }
@@ -759,6 +855,7 @@ void global_symtab_init(void)
 void funcdef_to_symtab(struct function_def *funcdef)
 {
 
+    printf("DEBUG: funcdef_to_symtab: invoked!\n");
 
     /* a function defintion is composed of a
     |  fuction_defspec and a compound statement.
@@ -807,7 +904,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
         /* if the symbol references a function definition...  exit with error
 	+---------------------------------------------------------------------*/
         if(func->funcdef_true)
-	{   
+	{
             /* fast forward to the declarator containing the id...
 	    +-----------------------------------------------------*/
             if(func->nodetype == POINTER_DECLARATOR)
@@ -860,7 +957,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
     /* Add the function name to current symbol table
     +-------------------------------------------------*/
-    dporig->funcdef_true=1;
+    dporig->funcdef_true=3000;
     ast_to_symtab((struct ast *)dporig, curr_symtab);
 
 
@@ -950,5 +1047,5 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	}
     } while( (dlist= dlist->next) != NULL);
 
-    
+
 }
