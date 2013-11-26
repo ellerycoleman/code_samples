@@ -1862,7 +1862,6 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 
 
     sprintf(&fdef[strlen(fdef)]," %s(", funcname);
-    printf("\tDEBUG: current string: '%s'\n",fdef);
 
 
     do
@@ -1871,7 +1870,6 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
         {
 
 	    case SIMPLE_DECLARATOR:
-	       printf("\t\tDEBUG: parameter is simple declarator...\n");
                sprintf(&fdef[strlen(fdef)],"(%s ", print_type(plist->pd->tspecptr->type));
 	       /*
 	       if(plist->pd->id != NULL)
@@ -1917,7 +1915,6 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 
 
 	    case DECL:
-	       printf("\t\tDEBUG: parameter is decl...\n");
 	       d= plist->pd;
 	       print_decl((struct ast *)d,&fdef[strlen(fdef)]);
 
@@ -2001,7 +1998,6 @@ char * funcdecl_to_string(struct declarator *funcdp,char fdec[])
 
 
     sprintf(&fdec[strlen(fdec)]," %s(", funcname);
-    printf("\tDEBUG: current string: '%s'\n",fdec);
 
 
     do
@@ -2010,7 +2006,6 @@ char * funcdecl_to_string(struct declarator *funcdp,char fdec[])
         {
 
 	    case SIMPLE_DECLARATOR:
-	       printf("\t\tDEBUG: parameter is simple declarator...\n");
                sprintf(&fdec[strlen(fdec)],"(%s ", print_type(plist->pd->tspecptr->type));
 	       /*
 	       if(plist->pd->id != NULL)
@@ -2056,7 +2051,6 @@ char * funcdecl_to_string(struct declarator *funcdp,char fdec[])
 
 
 	    case DECL:
-	       printf("\t\tDEBUG: parameter is decl...\n");
 	       d= plist->pd;
 	       print_decl((struct ast *)d,&fdec[strlen(fdec)]);
 
