@@ -790,40 +790,24 @@ void funcdef_to_symtab(struct function_def *funcdef)
     /* A function defspec contains a typespec (needs to be changed)
     |  and a declarator.  Retrieve the declarator.
     +-----------------------------------------------------------*/
-    d= fdspec->d;
     dporig= fdspec->d;
 
 
 
-    /* Retrieve the function name from this declarator, considering
-    |  that pointers may be present.
-    +---------------------------------------------------------------*/
-    if(d->nodetype == POINTER_DECLARATOR)
-    {   while(d->next)
-        {   d= d->next;
-	}
-	if(!d->id)
-	{   d= d->adeclarator;
-	}
-    }
-    funcname= d->id;
-
-
-
-
-
-    /* Check to see if the function name is already in the
-    |  symbol table from a previous function prototype.
-    |  If so, make sure that the types from the function
+    /*------------------------------------------------------
+    |  Check to see if the function name is already in the
+    |  symbol table from a function prototype.  If so,
+    |  make sure that the types from the function
     |  prototype and the function defintion are the same.
     +------------------------------------------------------*/
+
 
     /* if function name is in symbol table...
     +-------------------------------------------*/
     if(func= lookup(dporig,curr_symtab))
     {
-        /* fast forward to the function declarator
-	+-------------------------------------------*/
+        /* fast forward to the declarator containing the id...
+	+-----------------------------------------------------*/
         if(func->nodetype == POINTER_DECLARATOR)
         {   while(func->next)
             {   func= func->next;
@@ -868,8 +852,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	}
 
 	remref(func,curr_symtab);
-
-
     }
     else
     {   printf("funcname IS NOT in table\n");
@@ -878,8 +860,8 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
     /* Add the function name to current symbol table
     +-------------------------------------------------*/
-    funcdef->fdspec->d->adeclarator->funcdef_true=1;
-    ast_to_symtab((struct ast *)fdspec, curr_symtab);
+    dporig->funcdef_true=1;
+    ast_to_symtab((struct ast *)dporig, curr_symtab);
 
 
 
@@ -905,10 +887,27 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
 
 
-    /* Generate and apply appropriate name and sid to
+    /*------------------------------------------------
+    |  Generate and apply appropriate name and sid to
     |  newly created symbol table.
     +------------------------------------------------*/
-    strcpy(symtab_name,fdspec->d->adeclarator->id);
+
+
+    /* Retrieve the function name from this declarator, considering
+    |  that pointers may be present.
+    +---------------------------------------------------------------*/
+    d= fdspec->d;
+    if(d->nodetype == POINTER_DECLARATOR)
+    {   while(d->next)
+        {   d= d->next;
+	}
+	if(!d->id)
+	{   d= d->adeclarator;
+	}
+    }
+    funcname= d->id;
+
+    strcpy(symtab_name,funcname);
     strcat(symtab_name,"_funcdef");
     strcpy(curr_symtab->id,symtab_name);
     curr_symtab->sid= ++symtab_sid;
