@@ -285,8 +285,6 @@ void print_tree(struct ast *nodeptr)
 
 	    sprintf(&tmpstr[strlen(tmpstr)],"%s(", funcname);
 	    printf("%s", tmpstr); clearstr(tmpstr);
-	    printf("DEBUG print_tree():  plist addr is %ld\n", plist);
-
 
 
             /* print parameter list */

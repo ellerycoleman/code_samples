@@ -114,6 +114,12 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
     }
 
 
+    else if(sym->nodetype == POINTER_DECLARATOR)
+    {   dp= (struct declarator *)sym;
+	addref(dp,curr_symtab);
+    }
+        
+
 
     else
     {   printf("WARNING: ast_to_symtab(): called with unknown nodetype: %d\n", sym->nodetype);
@@ -387,25 +393,11 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
     struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
-/*
-    printf("DEBUG addref(): invoked...\n");
-    printf("DEBUG addref(): param nodetype: %d\n", sym->nodetype);
-*/
-
-
-    /* fastforward to the id of the declarator parameter
-     +----------------------------------------------------*/
-     /*
-    while(sym->next != NULL)
-    {   sym= sym->next;
-    }
-     */
-
 
     if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
     {   sym= sym->adeclarator;
     }
-    if(sym->nodetype == POINTER_DECLARATOR)
+    if(sym->nodetype == POINTER_DECLARATOR)  /* fast forward to appropriate declarator */
     {   while(sym->next)
         {   sym= sym->next;
 	}
