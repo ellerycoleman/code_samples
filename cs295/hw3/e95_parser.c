@@ -247,7 +247,8 @@ void print_tree(struct ast *nodeptr)
 
             /* a function defintion is composed of a
 	    |  function_defspec and a compound statement.
-	    +----------------------------------------------*/
+	    |  A compound statement contains a decostat_list.
+	    +-------------------------------------------------*/
 	    struct function_defspec *fdspec= funcdef->fdspec;
 	    struct ast *cstmt= funcdef->cstmt;
 	    struct decostat_list *dlist;
@@ -272,9 +273,13 @@ void print_tree(struct ast *nodeptr)
             if(d->nodetype == POINTER_DECLARATOR)
             {   while(d->next)
                 {   d= d->next;
+		    sprintf(&tmpstr[strlen(tmpstr)],"*");
 	        }
+		sprintf(&tmpstr[strlen(tmpstr)]," ");
+
                 
 		plist= d->plist;
+
 
 	        if(!d->id)
 	        {   d= d->adeclarator;
@@ -1077,7 +1082,6 @@ char * print_decl(struct ast *expr, char *declstr)
     struct declarator *dview;
     struct declarator *ad;
     struct ast *tast;
-
 
     switch(expr->nodetype)
     {
@@ -1911,9 +1915,6 @@ char * funcdecl_to_string(struct declarator *fdecl,char *fdef)
 
 
     /* print type and name of function */
-    printf("DEBUG fdecl_to_str(): I've been passed a decl...\n");
-    printf("DEBUG fdecl_to_str(): decl type: %d\n", fdecl->nodetype);
-    printf("DEBUG fdecl_to_str(): tspecptr: %ld\n", fdecl->tspecptr);
 
     sprintf(fdef,print_type(fdecl->tspecptr->type));
     sprintf(&fdef[strlen(fdef)]," %s(", fdecl->adeclarator->id);
