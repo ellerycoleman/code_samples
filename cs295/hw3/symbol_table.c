@@ -885,6 +885,8 @@ void funcdef_to_symtab(struct function_def *funcdef)
     +------------------------------------------------*/
 
 
+
+
     /* Retrieve the function name from this declarator, considering
     |  that pointers may be present.
     +---------------------------------------------------------------*/
@@ -893,11 +895,15 @@ void funcdef_to_symtab(struct function_def *funcdef)
     {   while(d->next)
         {   d= d->next;
 	}
+
+	plist= d->plist;
+
 	if(!d->id)
 	{   d= d->adeclarator;
 	}
     }
     funcname= d->id;
+
 
     strcpy(symtab_name,funcname);
     strcat(symtab_name,"_funcdef");
@@ -908,13 +914,18 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
     /* Add the parameters to the newly created symtab
     +-------------------------------------------------*/
-    plist= fdspec->d->plist;
+    int i=0;
+    if(!plist)
+    {   plist= fdspec->d->plist;
+    }
+
     while(plist)
     {   d= plist->pd;
         if(d->tspecptr->type != VOID)
         {   addref(d,curr_symtab);
 	}
         plist= plist->next;
+	printf("DEBUG: adding 1 parameter to symtabl\n");
     }
 
 
