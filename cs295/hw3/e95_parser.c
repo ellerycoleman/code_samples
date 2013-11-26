@@ -317,7 +317,9 @@ void print_tree(struct ast *nodeptr)
 	    do
 	    {   indent(tmpstr);
 	        print_expr(dlist->decostat,tmpstr);
-	        sprintf(&tmpstr[strlen(tmpstr)],";\n");
+	        if(dlist->next)
+		{   sprintf(&tmpstr[strlen(tmpstr)],";\n");
+		}
 		printf("%s",tmpstr); clearstr(tmpstr);
 	    } while( (dlist= dlist->next) != NULL);
 	    --indent_count;
@@ -411,18 +413,23 @@ char * print_expr(struct ast *expr,char *exprstr)
 
 
         case COMPOUND_STATEMENT:
-	    ++indent_count;
+	    ;
 	    char tstr[TMPSTRSZ];
 	    dlist= (struct decostat_list *)expr->l;
-	    sprintf(&tstr[strlen(tstr)],"{ ");
+
+            indent(tstr);
+	    sprintf(&tstr[strlen(tstr)],"{\n");
+	    ++indent_count;
 	    do
-	    {   print_expr(dlist->decostat,tstr);
+	    {   indent(tstr);
+	        print_expr(dlist->decostat,tstr);
 	        sprintf(&tstr[strlen(tstr)],";\n");
 		printf("%s",tstr); clearstr(tstr);
             }while( (dlist= dlist->next) != NULL);
+	    --indent_count;
+	    indent(tstr);
 	    sprintf(&tstr[strlen(tstr)],"}\n\n");
 	    printf("%s",tstr); clearstr(tstr);
-	    --indent_count;
 	   break;
 
 
