@@ -318,9 +318,7 @@ void print_tree(struct ast *nodeptr)
 	    do
 	    {   indent(tmpstr);
 	        print_expr(dlist->decostat,tmpstr);
-	        if(dlist->next)
-		{   sprintf(&tmpstr[strlen(tmpstr)],";\n");
-		}
+		printf("%s;\n",tmpstr); clearstr(tmpstr);
 		printf("%s",tmpstr); clearstr(tmpstr);
 	    } while( (dlist= dlist->next) != NULL);
 	    --indent_count;

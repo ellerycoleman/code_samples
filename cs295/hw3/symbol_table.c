@@ -113,20 +113,12 @@ void create_symbol_tables(struct ast *parse_tree)
                 |  then it's a declarator that has not been defined.
 	        |  Exit with an error.
 	        +--------------------------------------------------------*/
-		/*
-                printf("\nDEBUG: we have a function declarator with addr: %ld\n", d);
-                printf("\nDEBUG: content of d: %ld\n", d);
-                printf("\nDEBUG: content of d->funcdef_true: %ld\n", d->funcdef_true);
-                printf("\nDEBUG: content of dlist->d: %ld\n", dlist->d);
-                printf("\nDEBUG: content of dlist->d->funcdef_true: %ld\n", dlist->d->funcdef_true);
-		*/
 	        if(!dporig->funcdef_true)
 	        {   printf("\nError: function prototype for '%s' was never defined.\n", d->adeclarator->id);
 		    exit(-1);
 	        }
 
             }
-            printf("\nDEBUG: create_symtabs: tdecl type: %ld\n", d->nodetype);
         }
     }
 }
@@ -146,22 +138,6 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
 
 
-                                    /* BEGIN DEBUG */
-/*
-    printf("\nDEBUG ast_to_symtab(): invoked with nodetype: %ld!!\n", sym->nodetype);
-
-    if(sym->nodetype == POINTER_DECLARATOR  ||
-       sym->nodetype == FUNCTION_DECLARATOR
-      )
-    {   dp= (struct declarator *)sym;
-        printf("\n\tsym is declarator with funcdef_true == %ld and address %ld (%ld)\n", dp->funcdef_true,dp,sym);
-
-    }
-*/
-                                    /*  END  DEBUG */
-
-
-
 
 
     if(sym->nodetype == DECL)
@@ -174,7 +150,6 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 	    if(dp->nodetype == FUNCTION_DECLARATOR)
 	    {   dp->tspecptr= (struct basic_type *)tdecl->tspecptr;
 	    }
-            printf("\n\tabout to addref with funcdef_true == %ld\n", dp->funcdef_true);
             addref(dp,curr_symtab);
         }while(dlist= dlist->next);
     }
@@ -212,11 +187,7 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
     int i, j=0;
     for(i=0; i<NHASH; i++)
     {   if(global_top_level->symtab[i])
-        {   printf("\tDEBUG: symtab has %ld element(s)\n", ++j);
-            printf("\tDEBUG: address of element is: %ld\n", global_top_level->symtab[i]);
-	    dp= global_top_level->symtab[i];
-	    printf("\tDEBUG: This element has funcdecl_true set to %ld\n", dp->funcdef_true);
-
+        {   dp= global_top_level->symtab[i]; 
 	}
     }
 
@@ -492,7 +463,6 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
     struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
-    printf("\nDEBUG addref(): invoked with nodetype: %ld!!\n", sym->nodetype);
 
 
     if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
@@ -652,8 +622,7 @@ void remref(struct declarator *sym, struct symtabl *curr_symtab)
         {
             /* and if cell contains the same id as the declarator param, then it's a dup. */
             if(spname->id  &&  !strcmp(spname->id,sym->id))
-	    {   printf("\nDEBUG remref(): about to remove '%s' from symtab\n", sym->id);
-	        curr_symtab->symtab[hash]=0;
+	    {   curr_symtab->symtab[hash]=0;
 	        return;
             }
         }
@@ -855,7 +824,6 @@ void global_symtab_init(void)
 void funcdef_to_symtab(struct function_def *funcdef)
 {
 
-    printf("DEBUG: funcdef_to_symtab: invoked!\n");
 
     /* a function defintion is composed of a
     |  fuction_defspec and a compound statement.
