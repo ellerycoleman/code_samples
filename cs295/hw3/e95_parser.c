@@ -333,7 +333,7 @@ void print_tree(struct ast *nodeptr)
 
     /* print symbol tables */
     printtabs(global_top_level);
-    printf("\n\nTotal amount of memory dynamically allocated by parser: %d bytes\n", global_allocation);
+    printf("\n\nTotal amount of memory dynamically allocated by this compiler: %d bytes\n", global_allocation);
 }
 
 
@@ -1254,7 +1254,8 @@ declarator *new_direct_abstract_declarator(int type, struct ast *data, declarato
 
 
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist)
-{   declarator *d= emalloc(sizeof(declarator));
+{   
+    declarator *d= emalloc(sizeof(declarator));
     {   d->nodetype= FUNCTION_DECLARATOR;
         d->adeclarator= fdecl;
         d->plist= plist;

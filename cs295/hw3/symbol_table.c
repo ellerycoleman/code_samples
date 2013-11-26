@@ -789,6 +789,8 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
 
 
+
+
     /*------------------------------------------------------
     |  Check to see if the function name is already in the
     |  symbol table from a function prototype.  If so,
@@ -800,7 +802,8 @@ void funcdef_to_symtab(struct function_def *funcdef)
     /* if function name is in symbol table...
     +-------------------------------------------*/
     if(func= lookup(dporig,curr_symtab))
-    {
+    {   /* printf("funcname IS ALREADY in table\n"); */
+
         /* if the symbol references a function definition...  exit with error
 	+---------------------------------------------------------------------*/
         if(func->funcdef_true)
@@ -811,10 +814,14 @@ void funcdef_to_symtab(struct function_def *funcdef)
             {   while(func->next)
                 {   func= func->next;
 	        }
+
 	        if(!func->id)
 	        {   func= func->adeclarator;
 	        }
             }
+	    else
+	    {   func= func->adeclarator;
+	    }
 	
 	
 	    printf("Error: redefinition of function '%s' not allowed\n", func->id);
@@ -847,7 +854,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	remref(func,curr_symtab);
     }
     else
-    {   printf("funcname IS NOT in table\n");
+    {   /* printf("funcname IS NOT in table\n"); */
     }
 
 
@@ -889,7 +896,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
 
     /* Retrieve the function name from this declarator, considering
-    |  that pointers may be present.
+    |  that pointers may be present.  Grab plist also.
     +---------------------------------------------------------------*/
     d= fdspec->d;
     if(d->nodetype == POINTER_DECLARATOR)
@@ -904,7 +911,8 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	}
     }
     else
-    {   d= d->adeclarator;
+    {   plist= d->plist;
+        d= d->adeclarator;
     }
     funcname= d->id;
 
@@ -919,8 +927,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
     /* Add the parameters to the newly created symtab
     +-------------------------------------------------*/
     int i=0;
-    plist= fdspec->d->plist;
-
 
     while(plist)
     {   d= plist->pd;
