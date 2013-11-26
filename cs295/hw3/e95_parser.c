@@ -237,29 +237,64 @@ void print_tree(struct ast *nodeptr)
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
         {
 
-	    /* retrieve function definition */
+	    clearstr(tmpstr);
+
+	    /* retrieve function definition 
+	    +---------------------------------*/
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
 
+
+
             /* a function defintion is composed of a
-	     * fuction_defspec and a compound statement.
-	     */
+	    |  function_defspec and a compound statement.
+	    +----------------------------------------------*/
 	    struct function_defspec *fdspec= funcdef->fdspec;
 	    struct ast *cstmt= funcdef->cstmt;
 	    struct decostat_list *dlist;
 
 
+
+	    /*
+	    |  fdspec contains the function declarator.
+	    +-------------------------------------------*/
+	    struct declarator *d= fdspec->d;
+
+
+
 	    /* print function return type */
 	    printf("\n\n%s ", print_type(fdspec->typespec));
 
-	    /* print function name */
-	    sprintf(&tmpstr[strlen(tmpstr)],"%s(", fdspec->d->adeclarator->id);
+
+            /* Retrieve and print function name from this declarator,
+            |  considering that pointers may be present.
+            +------------------------------------------------------------*/
+	    struct parameter_list *plist;
+            if(d->nodetype == POINTER_DECLARATOR)
+            {   while(d->next)
+                {   d= d->next;
+	        }
+                
+		plist= d->plist;
+
+	        if(!d->id)
+	        {   d= d->adeclarator;
+	        }
+            }
+            char *funcname= d->id;
+
+
+	    sprintf(&tmpstr[strlen(tmpstr)],"%s(", funcname);
 	    printf("%s", tmpstr); clearstr(tmpstr);
+	    printf("DEBUG print_tree():  plist addr is %ld\n", plist);
+
+
 
             /* print parameter list */
-	    print_parameter_list(fdspec->d->plist,tmpstr);
+	    print_parameter_list(plist,tmpstr);
 	    sprintf(&tmpstr[strlen(tmpstr)],")");
 	    sprintf(&tmpstr[strlen(tmpstr)],"\n{\n");
 	    printf("%s",tmpstr); clearstr(tmpstr);
+
 
 
             /* display compound statement block */
@@ -1441,6 +1476,7 @@ char * print_parameter_list(parameter_list *plist,char *plistr)
     declarator *ad;
     do
     {   sprintf(&plistr[strlen(plistr)],"(");
+
         switch(plist->pd->nodetype)
         {
 
