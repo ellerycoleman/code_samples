@@ -900,23 +900,22 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	if(func->nodetype == FUNCTION_DECLARATOR)
 	{
             fplist= func->plist;
-	    printf("\n\n------------\n");
 	
 	    char tmp1[TMPSTRSZ];
 	    char tmp2[TMPSTRSZ];
 
-	    funcdef_to_string(funcdef,tmp1);
-	    /*
-	    funcdecl_to_string(lookup(dporig,curr_symtab),tmp2);
-	    */
+	    funcdecl_to_string(lookup(dporig,curr_symtab),tmp1);
+	    funcdef_to_string(funcdef,tmp2);
 
-	    printf(":::funcdef::: %s\n", tmp1);
-	    /*
-	    printf(":::funcdecl:: %s\n", tmp2);
-	    */
+            if(strcmp(tmp1,tmp2))
+	    {   printf("ERROR: function prototype and function definition do not match.\n"); 
+	    
+	        printf("\nfunc decl: %s\n", tmp1);
+	        printf(" func def: %s\n", tmp2);
+	        printf("\n\n");
 
-
-	    printf("n\n------------\n");
+		exit(-1);
+            }
 	}
 
 	remref(func,curr_symtab);

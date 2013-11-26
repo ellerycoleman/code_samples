@@ -1957,89 +1957,93 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 
 
 
-char * funcdecl_to_string(struct declarator *fdecl,char *fdef)
+
+
+
+char * funcdecl_to_string(struct declarator *funcdp,char fdec[])
 {
     int tcount=0;
     declarator *d;
-    declarator *dporig= fdecl;
-    declarator *ad;
+    declarator *dporig= funcdp;
     struct parameter_list *plist;
-    plist= fdecl->plist;
 
 
     /* print type and name of function */
+    d= funcdp;
+
+
+    sprintf(&fdec[strlen(fdec)],"%s ",print_type(dporig->tspecptr->type));
 
 
             /* Retrieve and print function name from this declarator,
             |  considering that pointers may be present.  Also grab
 	    |  the parameter_list.
             +------------------------------------------------------------*/
-            if(fdecl->nodetype == POINTER_DECLARATOR)
-            {   while(fdecl->next)
-                {   fdecl= fdecl->next;
-		    sprintf(&tmpstr[strlen(tmpstr)],"*");
+            if(d->nodetype == POINTER_DECLARATOR)
+            {   while(d->next)
+                {   d= d->next;
+		    sprintf(&fdec[strlen(fdec)],"*");
 	        }
 
 
-		plist= fdecl->plist;
+		plist= d->plist;
 
 
-	        if(!fdecl->id)
-	        {   fdecl= fdecl->adeclarator;
+	        if(!d->id)
+	        {   d= d->adeclarator;
 	        }
             }
 	    else
-	    {   fdecl= fdecl->adeclarator;
-	        plist= fdecl->plist;
+	    {   d= d->adeclarator;
+	        plist= dporig->plist;
 	    }
-            char *funcname= fdecl->id;
-
-    sprintf(&fdef[strlen(fdef)],print_type(dporig->tspecptr->type));
-    sprintf(&fdef[strlen(fdef)],"%s",funcname);
-    printf("%s",fdef);
+            char *funcname= d->id;
 
 
+    sprintf(&fdec[strlen(fdec)]," %s(", funcname);
+    printf("\tDEBUG: current string: '%s'\n",fdec);
 
 
     do
-    {   sprintf(&fdef[strlen(fdef)],"(");
+    {   
         switch(plist->pd->nodetype)
         {
 
 	    case SIMPLE_DECLARATOR:
-               sprintf(&fdef[strlen(fdef)],"%s ", print_type(plist->pd->tspecptr->type));
+	       printf("\t\tDEBUG: parameter is simple declarator...\n");
+               sprintf(&fdec[strlen(fdec)],"(%s ", print_type(plist->pd->tspecptr->type));
+	       /*
 	       if(plist->pd->id != NULL)
-	       {   sprintf(&fdef[strlen(fdef)],"%s", plist->pd->id);
+	       {   sprintf(&fdec[strlen(fdec)],"%s", plist->pd->id);
 	       }
+	       */
 	       break;
 
 
 
 	    case POINTER_DECLARATOR:
-               sprintf(&fdef[strlen(fdef)],"");
+               sprintf(&fdec[strlen(fdec)],"");
 	       struct declarator *tmpd;
 	       struct parameter_list *tmplist;
 
-
-
-               sprintf(&fdef[strlen(fdef)], "%s ", print_type(plist->pd->tspecptr->type));
+               sprintf(&fdec[strlen(fdec)], "%s ", print_type(plist->pd->tspecptr->type));
 	       d= plist->pd;
 
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
-	           {   sprintf(&fdef[strlen(fdef)],"*");
+	           {   sprintf(&fdec[strlen(fdec)],"*");
 		   }
 		   else if( d->nodetype == SIMPLE_DECLARATOR )
-	           {   sprintf(&fdef[strlen(fdef)],"%s", d->id);
+	           {   sprintf(&fdec[strlen(fdec)],"%s", d->id);
 		   }
 		   else if( d->nodetype == DIRECT_ABSTRACT_DECLARATOR )
-		   {   print_dad(d,&fdef[strlen(fdef)]);
+		   {   print_dad(d,&fdec[strlen(fdec)]);
 		   }
 	           else if( d->nodetype == ARRAY_DECLARATOR )
-		   {   /* sprintf(&fdef[strlen(fdef)]," (%s", d->adeclarator->id); */
-         	       sprintf(&fdef[strlen(fdef)],"[");
-	               print_expr((struct ast *)d->exp,&fdef[strlen(fdef)]);
-         	       sprintf(&fdef[strlen(fdef)],"])");
+		   {   /* sprintf(&fdec[strlen(fdec)]," (%s", d->adeclarator->id); */
+         	       sprintf(&fdec[strlen(fdec)],"[");
+	               print_expr((struct ast *)d->exp,&fdec[strlen(fdec)]);
+         	       sprintf(&fdec[strlen(fdec)],"])");
 		   }
                }while( (d= d->next) != NULL);
 	       break;
@@ -2047,24 +2051,25 @@ char * funcdecl_to_string(struct declarator *fdecl,char *fdef)
 
 	    case DIRECT_ABSTRACT_DECLARATOR:
 	       d= plist->pd;
-	       print_dad(d,tmpstr);
+	       print_dad(d,&fdec[strlen(fdec)]);
 	       break;
 
 
 	    case DECL:
+	       printf("\t\tDEBUG: parameter is decl...\n");
 	       d= plist->pd;
-	       print_decl((struct ast *)d,tmpstr);
+	       print_decl((struct ast *)d,&fdec[strlen(fdec)]);
 
 
             case OTHER:  /* print type only */
-               sprintf(&fdef[strlen(fdef)],"%s", print_type(plist->pd->tspecptr->type));
+               sprintf(&fdec[strlen(fdec)],"%s", print_type(plist->pd->tspecptr->type));
 	       d= plist->pd;
 	       do
 	       {   if( d->nodetype == POINTER_DECLARATOR )
-	           {   sprintf(&fdef[strlen(fdef)],"*");
+	           {   sprintf(&fdec[strlen(fdec)],"*");
 		   }
 		   else if( d->nodetype == SIMPLE_DECLARATOR )
-		   {   sprintf(&fdef[strlen(fdef)],"%s", d->id);
+		   {   sprintf(&fdec[strlen(fdec)],"%s", d->id);
 		   }
                }while( (d= d->next) != NULL);
 	       break;
@@ -2072,20 +2077,20 @@ char * funcdecl_to_string(struct declarator *fdecl,char *fdef)
 
            default:
 	      d= plist->pd;
-	      sprintf(&fdef[strlen(fdef)],"PRINT_PARAMETER_LIST: not sure what to do with nodetype: %d\n",d->nodetype);
+	      sprintf(&fdec[strlen(fdec)],"PRINT_PARAMETER_LIST: not sure what to do with nodetype: %d\n",d->nodetype);
 	      break;
 
         }
-        sprintf(&fdef[strlen(fdef)],")");
+        sprintf(&fdec[strlen(fdec)],")");
 
 
         if(plist->next != NULL)
-        {   printf(", ");
+        {   sprintf(&fdec[strlen(fdec)],", ");
         }
     }while((plist= plist->next) != NULL);
-    sprintf(&fdef[strlen(fdef)],")");
+    sprintf(&fdec[strlen(fdec)],")");
 
-    return fdef;
+    return fdec;
 }
 
 
