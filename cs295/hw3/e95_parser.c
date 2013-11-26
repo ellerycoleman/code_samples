@@ -272,7 +272,8 @@ void print_tree(struct ast *nodeptr)
 
 
             /* Retrieve and print function name from this declarator,
-            |  considering that pointers may be present.
+            |  considering that pointers may be present.  Also grab
+	    |  the parameter_list.
             +------------------------------------------------------------*/
 	    struct parameter_list *plist;
             if(d->nodetype == POINTER_DECLARATOR)
@@ -289,6 +290,10 @@ void print_tree(struct ast *nodeptr)
 	        {   d= d->adeclarator;
 	        }
             }
+	    else
+	    {   d= d->adeclarator;
+	        plist= fdspec->d->plist;
+	    }
             char *funcname= d->id;
 
 
@@ -1487,7 +1492,7 @@ char * print_parameter_list(parameter_list *plist,char *plistr)
     declarator *d;
     declarator *ad;
     do
-    {   sprintf(&plistr[strlen(plistr)],"(");
+    {   sprintf(&plistr[strlen(plistr)],"%s","(");
 
         switch(plist->pd->nodetype)
         {

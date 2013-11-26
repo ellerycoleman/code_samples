@@ -72,6 +72,7 @@ void create_symbol_tables(struct ast *parse_tree)
 	    /* retrieve function definition */
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
 
+
 	    /* add funcdef to symtab */
 	    funcdef_to_symtab(funcdef);
 	}
@@ -118,8 +119,13 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
     {   dp= (struct declarator *)sym;
 	addref(dp,curr_symtab);
     }
-        
 
+
+    else if(sym->nodetype == FUNCTION_DECLARATOR)
+    {   dp= (struct declarator *)sym;
+	addref(dp,curr_symtab);
+    }
+        
 
     else
     {   printf("WARNING: ast_to_symtab(): called with unknown nodetype: %d\n", sym->nodetype);
@@ -795,22 +801,23 @@ void funcdef_to_symtab(struct function_def *funcdef)
     +-------------------------------------------*/
     if(func= lookup(dporig,curr_symtab))
     {
-        /* fast forward to the declarator containing the id...
-	+-----------------------------------------------------*/
-        if(func->nodetype == POINTER_DECLARATOR)
-        {   while(func->next)
-            {   func= func->next;
-	    }
-	    if(!func->id)
-	    {   func= func->adeclarator;
-	    }
-        }
-
-
         /* if the symbol references a function definition...  exit with error
 	+---------------------------------------------------------------------*/
         if(func->funcdef_true)
-	{   printf("Error: redefinition of function '%s' not allowed\n", func->adeclarator->id);
+	{   
+            /* fast forward to the declarator containing the id...
+	    +-----------------------------------------------------*/
+            if(func->nodetype == POINTER_DECLARATOR)
+            {   while(func->next)
+                {   func= func->next;
+	        }
+	        if(!func->id)
+	        {   func= func->adeclarator;
+	        }
+            }
+	
+	
+	    printf("Error: redefinition of function '%s' not allowed\n", func->id);
 	    exit(-1);
         }
 
@@ -896,6 +903,9 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	{   d= d->adeclarator;
 	}
     }
+    else
+    {   d= d->adeclarator;
+    }
     funcname= d->id;
 
 
@@ -909,9 +919,8 @@ void funcdef_to_symtab(struct function_def *funcdef)
     /* Add the parameters to the newly created symtab
     +-------------------------------------------------*/
     int i=0;
-    if(!plist)
-    {   plist= fdspec->d->plist;
-    }
+    plist= fdspec->d->plist;
+
 
     while(plist)
     {   d= plist->pd;
@@ -935,6 +944,5 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	}
     } while( (dlist= dlist->next) != NULL);
 
-
-    printf("\n}\n\n");
+    
 }
