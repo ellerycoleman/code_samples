@@ -102,12 +102,12 @@ void create_symbol_tables(struct ast *parse_tree)
 	        {   d= d->next;
 	        }
             }
- 
+
 
             /* if this is a function declarator...
             +---------------------------------------*/
             if(d->nodetype == FUNCTION_DECLARATOR)
-            {   
+            {
 
                 /* if this declarator doesn't belong to a function def,
                 |  then it's a declarator that has not been defined.
@@ -139,18 +139,27 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
 
 
-
     if(sym->nodetype == DECL)
     {   tdecl= (struct decl *)sym;
         dlist= tdecl->dl;
         do
         {   dp= dlist->d;
+	    dporig= dlist->d;
+
+
+	    /* ffwd pointer declarators */
+	    if(dp->nodetype == POINTER_DECLARATOR)
+	    {   while(dp->next)
+	        {   dp= dp->next;
+		}
+            }
 
 	    /* copy declarator type to function declarators */
 	    if(dp->nodetype == FUNCTION_DECLARATOR)
-	    {   dp->tspecptr= (struct basic_type *)tdecl->tspecptr;
+	    {   dporig->tspecptr= (struct basic_type *)tdecl->tspecptr;
+	        dp->tspecptr= (struct basic_type *)tdecl->tspecptr;
 	    }
-            addref(dp,curr_symtab);
+            addref(dporig,curr_symtab);
         }while(dlist= dlist->next);
     }
 
@@ -187,7 +196,7 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
     int i, j=0;
     for(i=0; i<NHASH; i++)
     {   if(global_top_level->symtab[i])
-        {   dp= global_top_level->symtab[i]; 
+        {   dp= global_top_level->symtab[i];
 	}
     }
 
@@ -867,29 +876,13 @@ void funcdef_to_symtab(struct function_def *funcdef)
     /* if function name is in symbol table...
     +-------------------------------------------*/
     if(func= lookup(dporig,curr_symtab))
-    {   /* printf("funcname IS ALREADY in table\n"); */
+    {   printf("funcname IS ALREADY in table\n");
+
 
         /* if the symbol references a function definition...  exit with error
 	+---------------------------------------------------------------------*/
         if(func->funcdef_true)
-	{
-            /* fast forward to the declarator containing the id...
-	    +-----------------------------------------------------*/
-            if(func->nodetype == POINTER_DECLARATOR)
-            {   while(func->next)
-                {   func= func->next;
-	        }
-
-	        if(!func->id)
-	        {   func= func->adeclarator;
-	        }
-            }
-	    else
-	    {   func= func->adeclarator;
-	    }
-	
-	
-	    printf("Error: redefinition of function '%s' not allowed\n", func->id);
+	{   printf("Error: redefinition of function '%s' not allowed\n", func->id);
 	    exit(-1);
         }
 
@@ -898,6 +891,12 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	|  make sure the prototype matches the function definition.
 	+----------------------------------------------------------*/
 	struct parameter_list *fplist;
+	if(func->nodetype == POINTER_DECLARATOR)
+	{   while(func->next)
+	    {   func= func->next;
+	    }
+	}
+
 	if(func->nodetype == FUNCTION_DECLARATOR)
 	{
             fplist= func->plist;
@@ -907,19 +906,23 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	    char tmp2[TMPSTRSZ];
 
 	    funcdef_to_string(funcdef,tmp1);
-	    funcdecl_to_string(func,tmp2);
+	    /*
+	    funcdecl_to_string(lookup(dporig,curr_symtab),tmp2);
+	    */
 
-	    printf(" funcdef: %s\n", tmp1);
-	    printf("funcdecl: %s\n", tmp2);
+	    printf(":::funcdef::: %s\n", tmp1);
+	    /*
+	    printf(":::funcdecl:: %s\n", tmp2);
+	    */
 
 
-	    printf("\n\n------------\n");
+	    printf("n\n------------\n");
 	}
 
 	remref(func,curr_symtab);
     }
     else
-    {   /* printf("funcname IS NOT in table\n"); */
+    {   printf("funcname IS NOT in table\n");
     }
 
 

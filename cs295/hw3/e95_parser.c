@@ -1828,27 +1828,56 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
     declarator *ad;
     struct parameter_list *plist;
     plist= funcdef->fdspec->d->plist;
-    fdef[0]= 0;
     struct function_defspec *fdspec= funcdef->fdspec;
 
 
     /* print type and name of function */
-    sprintf(fdef,print_type(fdspec->typespec));  /*DEBUG: this needs to be updated */
-    sprintf(&fdef[strlen(fdef)]," %s(", fdspec->d->adeclarator->id);
+    d=fdspec->d;
+    sprintf(&fdef[strlen(fdef)],"%s ",print_type(fdspec->typespec));  /*DEBUG: this needs to be updated */
 
 
+            /* Retrieve and print function name from this declarator,
+            |  considering that pointers may be present.  Also grab
+	    |  the parameter_list.
+            +------------------------------------------------------------*/
+            if(d->nodetype == POINTER_DECLARATOR)
+            {   while(d->next)
+                {   d= d->next;
+		    sprintf(&fdef[strlen(fdef)],"*");
+	        }
+
+
+		plist= d->plist;
+
+
+	        if(!d->id)
+	        {   d= d->adeclarator;
+	        }
+            }
+	    else
+	    {   d= d->adeclarator;
+	        plist= fdspec->d->plist;
+	    }
+            char *funcname= d->id;
+
+
+    sprintf(&fdef[strlen(fdef)]," %s(", funcname);
+    printf("\tDEBUG: current string: '%s'\n",fdef);
 
 
     do
-    {   sprintf(&fdef[strlen(fdef)],"(");
+    {   
         switch(plist->pd->nodetype)
         {
 
 	    case SIMPLE_DECLARATOR:
-               sprintf(&fdef[strlen(fdef)],"%s ", print_type(plist->pd->tspecptr->type));
+	       printf("\t\tDEBUG: parameter is simple declarator...\n");
+               sprintf(&fdef[strlen(fdef)],"(%s ", print_type(plist->pd->tspecptr->type));
+	       /*
 	       if(plist->pd->id != NULL)
 	       {   sprintf(&fdef[strlen(fdef)],"%s", plist->pd->id);
 	       }
+	       */
 	       break;
 
 
@@ -1857,8 +1886,6 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
                sprintf(&fdef[strlen(fdef)],"");
 	       struct declarator *tmpd;
 	       struct parameter_list *tmplist;
-
-
 
                sprintf(&fdef[strlen(fdef)], "%s ", print_type(plist->pd->tspecptr->type));
 	       d= plist->pd;
@@ -1885,13 +1912,14 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 
 	    case DIRECT_ABSTRACT_DECLARATOR:
 	       d= plist->pd;
-	       print_dad(d,tmpstr);
+	       print_dad(d,&fdef[strlen(fdef)]);
 	       break;
 
 
 	    case DECL:
+	       printf("\t\tDEBUG: parameter is decl...\n");
 	       d= plist->pd;
-	       print_decl((struct ast *)d,tmpstr);
+	       print_decl((struct ast *)d,&fdef[strlen(fdef)]);
 
 
             case OTHER:  /* print type only */
@@ -1918,7 +1946,7 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 
 
         if(plist->next != NULL)
-        {   printf(", ");
+        {   sprintf(&fdef[strlen(fdef)],", ");
         }
     }while((plist= plist->next) != NULL);
     sprintf(&fdef[strlen(fdef)],")");
@@ -1933,16 +1961,42 @@ char * funcdecl_to_string(struct declarator *fdecl,char *fdef)
 {
     int tcount=0;
     declarator *d;
+    declarator *dporig= fdecl;
     declarator *ad;
     struct parameter_list *plist;
     plist= fdecl->plist;
-    fdef[0]= 0;
 
 
     /* print type and name of function */
 
-    sprintf(fdef,print_type(fdecl->tspecptr->type));
-    sprintf(&fdef[strlen(fdef)]," %s(", fdecl->adeclarator->id);
+
+            /* Retrieve and print function name from this declarator,
+            |  considering that pointers may be present.  Also grab
+	    |  the parameter_list.
+            +------------------------------------------------------------*/
+            if(fdecl->nodetype == POINTER_DECLARATOR)
+            {   while(fdecl->next)
+                {   fdecl= fdecl->next;
+		    sprintf(&tmpstr[strlen(tmpstr)],"*");
+	        }
+
+
+		plist= fdecl->plist;
+
+
+	        if(!fdecl->id)
+	        {   fdecl= fdecl->adeclarator;
+	        }
+            }
+	    else
+	    {   fdecl= fdecl->adeclarator;
+	        plist= fdecl->plist;
+	    }
+            char *funcname= fdecl->id;
+
+    sprintf(&fdef[strlen(fdef)],print_type(dporig->tspecptr->type));
+    sprintf(&fdef[strlen(fdef)],"%s",funcname);
+    printf("%s",fdef);
 
 
 
