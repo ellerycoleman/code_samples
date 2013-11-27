@@ -770,7 +770,13 @@ void print_symtab(struct symtabl *curr_symtab)
 
     printf("\n\n\n\n\n\n\n");
     printf("=====================================================\n");
-    printf(" Symbol Table '%s'\t\t(sid %d)\n", curr_symtab->id,curr_symtab->sid);
+    printf(" Symbol Table: '%s'\t\t(sid %d)\n", curr_symtab->id,curr_symtab->sid);
+    if(curr_symtab->parent)
+    {   printf(" parent_table: (%s,%d)\n", curr_symtab->parent->id, curr_symtab->parent->sid);
+    }
+    else
+    {   printf(" parent_table: NULL\n");
+    }
     printf("=====================================================\n");
 
 
@@ -943,6 +949,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
     +---------------------------------------------------------*/
     if(  (curr_symtab->sid == ROOT)  &&  (curr_symtab->child == NULL) )
     {   curr_symtab->child= emalloc(sizeof(struct symtabl));
+        curr_symtab->child->parent= curr_symtab;
         curr_symtab= curr_symtab->child;
     }
     else
@@ -1018,7 +1025,47 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	{   ast_to_symtab(dstat,curr_symtab);
 	}
 	else if(dstat->nodetype == COMPOUND_STATEMENT)
-	{   printf("DEBUG: encountered compound statement...\n");
+	{   
+
+            /* Allocate a new symbol table.  Compound statements can
+            |  only occur in the context of a function, but they can
+            |  be nested.
+            |
+            |  Case 1:
+            |  If the current symbol table is for a function, and the child
+            |  table is NULL, then we'll create a table to be the child
+            |  of the function table.  
+            |
+            |  Case 2:
+            |  If the current symbol table is for a function, and the child
+            |  table is NOT NULL, then we'll create a sibling table.
+            |
+            |  Case 3:
+            |  If the current symbol table is for a compound statement,
+            |  and the child is null, then we'll create a table to be
+            |  the child of this compound statement table.
+            |
+            |  Case 4:
+            |  If the current symbol table is for a compound statement,
+            |  and the child is NOT NULL, then we'll create a sibling table.
+            +------------------------------------------------------------------*/
+    
+            /* CASE 1 */
+            if(  (strstr(curr_symtab->id, "_funcdef"))  &&  (curr_symtab->child == NULL) )
+            {   curr_symtab->child= emalloc(sizeof(struct symtabl));
+	        curr_symtab->child->parent= curr_symtab;
+                curr_symtab= curr_symtab->child;
+		strcpy(curr_symtab->id,curr_symtab->parent->id);
+		strcat(curr_symtab->id,"_child");
+		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%s%d",
+		        "_",
+			++curr_symtab->parent->child_count
+	        );
+            }
+
+
+
+
 	}
 	else
 	{   printf("DEBUG: encountered decostat type: %ld \n", dstat->nodetype);
