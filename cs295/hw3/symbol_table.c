@@ -19,7 +19,7 @@ extern int symtab_sid;
 void create_symbol_tables(struct ast *parse_tree)
 {
     struct decl *tdecl;
-    struct declarator_list *dlist;
+    struct declarator_list *decolist;
     struct function_def *funcdef;
     int i=1;
     int tldloop=0;
@@ -132,7 +132,7 @@ void create_symbol_tables(struct ast *parse_tree)
  | ast_to_symtab
  +---------------------------------------------*/
 void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
-{   struct declarator_list *dlist;
+{   struct declarator_list *decolist;
     struct declarator *dp;
     struct declarator *dporig;
     struct decl *tdecl;
@@ -143,10 +143,10 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
     if(sym->nodetype == DECL)
     {   tdecl= (struct decl *)sym;
-        dlist= tdecl->dl;
+        decolist= tdecl->dl;
         do
-        {   dp= dlist->d;
-	    dporig= dlist->d;
+        {   dp= decolist->d;
+	    dporig= decolist->d;
 
 
 	    /* ffwd pointer declarators */
@@ -162,7 +162,7 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 	        dp->tspecptr= (struct basic_type *)tdecl->tspecptr;
 	    }
             addref(dporig,curr_symtab);
-        }while(dlist= dlist->next);
+        }while(decolist= decolist->next);
     }
 
 
@@ -849,7 +849,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
     struct ast *cstmt= funcdef->cstmt;
 
 
-    struct decostat_list *dlist;
+    struct decostat_list *decolist;
     struct parameter_list *plist;
     struct ast *dstat;
     char symtab_name[100];
@@ -958,6 +958,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	}
 
         curr_symtab->rsibling= emalloc(sizeof(struct symtabl));
+        curr_symtab->rsibling->parent= curr_symtab;
         curr_symtab= curr_symtab->rsibling;
     }
 
@@ -1018,9 +1019,9 @@ void funcdef_to_symtab(struct function_def *funcdef)
     |  Add decls to the symtab.  If labels are found, create
     |  a sibling symtab to store them.  make sure 
     +-----------------------------------------------------------*/
-    dlist= (struct decostat_list *) cstmt->l;
+    decolist= (struct decostat_list *) cstmt->l;
     do
-    {   dstat= dlist->decostat;
+    {   dstat= decolist->decostat;
         if(dstat->nodetype == DECL)
 	{   ast_to_symtab(dstat,curr_symtab);
 	}
@@ -1052,8 +1053,11 @@ void funcdef_to_symtab(struct function_def *funcdef)
     
             /* CASE 1 */
             if(  (strstr(curr_symtab->id, "_funcdef"))  &&  (curr_symtab->child == NULL) )
-            {   curr_symtab->child= emalloc(sizeof(struct symtabl));
+            {   /* create new symtab */
+	        curr_symtab->child= emalloc(sizeof(struct symtabl));
 	        curr_symtab->child->parent= curr_symtab;
+
+                /* switch to new symtab and provide parameters */
                 curr_symtab= curr_symtab->child;
 		strcpy(curr_symtab->id,curr_symtab->parent->id);
 		strcat(curr_symtab->id,"_child");
@@ -1061,6 +1065,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 		        "_",
 			++curr_symtab->parent->child_count
 	        );
+                curr_symtab->sid= ++symtab_sid;
             }
 
 
@@ -1070,6 +1075,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	else
 	{   printf("DEBUG: encountered decostat type: %ld \n", dstat->nodetype);
 	}
-    } while( (dlist= dlist->next) != NULL);
+    } while( (decolist= decolist->next) != NULL);
 
 }
