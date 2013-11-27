@@ -33,9 +33,11 @@ void create_symbol_tables(struct ast *parse_tree)
     basic_types_init();
 
 
+
     /* Initialize global symbol table
     +----------------------------------*/
     global_symtab_init();
+
 
 
     /* create_symbol_table() accepts the root of parse tree as its param.
@@ -833,7 +835,6 @@ void global_symtab_init(void)
 void funcdef_to_symtab(struct function_def *funcdef)
 {
 
-
     /* a function defintion is composed of a
     |  fuction_defspec and a compound statement.
     |  A compound statement has a decostat_list.
@@ -858,7 +859,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
     /* A function defspec contains a typespec (needs to be changed)
     |  and a declarator.  Retrieve the declarator.
-    +-----------------------------------------------------------*/
+    +--------------------------------------------------------------*/
     dporig= fdspec->d;
 
 
@@ -897,6 +898,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	    }
 	}
 
+
 	if(func->nodetype == FUNCTION_DECLARATOR)
 	{
             fplist= func->plist;
@@ -908,8 +910,8 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	    funcdef_to_string(funcdef,tmp2);
 
             if(strcmp(tmp1,tmp2))
-	    {   printf("ERROR: function prototype and function definition do not match.\n"); 
-	    
+	    {   printf("ERROR: function prototype and function definition do not match.\n");
+
 	        printf("\nfunc decl: %s\n", tmp1);
 	        printf(" func def: %s\n", tmp2);
 	        printf("\n\n");
@@ -994,7 +996,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
     /* Add the parameters to the newly created symtab
     +-------------------------------------------------*/
     int i=0;
-
     while(plist)
     {   d= plist->pd;
         if(d->tspecptr->type != VOID)
@@ -1005,9 +1006,10 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
 
 
-    /* search the compound statement block for decls or labels.
+    /* search the compound statement block for decls, labels,
+    |  compound statements or simple declarators.
     |  Add decls to the symtab.  If labels are found, create
-    |  a sibling symtab to store them.
+    |  a sibling symtab to store them.  make sure 
     +-----------------------------------------------------------*/
     dlist= (struct decostat_list *) cstmt->l;
     do
@@ -1015,7 +1017,12 @@ void funcdef_to_symtab(struct function_def *funcdef)
         if(dstat->nodetype == DECL)
 	{   ast_to_symtab(dstat,curr_symtab);
 	}
+	else if(dstat->nodetype == COMPOUND_STATEMENT)
+	{   printf("DEBUG: encountered compound statement...\n");
+	}
+	else
+	{   printf("DEBUG: encountered decostat type: %ld \n", dstat->nodetype);
+	}
     } while( (dlist= dlist->next) != NULL);
-
 
 }

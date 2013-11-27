@@ -318,7 +318,12 @@ void print_tree(struct ast *nodeptr)
 	    do
 	    {   indent(tmpstr);
 	        print_expr(dlist->decostat,tmpstr);
-		printf("%s;\n",tmpstr); clearstr(tmpstr);
+		if(dlist->decostat->nodetype != COMPOUND_STATEMENT)
+		{   printf("%s;\n",tmpstr); clearstr(tmpstr);
+		}
+		else
+		{   printf("\n");
+		}
 		printf("%s",tmpstr); clearstr(tmpstr);
 	    } while( (dlist= dlist->next) != NULL);
 	    --indent_count;
