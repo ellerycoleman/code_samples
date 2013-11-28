@@ -8,7 +8,6 @@
 +===========================================================================*/
 
 extern struct basic_type basic_types[];
-extern struct symtabl *curr_symtab;
 extern struct symtabl *global_top_level;
 extern int symtab_sid;
 
@@ -26,6 +25,7 @@ void create_symbol_tables(struct ast *parse_tree)
     struct declarator *d;
     struct declarator *dporig;
     char symtab_name[100];
+    struct symtabl *curr_symtab;
 
 
     /* Initialize basic_types data structure
@@ -78,7 +78,7 @@ void create_symbol_tables(struct ast *parse_tree)
 
 
 	    /* add funcdef to symtab */
-	    funcdef_to_symtab(funcdef);
+	    funcdef_to_symtab(funcdef,curr_symtab);
 	}
 
     }while( (tldlist= tldlist->next) != NULL );
@@ -815,8 +815,9 @@ void print_symtab(struct symtabl *curr_symtab)
 /*-----------------------------------------------
  | global_symtab_init
  +---------------------------------------------*/
-void global_symtab_init(void)
+struct symtabl * global_symtab_init(void)
 {
+    struct symtabl *curr_symtab;
     curr_symtab= emalloc(sizeof(struct symtabl));
     curr_symtab->sid= ROOT;
     strcpy(curr_symtab->id,"global_top_level");
@@ -827,6 +828,8 @@ void global_symtab_init(void)
 
     global_top_level= curr_symtab;
     symtab_sid= ROOT;
+
+    return curr_symtab;
 }
 
 
@@ -838,7 +841,7 @@ void global_symtab_init(void)
 /*-----------------------------------------------
  | funcdef_to_symtab
  +---------------------------------------------*/
-void funcdef_to_symtab(struct function_def *funcdef)
+void funcdef_to_symtab(struct function_def *funcdef,struct symtabl *curr_symtab)
 {
 
     /* a function defintion is composed of a
@@ -1017,16 +1020,43 @@ void funcdef_to_symtab(struct function_def *funcdef)
     /* search the compound statement block for decls, labels,
     |  compound statements or simple declarators.
     |  Add decls to the symtab.  If labels are found, create
-    |  a sibling symtab to store them.  make sure 
+    |  a sibling symtab to store them.  make sure
     +-----------------------------------------------------------*/
     decolist= (struct decostat_list *) cstmt->l;
+    compound_to_symtab(decolist,curr_symtab);
+
+}
+
+
+
+
+
+
+
+void compound_to_symtab(struct decostat_list *decolist, struct symtabl *curr_symtab)
+{   struct ast *dstat;
+
+    printf("\nDEBUG compound_to_symtab: invoked with symtab %s\n", curr_symtab->id);
+
     do
     {   dstat= decolist->decostat;
         if(dstat->nodetype == DECL)
 	{   ast_to_symtab(dstat,curr_symtab);
 	}
 	else if(dstat->nodetype == COMPOUND_STATEMENT)
-	{   
+	{
+
+            /*---------------------------------------------------------------
+	    |  We are processing one compound statement, and have just
+	    |  encountered another compound statement.  We will initialize
+	    |  another symbol table, and then call this function (recursion)
+	    |  with the new symbol table and compound statement.
+	    +----------------------------------------------------------------*/
+
+
+
+
+
 
             /* Allocate a new symbol table.  Compound statements can
             |  only occur in the context of a function, but they can
@@ -1035,7 +1065,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
             |  Case 1:
             |  If the current symbol table is for a function, and the child
             |  table is NULL, then we'll create a table to be the child
-            |  of the function table.  
+            |  of the function table.
             |
             |  Case 2:
             |  If the current symbol table is for a function, and the child
@@ -1050,10 +1080,13 @@ void funcdef_to_symtab(struct function_def *funcdef)
             |  If the current symbol table is for a compound statement,
             |  and the child is NOT NULL, then we'll create a sibling table.
             +------------------------------------------------------------------*/
-    
+
             /* CASE 1 */
             if(  (strstr(curr_symtab->id, "_funcdef"))  &&  (curr_symtab->child == NULL) )
-            {   /* create new symtab */
+            {
+	        printf("DEBUG compound_to_symtab: case1\n");
+
+	        /* create new symtab */
 	        curr_symtab->child= emalloc(sizeof(struct symtabl));
 	        curr_symtab->child->parent= curr_symtab;
 
@@ -1066,6 +1099,8 @@ void funcdef_to_symtab(struct function_def *funcdef)
 			++curr_symtab->parent->child_count
 	        );
                 curr_symtab->sid= ++symtab_sid;
+                decolist= (struct decostat_list *) dstat->l;
+                compound_to_symtab(decolist,curr_symtab);
             }
 
 
