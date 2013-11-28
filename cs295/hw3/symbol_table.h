@@ -46,10 +46,10 @@ struct declarator *lookup(declarator *sym, struct symtabl *curr_symtab);
 void create_symbol_tables(struct ast *parse_tree);
 void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab);
 void print_symtab(struct symtabl *curr_symtab);
-struct symtabl *global_symtab_init();
-void funcdef_to_symtab(struct function_def *funcdef, struct symtabl *curr_symtab);
+void global_symtab_init();
+void funcdef_to_symtab(struct function_def *funcdef);
 void remref(struct declarator *sym, struct symtabl *curr_symtab);
-void compound_to_symtab(struct decostat_list *decolist, struct symtabl *curr_symtab);
+void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab);
 
 
 
@@ -62,6 +62,6 @@ char *currfilename;
 
 struct basic_type basic_types[10];
 
-/* struct symtabl *curr_symtab; */
+struct symtabl *curr_symtab;
 struct symtabl *global_top_level;
 int symtab_sid;

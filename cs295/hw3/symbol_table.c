@@ -195,12 +195,14 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
 
     /* debug */
+    /*
     int i, j=0;
     for(i=0; i<NHASH; i++)
     {   if(global_top_level->symtab[i])
         {   dp= global_top_level->symtab[i];
 	}
     }
+    */
 
 
 }
@@ -1017,6 +1019,22 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
 
 
+
+    /* Process the compound statement, adding symbols to the
+    |  appropriate symtabs.
+    +---------------------------------------------------------*/
+    compound_to_symtab(cstmt,curr_symtab);
+
+
+}
+
+
+
+
+void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
+{   struct decostat_list *decolist;
+    struct ast *dstat;
+
     /* search the compound statement block for decls, labels,
     |  compound statements or simple declarators.
     |  Add decls to the symtab.  If labels are found, create
@@ -1069,6 +1087,11 @@ void funcdef_to_symtab(struct function_def *funcdef)
 			++curr_symtab->parent->child_count
 	        );
                 curr_symtab->sid= ++symtab_sid;
+
+		compound_to_symtab(dstat,curr_symtab);
+
+		/* switching back to parent symtab */
+		curr_symtab= curr_symtab->parent;
             }
 
 
