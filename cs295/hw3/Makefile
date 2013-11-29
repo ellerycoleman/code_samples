@@ -49,6 +49,7 @@ clean:
 	rm -f bison_parser.tab.*
 	rm -f e95_parser parser
 	rm -f testprog*
+	sleep 2;
 
 
 test:	all

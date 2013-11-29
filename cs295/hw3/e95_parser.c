@@ -312,7 +312,8 @@ void print_tree(struct ast *nodeptr)
 
 
 
-            /* display compound statement block */
+            /* display compound statement block
+	    +-------------------------------------*/
 	    dlist= (struct decostat_list *) cstmt->l;
 	    ++indent_count;
 	    do
@@ -363,6 +364,8 @@ char * print_expr(struct ast *expr,char *exprstr)
     struct ast *tast;
     struct cond_expr *cexpr;
     struct flow *tflow;
+
+    printf("DEBUG: print_expr() was invoked with expr type %d\n", expr->nodetype);
 
 
 
@@ -430,7 +433,12 @@ char * print_expr(struct ast *expr,char *exprstr)
 	    do
 	    {   indent(tstr);
 	        print_expr(dlist->decostat,tstr);
-	        sprintf(&tstr[strlen(tstr)],";\n");
+		if(dlist->decostat->nodetype == COMPOUND_STATEMENT)
+		{   sprintf(&tstr[strlen(tstr)],"\n");
+		}
+		else
+		{   sprintf(&tstr[strlen(tstr)],";\n");
+		}
 		printf("%s",tstr); clearstr(tstr);
             }while( (dlist= dlist->next) != NULL);
 	    --indent_count;

@@ -1035,10 +1035,11 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 {   struct decostat_list *decolist;
     struct ast *dstat;
 
+
     /* search the compound statement block for decls, labels,
     |  compound statements or simple declarators.
     |  Add decls to the symtab.  If labels are found, create
-    |  a sibling symtab to store them.  make sure 
+    |  a sibling symtab to store them.  make sure
     +-----------------------------------------------------------*/
     decolist= (struct decostat_list *) cstmt->l;
     do
@@ -1047,7 +1048,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 	{   ast_to_symtab(dstat,curr_symtab);
 	}
 	else if(dstat->nodetype == COMPOUND_STATEMENT)
-	{   
+	{
 
             /* Allocate a new symbol table.  Compound statements can
             |  only occur in the context of a function, but they can
@@ -1056,7 +1057,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
             |  Case 1:
             |  If the current symbol table is for a function, and the child
             |  table is NULL, then we'll create a table to be the child
-            |  of the function table.  
+            |  of the function table.
             |
             |  Case 2:
             |  If the current symbol table is for a function, and the child
@@ -1071,19 +1072,30 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
             |  If the current symbol table is for a compound statement,
             |  and the child is NOT NULL, then we'll create a sibling table.
             +------------------------------------------------------------------*/
-    
-            /* CASE 1 */
+
+            /* CASE 1: Create child table for function */
             if(  (strstr(curr_symtab->id, "_funcdef"))  &&  (curr_symtab->child == NULL) )
-            {   /* create new symtab */
+            {
+
+	        printf("DEBUG: found case 1!!\n");
+
+
+	        /* create new symtab */
 	        curr_symtab->child= emalloc(sizeof(struct symtabl));
 	        curr_symtab->child->parent= curr_symtab;
 
                 /* switch to new symtab and provide parameters */
+		char newname[100];
+		strcpy(newname,curr_symtab->id);
+                char *edit;
+		edit= strstr(newname,"_funcdef");
+		strcpy(edit,"_func");
+
+		
                 curr_symtab= curr_symtab->child;
-		strcpy(curr_symtab->id,curr_symtab->parent->id);
+		strcpy(curr_symtab->id,newname);
 		strcat(curr_symtab->id,"_child");
-		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%s%d",
-		        "_",
+		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
 			++curr_symtab->parent->child_count
 	        );
                 curr_symtab->sid= ++symtab_sid;
@@ -1095,6 +1107,122 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
             }
 
 
+
+            /* CASE 2: Create child-sibling table for function */
+            else if(  (strstr(curr_symtab->id, "_funcdef"))  &&  (curr_symtab->child != NULL) )
+            {
+
+	        printf("DEBUG: found case 2!!\n");
+
+
+	        /* create new symtab */
+		struct symtabl *rightmost_sibling;
+		rightmost_sibling= curr_symtab->child;
+
+		while(rightmost_sibling->rsibling)
+		{   rightmost_sibling= rightmost_sibling->rsibling;
+		}
+
+	        rightmost_sibling->rsibling= emalloc(sizeof(struct symtabl));
+	        rightmost_sibling->rsibling->parent= rightmost_sibling->parent;
+		rightmost_sibling->rsibling->lsibling= rightmost_sibling;
+		printf("def got this far...\n");
+
+
+                /* switch to new symtab and provide parameters */
+                curr_symtab= rightmost_sibling->rsibling;
+		char newname[100];
+		strcpy(newname,curr_symtab->parent->id);
+                char *edit;
+		edit= strstr(newname,"_funcdef");
+		strcpy(edit,"_func");
+
+		
+		strcpy(curr_symtab->id,newname);
+		strcat(curr_symtab->id,"_child");
+		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
+			++curr_symtab->parent->child_count
+	        );
+                curr_symtab->sid= ++symtab_sid;
+
+		compound_to_symtab(dstat,curr_symtab);
+
+		/* switching back to parent symtab */
+		curr_symtab= curr_symtab->parent;
+            }
+
+
+
+
+
+            /* CASE 3: Create child table for compound statement */
+            else if(  (strstr(curr_symtab->id, "_child"))  &&  (curr_symtab->child == NULL) )
+            {
+
+	        printf("DEBUG: found case 3!!\n");
+
+
+	        /* create new symtab */
+	        curr_symtab->child= emalloc(sizeof(struct symtabl));
+	        curr_symtab->child->parent= curr_symtab;
+
+                /* switch to new symtab and provide parameters */
+                curr_symtab= curr_symtab->child;
+		strcpy(curr_symtab->id,curr_symtab->parent->id);
+		strcat(curr_symtab->id,"_child");
+		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
+			++curr_symtab->parent->child_count
+	        );
+                curr_symtab->sid= ++symtab_sid;
+
+		compound_to_symtab(dstat,curr_symtab);
+
+		/* switching back to parent symtab */
+		curr_symtab= curr_symtab->parent;
+            }
+
+
+
+
+
+
+            /* CASE 4: Create child-sibling table for compound statement */
+            else if(  (strstr(curr_symtab->id, "_child"))  &&  (curr_symtab->child != NULL) )
+            {
+
+	        printf("DEBUG: found case 4!!\n");
+
+
+	        /* create new symtab */
+		struct symtabl *rightmost_sibling;
+		rightmost_sibling= curr_symtab->child;
+
+		while(rightmost_sibling->rsibling)
+		{   rightmost_sibling= rightmost_sibling->rsibling;
+		}
+
+	        rightmost_sibling->rsibling= emalloc(sizeof(struct symtabl));
+	        rightmost_sibling->rsibling->parent= rightmost_sibling->parent;
+		rightmost_sibling->rsibling->lsibling= rightmost_sibling;
+
+
+                /* switch to new symtab and provide parameters */
+                curr_symtab= rightmost_sibling->rsibling;
+		char newname[100];
+		strcpy(newname,curr_symtab->parent->id);
+		
+		strcpy(curr_symtab->id,newname);
+		strcat(curr_symtab->id,"_child");
+		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
+			++curr_symtab->parent->child_count
+	        );
+                curr_symtab->sid= ++symtab_sid;
+
+		compound_to_symtab(dstat,curr_symtab);
+
+		/* switching back to parent symtab */
+		curr_symtab= curr_symtab->parent;
+            }
 
 
 	}
