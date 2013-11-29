@@ -349,7 +349,7 @@ void print_tree(struct ast *nodeptr)
 
 /*===============================================================
  * Function: print_expr
- * Abstract: writes a struct expr to STDOUT
+ * Abstract: writes a struct expr to char *
  *===============================================================
  */
 char * print_expr(struct ast *expr,char *exprstr)
@@ -423,27 +423,29 @@ char * print_expr(struct ast *expr,char *exprstr)
 
         case COMPOUND_STATEMENT:
 	    ;
-	    char tstr[TMPSTRSZ];
 	    dlist= (struct decostat_list *)expr->l;
+	    sprintf(&exprstr[strlen(exprstr)],"{\n");
 
-            indent(tstr);
-	    sprintf(&tstr[strlen(tstr)],"{\n");
+
 	    ++indent_count;
 	    do
-	    {   indent(tstr);
-	        print_expr(dlist->decostat,tstr);
+	    {   indent(exprstr);
+	        print_expr(dlist->decostat,exprstr);
 		if(dlist->decostat->nodetype == COMPOUND_STATEMENT)
-		{   sprintf(&tstr[strlen(tstr)],"\n");
+		{   sprintf(&exprstr[strlen(exprstr)],"\n");
 		}
 		else
-		{   sprintf(&tstr[strlen(tstr)],";\n");
+		{   sprintf(&exprstr[strlen(exprstr)],";\n");
 		}
-		printf("%s",tstr); clearstr(tstr);
+		printf("%s",exprstr); clearstr(exprstr);
             }while( (dlist= dlist->next) != NULL);
 	    --indent_count;
-	    indent(tstr);
-	    sprintf(&tstr[strlen(tstr)],"}\n\n");
-	    printf("%s",tstr); clearstr(tstr);
+
+
+
+	    indent(exprstr);
+	    sprintf(&exprstr[strlen(exprstr)],"}\n\n");
+	    printf("%s",exprstr); clearstr(exprstr);
 	   break;
 
 
