@@ -365,7 +365,6 @@ char * print_expr(struct ast *expr,char *exprstr)
     struct cond_expr *cexpr;
     struct flow *tflow;
 
-    printf("DEBUG: print_expr() was invoked with expr type %d\n", expr->nodetype);
 
 
 

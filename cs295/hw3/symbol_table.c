@@ -885,7 +885,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
     /* if function name is in symbol table...
     +-------------------------------------------*/
     if(func= lookup(dporig,curr_symtab))
-    {   printf("funcname IS ALREADY in table\n");
+    {   /* printf("funcname IS ALREADY in table\n"); */
 
 
         /* if the symbol references a function definition...  exit with error
@@ -931,7 +931,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 	remref(func,curr_symtab);
     }
     else
-    {   printf("funcname IS NOT in table\n");
+    {   /* printf("funcname IS NOT in table\n"); */
     }
 
 
@@ -1077,7 +1077,6 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
             if(  (strstr(curr_symtab->id, "_funcdef"))  &&  (curr_symtab->child == NULL) )
             {
 
-	        printf("DEBUG: found case 1!!\n");
 
 
 	        /* create new symtab */
@@ -1112,7 +1111,6 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
             else if(  (strstr(curr_symtab->id, "_funcdef"))  &&  (curr_symtab->child != NULL) )
             {
 
-	        printf("DEBUG: found case 2!!\n");
 
 
 	        /* create new symtab */
@@ -1126,7 +1124,6 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 	        rightmost_sibling->rsibling= emalloc(sizeof(struct symtabl));
 	        rightmost_sibling->rsibling->parent= rightmost_sibling->parent;
 		rightmost_sibling->rsibling->lsibling= rightmost_sibling;
-		printf("def got this far...\n");
 
 
                 /* switch to new symtab and provide parameters */
@@ -1159,7 +1156,6 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
             else if(  (strstr(curr_symtab->id, "_child"))  &&  (curr_symtab->child == NULL) )
             {
 
-	        printf("DEBUG: found case 3!!\n");
 
 
 	        /* create new symtab */
@@ -1190,7 +1186,6 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
             else if(  (strstr(curr_symtab->id, "_child"))  &&  (curr_symtab->child != NULL) )
             {
 
-	        printf("DEBUG: found case 4!!\n");
 
 
 	        /* create new symtab */
@@ -1227,7 +1222,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 	}
 	else
-	{   printf("DEBUG: encountered decostat type: %ld \n", dstat->nodetype);
+	{   printf("ERROR: encountered unknown decostat type: %ld \n", dstat->nodetype);
 	}
     } while( (decolist= decolist->next) != NULL);
 
