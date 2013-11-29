@@ -50,6 +50,10 @@ void global_symtab_init();
 void funcdef_to_symtab(struct function_def *funcdef);
 void remref(struct declarator *sym, struct symtabl *curr_symtab);
 void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab);
+void compound_to_symtab_case1(struct symtabl *curr_symtab, struct ast *dstat);
+void compound_to_symtab_case2(struct symtabl *curr_symtab, struct ast *dstat);
+void compound_to_symtab_case3(struct symtabl *curr_symtab, struct ast *dstat);
+void compound_to_symtab_case4(struct symtabl *curr_symtab, struct ast *dstat);
 
 
 

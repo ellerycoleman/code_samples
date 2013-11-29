@@ -1075,148 +1075,26 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
             /* CASE 1: Create child table for function */
             if(  (strstr(curr_symtab->id, "_funcdef"))  &&  (curr_symtab->child == NULL) )
-            {
-
-
-
-	        /* create new symtab */
-	        curr_symtab->child= emalloc(sizeof(struct symtabl));
-	        curr_symtab->child->parent= curr_symtab;
-
-                /* switch to new symtab and provide parameters */
-		char newname[100];
-		strcpy(newname,curr_symtab->id);
-                char *edit;
-		edit= strstr(newname,"_funcdef");
-		strcpy(edit,"_func");
-
-		
-                curr_symtab= curr_symtab->child;
-		strcpy(curr_symtab->id,newname);
-		strcat(curr_symtab->id,"_child");
-		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
-			++curr_symtab->parent->child_count
-	        );
-                curr_symtab->sid= ++symtab_sid;
-
-		compound_to_symtab(dstat,curr_symtab);
-
-		/* switching back to parent symtab */
-		curr_symtab= curr_symtab->parent;
+            {   compound_to_symtab_case1(curr_symtab,dstat);
             }
-
 
 
             /* CASE 2: Create child-sibling table for function */
             else if(  (strstr(curr_symtab->id, "_funcdef"))  &&  (curr_symtab->child != NULL) )
-            {
-
-
-
-	        /* create new symtab */
-		struct symtabl *rightmost_sibling;
-		rightmost_sibling= curr_symtab->child;
-
-		while(rightmost_sibling->rsibling)
-		{   rightmost_sibling= rightmost_sibling->rsibling;
-		}
-
-	        rightmost_sibling->rsibling= emalloc(sizeof(struct symtabl));
-	        rightmost_sibling->rsibling->parent= rightmost_sibling->parent;
-		rightmost_sibling->rsibling->lsibling= rightmost_sibling;
-
-
-                /* switch to new symtab and provide parameters */
-                curr_symtab= rightmost_sibling->rsibling;
-		char newname[100];
-		strcpy(newname,curr_symtab->parent->id);
-                char *edit;
-		edit= strstr(newname,"_funcdef");
-		strcpy(edit,"_func");
-
-		
-		strcpy(curr_symtab->id,newname);
-		strcat(curr_symtab->id,"_child");
-		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
-			++curr_symtab->parent->child_count
-	        );
-                curr_symtab->sid= ++symtab_sid;
-
-		compound_to_symtab(dstat,curr_symtab);
-
-		/* switching back to parent symtab */
-		curr_symtab= curr_symtab->parent;
+            {   compound_to_symtab_case2(curr_symtab,dstat);
             }
-
-
-
 
 
             /* CASE 3: Create child table for compound statement */
             else if(  (strstr(curr_symtab->id, "_child"))  &&  (curr_symtab->child == NULL) )
-            {
-
-
-
-	        /* create new symtab */
-	        curr_symtab->child= emalloc(sizeof(struct symtabl));
-	        curr_symtab->child->parent= curr_symtab;
-
-                /* switch to new symtab and provide parameters */
-                curr_symtab= curr_symtab->child;
-		strcpy(curr_symtab->id,curr_symtab->parent->id);
-		strcat(curr_symtab->id,"_child");
-		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
-			++curr_symtab->parent->child_count
-	        );
-                curr_symtab->sid= ++symtab_sid;
-
-		compound_to_symtab(dstat,curr_symtab);
-
-		/* switching back to parent symtab */
-		curr_symtab= curr_symtab->parent;
+            {   compound_to_symtab_case3(curr_symtab,dstat);
             }
-
-
-
 
 
 
             /* CASE 4: Create child-sibling table for compound statement */
             else if(  (strstr(curr_symtab->id, "_child"))  &&  (curr_symtab->child != NULL) )
-            {
-
-
-
-	        /* create new symtab */
-		struct symtabl *rightmost_sibling;
-		rightmost_sibling= curr_symtab->child;
-
-		while(rightmost_sibling->rsibling)
-		{   rightmost_sibling= rightmost_sibling->rsibling;
-		}
-
-	        rightmost_sibling->rsibling= emalloc(sizeof(struct symtabl));
-	        rightmost_sibling->rsibling->parent= rightmost_sibling->parent;
-		rightmost_sibling->rsibling->lsibling= rightmost_sibling;
-
-
-                /* switch to new symtab and provide parameters */
-                curr_symtab= rightmost_sibling->rsibling;
-		char newname[100];
-		strcpy(newname,curr_symtab->parent->id);
-		
-		strcpy(curr_symtab->id,newname);
-		strcat(curr_symtab->id,"_child");
-		sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
-			++curr_symtab->parent->child_count
-	        );
-                curr_symtab->sid= ++symtab_sid;
-
-		compound_to_symtab(dstat,curr_symtab);
-
-		/* switching back to parent symtab */
-		curr_symtab= curr_symtab->parent;
+            {   compound_to_symtab_case4(curr_symtab,dstat);
             }
 
 
@@ -1227,3 +1105,124 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
     } while( (decolist= decolist->next) != NULL);
 
 }
+
+
+void compound_to_symtab_case1(struct symtabl *curr_symtab, struct ast *dstat)
+{
+    /* create new symtab */
+    curr_symtab->child= emalloc(sizeof(struct symtabl));
+    curr_symtab->child->parent= curr_symtab;
+
+    /* switch to new symtab and provide parameters */
+    char newname[100];
+    strcpy(newname,curr_symtab->id);
+    char *edit;
+    edit= strstr(newname,"_funcdef");
+    strcpy(edit,"_func");
+
+	
+    curr_symtab= curr_symtab->child;
+    strcpy(curr_symtab->id,newname);
+    strcat(curr_symtab->id,"_child");
+    sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
+            ++curr_symtab->parent->child_count
+    );
+    curr_symtab->sid= ++symtab_sid;
+
+    compound_to_symtab(dstat,curr_symtab);
+}
+
+
+void compound_to_symtab_case2(struct symtabl *curr_symtab, struct ast *dstat)
+{
+    /* create new symtab */
+    struct symtabl *rightmost_sibling;
+    rightmost_sibling= curr_symtab->child;
+
+    while(rightmost_sibling->rsibling)
+    {   rightmost_sibling= rightmost_sibling->rsibling;
+    }
+
+    rightmost_sibling->rsibling= emalloc(sizeof(struct symtabl));
+    rightmost_sibling->rsibling->parent= rightmost_sibling->parent;
+    rightmost_sibling->rsibling->lsibling= rightmost_sibling;
+
+
+    /* switch to new symtab and provide parameters */
+    curr_symtab= rightmost_sibling->rsibling;
+    char newname[100];
+    strcpy(newname,curr_symtab->parent->id);
+    char *edit;
+    edit= strstr(newname,"_funcdef");
+    strcpy(edit,"_func");
+
+		
+    strcpy(curr_symtab->id,newname);
+    strcat(curr_symtab->id,"_child");
+    sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
+            ++curr_symtab->parent->child_count
+    );
+    curr_symtab->sid= ++symtab_sid;
+    compound_to_symtab(dstat,curr_symtab);
+}
+
+
+
+
+
+void compound_to_symtab_case3(struct symtabl *curr_symtab, struct ast *dstat)
+{
+    /* create new symtab */
+    curr_symtab->child= emalloc(sizeof(struct symtabl));
+    curr_symtab->child->parent= curr_symtab;
+
+    /* switch to new symtab and provide parameters */
+    curr_symtab= curr_symtab->child;
+    strcpy(curr_symtab->id,curr_symtab->parent->id);
+    strcat(curr_symtab->id,"_child");
+    sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
+            ++curr_symtab->parent->child_count
+    );
+    curr_symtab->sid= ++symtab_sid;
+    compound_to_symtab(dstat,curr_symtab);
+}
+
+
+
+
+
+
+void compound_to_symtab_case4(struct symtabl *curr_symtab, struct ast *dstat)
+{
+    /* create new symtab */
+    struct symtabl *rightmost_sibling;
+    rightmost_sibling= curr_symtab->child;
+
+    while(rightmost_sibling->rsibling)
+    {   rightmost_sibling= rightmost_sibling->rsibling;
+    }
+
+    rightmost_sibling->rsibling= emalloc(sizeof(struct symtabl));
+    rightmost_sibling->rsibling->parent= rightmost_sibling->parent;
+    rightmost_sibling->rsibling->lsibling= rightmost_sibling;
+
+
+    /* switch to new symtab and provide parameters */
+    curr_symtab= rightmost_sibling->rsibling;
+    char newname[100];
+    strcpy(newname,curr_symtab->parent->id);
+
+    strcpy(curr_symtab->id,newname);
+    strcat(curr_symtab->id,"_child");
+    sprintf(&curr_symtab->id[strlen(curr_symtab->id)],"%d",
+	    ++curr_symtab->parent->child_count
+    );
+    curr_symtab->sid= ++symtab_sid;
+    compound_to_symtab(dstat,curr_symtab);
+
+}
+
+
+
+
+
