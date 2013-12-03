@@ -330,6 +330,12 @@ pointer_declarator:     pointer direct_declarator
 ;
 
 
+/*
+  ptr_decl:  asterisk ptr_decl
+  |          asterisk direct_declarator
+*/
+
+
 pointer:    ASTERISK
             {   $$= new_pointer_declarator(NULL);
             }

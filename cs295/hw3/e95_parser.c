@@ -321,9 +321,9 @@ void print_tree(struct ast *nodeptr)
 	        print_expr(dlist->decostat,tmpstr);
 
                 /* no semicolons after compound statements */
-		if(dlist->decostat->nodetype == COMPOUND_STATEMENT           ||
-		      ( dlist->decostat->nodetype == LABELED_STATEMENT       &&
-		        dlist->decostat->r->nodetype == COMPOUND_STATEMENT
+		if(   (dlist->decostat->nodetype == COMPOUND_STATEMENT)      ||
+		      ( (dlist->decostat->nodetype == LABELED_STATEMENT)     &&
+		        (dlist->decostat->r->nodetype == COMPOUND_STATEMENT)
                       )
 		  )
 		{   printf("\n");
@@ -428,7 +428,6 @@ char * print_expr(struct ast *expr,char *exprstr)
 
 
         case COMPOUND_STATEMENT:
-	    ;
 	    dlist= (struct decostat_list *)expr->l;
 	    sprintf(&exprstr[strlen(exprstr)],"{\n");
 
@@ -437,7 +436,10 @@ char * print_expr(struct ast *expr,char *exprstr)
 	    do
 	    {   indent(exprstr);
 	        print_expr(dlist->decostat,exprstr);
-		if(dlist->decostat->nodetype == COMPOUND_STATEMENT)
+
+		if( (dlist->decostat->nodetype == COMPOUND_STATEMENT) ||
+		    (dlist->decostat->nodetype == LABELED_STATEMENT)
+		  )
 		{   sprintf(&exprstr[strlen(exprstr)],"\n");
 		}
 		else
@@ -446,7 +448,6 @@ char * print_expr(struct ast *expr,char *exprstr)
 		printf("%s",exprstr); clearstr(exprstr);
             }while( (dlist= dlist->next) != NULL);
 	    --indent_count;
-
 
 
 	    indent(exprstr);
@@ -1285,7 +1286,7 @@ declarator *new_direct_abstract_declarator(int type, struct ast *data, declarato
         d->next= next;
     }
     else if(type == BRACKET_NO_EXPR)
-    {   printf("TYPE BRACKET_NO_EXPR...\n");
+    {   /* printf("TYPE BRACKET_NO_EXPR...\n"); */
     }
 
     return d;

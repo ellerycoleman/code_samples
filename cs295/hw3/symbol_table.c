@@ -1099,9 +1099,6 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 	else if(dstat->nodetype == LABELED_STATEMENT)
 	{   label_to_symtab(dstat,curr_symtab);
 	}
-	else
-	{   printf("ERROR: encountered unknown decostat type: %ld \n", dstat->nodetype);
-	}
     } while( (decolist= decolist->next) != NULL);
 }
 
@@ -1232,7 +1229,6 @@ void compound_to_symtab_case4(struct symtabl *curr_symtab, struct ast *dstat)
 
 void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
 {   
-    printf("DEBUG label_to_symtab(): invoked with table %s\n", curr_symtab->id);
 
     /* retrieve the label name.
     +---------------------------*/
@@ -1252,27 +1248,22 @@ void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
     }
 
 
-    printf("DEBUG label_to_symtab(): about to allocate space for label table for %s\n", curr_symtab->id);
-    printf("with parent %s\n", curr_symtab->parent->id);
     
 
     /* allocate space for the label symtab if necessary.
     +----------------------------------------------------*/
     if(curr_symtab->labels == NULL)
     {   curr_symtab->labels= emalloc(sizeof(struct symtabl));
+
+        /* provide id and parameters for label symtab
+        +---------------------------------------------*/
+        char newname[100];
+        strcpy(newname,curr_symtab->id);
+        strcat(strstr(newname,"_funcdef"),"_labels");
+        strcpy(curr_symtab->labels->id, newname);
+        curr_symtab->labels->sid= ++symtab_sid;
+        curr_symtab->labels->parent= curr_symtab;
     }
-
-
-
-    /* provide id and parameters for label symtab
-    +---------------------------------------------*/
-    char newname[100];
-    strcpy(newname,curr_symtab->id);
-    printf("DEBUG: newname: %s\n", newname);
-    strcat(strstr(newname,"_funcdef"),"_labels");
-    strcpy(curr_symtab->labels->id, newname);
-    curr_symtab->labels->sid= ++symtab_sid;
-    curr_symtab->labels->parent= curr_symtab;
 
 
 
