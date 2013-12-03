@@ -192,19 +192,6 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
     else
     {   printf("WARNING: ast_to_symtab(): called with unknown nodetype: %d\n", sym->nodetype);
     }
-
-
-    /* debug */
-    /*
-    int i, j=0;
-    for(i=0; i<NHASH; i++)
-    {   if(global_top_level->symtab[i])
-        {   dp= global_top_level->symtab[i];
-	}
-    }
-    */
-
-
 }
 
 
@@ -481,7 +468,7 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
     if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
     {   sym= sym->adeclarator;
     }
-    if(sym->nodetype == POINTER_DECLARATOR)  /* fast forward to appropriate declarator */
+    else if(sym->nodetype == POINTER_DECLARATOR)  /* fast forward to appropriate declarator */
     {   while(sym->next)
         {   sym= sym->next;
 	}
@@ -754,7 +741,9 @@ int symcompare(const void *xa, const void *xb)
 void printtabs(struct symtabl *curr_symtab)
 {
     if(curr_symtab != NULL)
-    {   print_symtab(curr_symtab);
+    {   
+        print_symtab(curr_symtab);
+	print_symtab(curr_symtab->labels);
         printtabs(curr_symtab->rsibling);
         printtabs(curr_symtab->child);
     }
@@ -767,7 +756,15 @@ void printtabs(struct symtabl *curr_symtab)
  | print_symtab
  +---------------------------------------------*/
 void print_symtab(struct symtabl *curr_symtab)
-{   int i;
+{   
+    /* protection against printing null symtabs */
+    if(curr_symtab == NULL)
+    {   return;
+    }
+
+
+
+    int i;
     struct declarator *sp;
 
     printf("\n\n\n\n\n\n\n");
@@ -1099,12 +1096,16 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 
 	}
+	else if(dstat->nodetype == LABELED_STATEMENT)
+	{   label_to_symtab(dstat,curr_symtab);
+	}
 	else
 	{   printf("ERROR: encountered unknown decostat type: %ld \n", dstat->nodetype);
 	}
     } while( (decolist= decolist->next) != NULL);
-
 }
+
+
 
 
 void compound_to_symtab_case1(struct symtabl *curr_symtab, struct ast *dstat)
@@ -1131,6 +1132,8 @@ void compound_to_symtab_case1(struct symtabl *curr_symtab, struct ast *dstat)
 
     compound_to_symtab(dstat,curr_symtab);
 }
+
+
 
 
 void compound_to_symtab_case2(struct symtabl *curr_symtab, struct ast *dstat)
@@ -1223,6 +1226,67 @@ void compound_to_symtab_case4(struct symtabl *curr_symtab, struct ast *dstat)
 }
 
 
+
+
+
+
+void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
+{   
+    printf("DEBUG label_to_symtab(): invoked with table %s\n", curr_symtab->id);
+
+    /* retrieve the label name.
+    +---------------------------*/
+    char *label= (char *)((struct constant *)labelstmt->l)->value;
+
+
+    /* navigate left and up in the tree of symbol tables,
+    |  looking for the first occurence of a function definition.
+    +------------------------------------------------------------*/
+    while(curr_symtab->lsibling != NULL)
+    {   curr_symtab= curr_symtab->lsibling;
+    }
+    while( (strstr(curr_symtab->id,"_funcdef") == NULL)  &&
+           (strcmp(curr_symtab->id,"global_top_level") != 0)
+         )
+    {   curr_symtab= curr_symtab->parent;
+    }
+
+
+    printf("DEBUG label_to_symtab(): about to allocate space for label table for %s\n", curr_symtab->id);
+    printf("with parent %s\n", curr_symtab->parent->id);
+    
+
+    /* allocate space for the label symtab if necessary.
+    +----------------------------------------------------*/
+    if(curr_symtab->labels == NULL)
+    {   curr_symtab->labels= emalloc(sizeof(struct symtabl));
+    }
+
+
+
+    /* provide id and parameters for label symtab
+    +---------------------------------------------*/
+    char newname[100];
+    strcpy(newname,curr_symtab->id);
+    printf("DEBUG: newname: %s\n", newname);
+    strcat(strstr(newname,"_funcdef"),"_labels");
+    strcpy(curr_symtab->labels->id, newname);
+    curr_symtab->labels->sid= ++symtab_sid;
+    curr_symtab->labels->parent= curr_symtab;
+
+
+
+
+    /* switch to labels symtab
+    +---------------------------*/
+    curr_symtab= curr_symtab->labels;
+
+
+
+    /* add current label to symbol table
+    +-------------------------------------*/
+    addref(new_label_declarator(labelstmt),curr_symtab);
+}
 
 
 

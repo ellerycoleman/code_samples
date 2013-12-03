@@ -319,11 +319,17 @@ void print_tree(struct ast *nodeptr)
 	    do
 	    {   indent(tmpstr);
 	        print_expr(dlist->decostat,tmpstr);
-		if(dlist->decostat->nodetype != COMPOUND_STATEMENT)
-		{   printf("%s;\n",tmpstr); clearstr(tmpstr);
+
+                /* no semicolons after compound statements */
+		if(dlist->decostat->nodetype == COMPOUND_STATEMENT           ||
+		      ( dlist->decostat->nodetype == LABELED_STATEMENT       &&
+		        dlist->decostat->r->nodetype == COMPOUND_STATEMENT
+                      )
+		  )
+		{   printf("\n");
 		}
 		else
-		{   printf("\n");
+		{   printf("%s;\n",tmpstr); clearstr(tmpstr);
 		}
 		printf("%s",tmpstr); clearstr(tmpstr);
 	    } while( (dlist= dlist->next) != NULL);
@@ -791,8 +797,10 @@ char * print_expr(struct ast *expr,char *exprstr)
 
 
         case LABELED_STATEMENT:
+	   sprintf(&exprstr[strlen(exprstr)], "\n");
 	   print_expr(expr->l,exprstr);
-	   sprintf(&exprstr[strlen(exprstr)],":   ");
+	   sprintf(&exprstr[strlen(exprstr)],":\n");
+	   indent(exprstr);
 	   print_expr(expr->r,exprstr);
 	   break;
 
@@ -1234,6 +1242,14 @@ declarator *new_simple_declarator(char *id)
     return d;
 }
 
+declarator *new_label_declarator(struct ast *labelstmt)
+{   declarator *d= emalloc(sizeof(declarator));
+    d->nodetype= LABELED_STATEMENT;
+    d->exp= (struct expr *) labelstmt;
+    d->id= (char *)((struct constant *)labelstmt->l)->value;
+    return d;
+}
+
 
 declarator *new_pointer_declarator(declarator *next)
 {   declarator *d= emalloc(sizeof(declarator));
@@ -1277,7 +1293,7 @@ declarator *new_direct_abstract_declarator(int type, struct ast *data, declarato
 
 
 declarator *new_function_declarator(declarator *fdecl, parameter_list *plist)
-{   
+{
     declarator *d= emalloc(sizeof(declarator));
     {   d->nodetype= FUNCTION_DECLARATOR;
         d->adeclarator= fdecl;
@@ -1879,7 +1895,7 @@ char * funcdef_to_string(struct function_def *funcdef,char fdef[])
 
 
     do
-    {   
+    {
         switch(plist->pd->nodetype)
         {
 
@@ -2015,7 +2031,7 @@ char * funcdecl_to_string(struct declarator *funcdp,char fdec[])
 
 
     do
-    {   
+    {
         switch(plist->pd->nodetype)
         {
 

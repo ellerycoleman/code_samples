@@ -31,6 +31,7 @@ struct symtabl
     struct symtabl *child;
     struct symtabl *lsibling;
     struct symtabl *rsibling;
+    struct symtabl *labels;
 };
 
 
@@ -54,6 +55,7 @@ void compound_to_symtab_case1(struct symtabl *curr_symtab, struct ast *dstat);
 void compound_to_symtab_case2(struct symtabl *curr_symtab, struct ast *dstat);
 void compound_to_symtab_case3(struct symtabl *curr_symtab, struct ast *dstat);
 void compound_to_symtab_case4(struct symtabl *curr_symtab, struct ast *dstat);
+void label_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab);
 
 
 
