@@ -19,11 +19,8 @@ cat <<DATA > testprog.c
 /* This is the progam input, see parser output below */
 /*---------------------------------------------------*/
 
-        {   int case1_3;
-        }
 
-
-int main(int i, short s, long l)
+int main(void)
 {   
     goto embedded_block_2;
     int testing;
@@ -38,8 +35,7 @@ int main(int i, short s, long l)
 
 
 embedded_block_2:
-    a++;
-    i++;
+    testing++;
     int funcvar;
 
     {   int case2;
@@ -51,9 +47,7 @@ foo:
         {   int case4;
         }
     }
-    int funcvar;
 
-    {   int case2;
 
 
     {    int case2_2;
@@ -65,8 +59,6 @@ foo:
          }
     }
 }
-
-
 
 
 /*---------------------------------------------------*/
