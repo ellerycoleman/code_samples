@@ -82,6 +82,7 @@ typedef enum ntype {   DECL,
 		       DECOSTAT_LIST,
 		       COMMA_LIST,
 		       DIRECT_ABSTRACT_DECLARATOR
+/* ^54 */
 
 		   } ntype;
 

@@ -189,6 +189,7 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 
 
 
+    /* check for any identifiers */
     else
     {   printf("WARNING: ast_to_symtab(): called with unknown nodetype: %d\n", sym->nodetype);
     }
@@ -741,7 +742,7 @@ int symcompare(const void *xa, const void *xb)
 void printtabs(struct symtabl *curr_symtab)
 {
     if(curr_symtab != NULL)
-    {   
+    {
         print_symtab(curr_symtab);
 	print_symtab(curr_symtab->labels);
         printtabs(curr_symtab->rsibling);
@@ -756,7 +757,7 @@ void printtabs(struct symtabl *curr_symtab)
  | print_symtab
  +---------------------------------------------*/
 void print_symtab(struct symtabl *curr_symtab)
-{   
+{
     /* protection against printing null symtabs */
     if(curr_symtab == NULL)
     {   return;
@@ -1031,6 +1032,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
 void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 {   struct decostat_list *decolist;
     struct ast *dstat;
+    int i=0;
 
 
     /* search the compound statement block for decls, labels,
@@ -1088,7 +1090,6 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
             }
 
 
-
             /* CASE 4: Create child-sibling table for compound statement */
             else if(  (strstr(curr_symtab->id, "_child"))  &&  (curr_symtab->child != NULL) )
             {   compound_to_symtab_case4(curr_symtab,dstat);
@@ -1099,7 +1100,56 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 	else if(dstat->nodetype == LABELED_STATEMENT)
 	{   label_to_symtab(dstat,curr_symtab);
 	}
+
+
+        /* locate any identifiers  */
+	else
+	{   printf("DEBUG: Making call #%d to id_to_symtab.\n", i++);
+	    locate_ids(dstat,curr_symtab);
+	}
+
+
     } while( (decolist= decolist->next) != NULL);
+}
+
+
+void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
+{   struct ast *tmpdstat= dstat;
+    struct declarator *d;
+    char tmpstr[TMPSTRSZ];
+
+    if(dstat == NULL)
+    {   printf("DEBUG: id_to_symtab invoked with NULL.  exting...\n");
+    }
+
+    /* 
+    printf("DEBUG: id_to_symtab has been called with dstat type: %d\n", dstat->nodetype);
+    printf("%s", print_expr(dstat,tmpstr));
+    clearstr(tmpstr);
+    printf("\n\n");
+    */
+
+    else if(dstat->nodetype == POINTER_DECLARATOR)
+    {   while(d->next != NULL)
+        {   d= d->next;
+	}
+    }
+
+    else if(dstat->nodetype == SIMPLE_DECLARATOR)
+    {   printf("I found an identifier: ");
+        d= (struct declarator *)dstat;
+	printf("%s\n", d->id);
+    }
+
+
+    if( (dstat->l != NULL)  &&  (dstat->l->nodetype != INTEGER_CONSTANT))
+    {   locate_ids(dstat->l,curr_symtab);
+    }
+
+
+    if( (dstat->r != NULL)  &&  (dstat->r->nodetype != INTEGER_CONSTANT))
+    {   locate_ids(dstat->r,curr_symtab);
+    }
 }
 
 
@@ -1228,7 +1278,7 @@ void compound_to_symtab_case4(struct symtabl *curr_symtab, struct ast *dstat)
 
 
 void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
-{   
+{
 
     /* retrieve the label name.
     +---------------------------*/
@@ -1248,7 +1298,7 @@ void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
     }
 
 
-    
+
 
     /* allocate space for the label symtab if necessary.
     +----------------------------------------------------*/
@@ -1278,6 +1328,8 @@ void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
     +-------------------------------------*/
     addref(new_label_declarator(labelstmt),curr_symtab);
 }
+
+
 
 
 

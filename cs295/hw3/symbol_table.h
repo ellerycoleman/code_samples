@@ -56,6 +56,7 @@ void compound_to_symtab_case2(struct symtabl *curr_symtab, struct ast *dstat);
 void compound_to_symtab_case3(struct symtabl *curr_symtab, struct ast *dstat);
 void compound_to_symtab_case4(struct symtabl *curr_symtab, struct ast *dstat);
 void label_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab);
+void locate_ids(struct ast *dstat, struct symtabl *curr_symtab);
 
 
 
