@@ -798,6 +798,8 @@ char * print_expr(struct ast *expr,char *exprstr)
 
 
         case LABELED_STATEMENT:
+	   printf("DEBUG: called to print labeled statement...\n");
+	   printf("DEBUG: nodetype of expr->l is: %d\n", expr->l->nodetype);
 	   sprintf(&exprstr[strlen(exprstr)], "\n");
 	   print_expr(expr->l,exprstr);
 	   sprintf(&exprstr[strlen(exprstr)],":\n");

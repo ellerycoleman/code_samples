@@ -856,6 +856,8 @@ constant_expr:   conditional_expr
 
 
 label:  IDENTIFIER
+        {    /* $$= (struct declarator *) new_simple_declarator($1); */
+        }
 ;
 
 

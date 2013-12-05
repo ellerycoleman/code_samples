@@ -11,6 +11,12 @@ extern struct basic_type basic_types[];
 extern struct symtabl *curr_symtab;
 extern struct symtabl *global_top_level;
 extern int symtab_sid;
+struct goto_queue
+{   int populated;
+    struct ast *dstat;
+    struct symtabl *symtab;
+};
+struct goto_queue goto_q[100];
 
 
 /*-----------------------------------------------
@@ -470,6 +476,11 @@ struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
     struct declarator *spname= sym;      /* used to investigate name of symbol in table    */
     struct declarator *symorig= sym;     /* used to keep location of original param        */
 
+
+    printf("DEBUG: resolve called with declarator type: %d\n", sym->nodetype);
+    if(sym->nodetype == SIMPLE_DECLARATOR)
+    {   printf("DEBUG: id is: %s\n", sym->id);
+    }
 
 
     /* fastforward to the id of the declarator parameter
@@ -975,7 +986,7 @@ void global_symtab_init(void)
  | funcdef_to_symtab
  +---------------------------------------------*/
 void funcdef_to_symtab(struct function_def *funcdef)
-{
+{   
 
     /* a function defintion is composed of a
     |  fuction_defspec and a compound statement.
@@ -1160,7 +1171,24 @@ void funcdef_to_symtab(struct function_def *funcdef)
     compound_to_symtab(cstmt,curr_symtab);
 
 
+
+    /* Resolve goto statements.
+    +-----------------------------*/
+    int j;
+    for(j=0; j<100; j++)
+    {   if(goto_q[j].populated == 1)
+        {   printf("DEBUG: investigating goto stmt: %d\n", j+1);
+	    locate_ids(goto_q[j].dstat,goto_q[j].symtab);
+	}
+    }
+
 }
+
+
+
+
+
+
 
 
 
@@ -1168,7 +1196,8 @@ void funcdef_to_symtab(struct function_def *funcdef)
 void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 {   struct decostat_list *decolist;
     struct ast *dstat;
-    int i=0;
+    int i=0, j;
+    
 
 
     /* search the compound statement block for decls, labels,
@@ -1239,6 +1268,30 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 
         /* locate any identifiers  */
+
+
+	/* skip goto statements in first pass */
+	else if(dstat->nodetype == RW_GOTO)
+	{   for(j=0; j<100; j++)
+	    {   if(goto_q[j].populated != 1)
+	        {   
+                    /* Navigate to the appropriate symtab for labels. */
+		    struct symtabl *tsymtab= curr_symtab;
+		    while( (strstr(curr_symtab->id,"_funcdef") == NULL)  &&
+		           (curr_symtab->parent != NULL)
+		         )
+		    {   tsymtab= tsymtab->parent;
+		    }
+
+		    goto_q[j].populated= 1;
+		    goto_q[j].dstat= dstat;
+		    goto_q[j].symtab= tsymtab;
+		    j=200;
+                 }
+            }
+	}
+
+
 	else
 	{   printf("DEBUG: Making call #%d to id_to_symtab.\n", i++);
 	    locate_ids(dstat,curr_symtab);
@@ -1246,7 +1299,21 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 
     } while( (decolist= decolist->next) != NULL);
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
@@ -1258,12 +1325,15 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     {   printf("DEBUG: id_to_symtab invoked with NULL.  exting...\n");
     }
 
-    /*
-    printf("DEBUG: id_to_symtab has been called with dstat type: %d\n", dstat->nodetype);
+    printf("DEBUG: locate_ids has been called with dstat type: %d\n", dstat->nodetype);
     printf("%s", print_expr(dstat,tmpstr));
     clearstr(tmpstr);
     printf("\n\n");
-    */
+
+    if(dstat->nodetype == RW_GOTO)
+    {   resolve_id(dstat,curr_symtab->labels);
+	return;
+    }
 
     if(dstat->nodetype == POINTER_DECLARATOR)
     {   while(d->next != NULL)
@@ -1281,12 +1351,12 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     }
 
 
-    if( (dstat->l != NULL)  &&  (dstat->l->nodetype != INTEGER_CONSTANT))
+    if( (dstat->l != NULL)  &&  (dstat->l->nodetype != INTEGER_CONSTANT) )
     {   locate_ids(dstat->l,curr_symtab);
     }
 
 
-    if( (dstat->r != NULL)  &&  (dstat->r->nodetype != INTEGER_CONSTANT))
+    if( (dstat->r != NULL)  &&  (dstat->r->nodetype != INTEGER_CONSTANT) )
     {   locate_ids(dstat->r,curr_symtab);
     }
 }
@@ -1299,11 +1369,22 @@ void resolve_id(struct ast *dstat, struct symtabl *curr_symtab)
     struct declarator *d;
 
 
+    if(dstat->nodetype == RW_GOTO)
+    {   d= new_simple_declarator((char *)dstat->l);
+        d= lookup(d,curr_symtab);   
+	if(d == NULL)
+	{   printf("ERROR: Label '%s' used but not defined.\n", dstat->l);
+	    exit(-1);
+        }
+    }
+
+
     if(dstat->nodetype == POINTER_DECLARATOR)
     {   while(d->next != NULL)
         {   d= d->next;
 	}
     }
+
 
     if(dstat->nodetype == SIMPLE_DECLARATOR)
     {   d= (struct declarator *)dstat;
