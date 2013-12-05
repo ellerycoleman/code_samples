@@ -453,6 +453,142 @@ struct declarator *lookup(struct declarator *sym, struct symtabl *curr_symtab)
 
 
 
+
+
+
+
+
+/*---------------------------------------------------
+ | resolve - Just like lookup (returns the address of
+ |           the declarator in the symtab cell) but it
+ |           also searches all parent symtabs.
+ +-------------------------------------------------*/
+struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
+{   int i;
+    int hash;
+    struct declarator *sp;               /* used to keep current place in symbol table     */
+    struct declarator *spname= sym;      /* used to investigate name of symbol in table    */
+    struct declarator *symorig= sym;     /* used to keep location of original param        */
+
+
+
+    /* fastforward to the id of the declarator parameter
+     +----------------------------------------------------*/
+    if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
+    {   sym= sym->adeclarator;
+    }
+    if(sym->nodetype == FUNCTION_DECLARATOR)
+    {   sym= sym->adeclarator;
+    }
+    if(sym->nodetype == POINTER_DECLARATOR)
+    {   while(sym->next)
+        {   sym= sym->next;
+	}
+	if(!sym->id)
+	{   sym= sym->adeclarator;
+	}
+    }
+
+
+    /* hash the symbol name */
+    printf("DEBUG: looking up symbol '%s'\n", sym->id);
+    hash= symhash(sym->id) % NHASH;
+
+
+    /* set symbol pointer 'sp' to the address of the cell that
+    |  this symbol hashed to.
+    +---------------------------------------------------------------*/
+    sp= (struct declarator *)&curr_symtab->symtab[hash];
+
+
+
+search_table:
+    ;
+    int scount= NHASH;
+    while(--scount >= 0)
+    {
+
+        /* fastforward to the the name of the symbol that we're currently
+	|  pointing to in the symbol table.
+	+---------------------------------------------------------------------*/
+        spname= curr_symtab->symtab[hash];
+
+        /* fastforward to declarator name */
+        while(spname && spname->next != NULL)
+        {   spname= spname->next;
+        }
+        if(spname &&
+	     (spname->nodetype == ARRAY_DECLARATOR ||
+	      spname->nodetype == FUNCTION_DECLARATOR
+	     )
+	  )
+        {   spname= spname->adeclarator;
+        }
+
+
+
+        /* if a symbol is in this cell already, check the name of
+	|  the symbol.
+	+-----------------------------------------------------------*/
+	if(curr_symtab->symtab[hash] != 0)  /* if cell is not empty... */
+        {
+            /* if the cell contains the same symbol as the declarator param,
+	     * then we've found what we were looking for; return the address.
+             */
+            if(spname->id  &&  !strcmp(spname->id,sym->id))
+	    {   return (struct declarator *) curr_symtab->symtab[hash];
+            }
+        }
+
+
+
+	/* if this cell is empty, switch to the parent symtab
+	|  if possible and continue the search.
+	+----------------------------------------------------*/
+	if(curr_symtab->symtab[hash] == 0)
+	{   if(curr_symtab->parent != 0)
+	    {   printf("DEBUG: Searching parent table for '%s'...\n", sym->id);
+	        curr_symtab= curr_symtab->parent;
+	        goto search_table;
+	    }
+        }
+
+
+
+        /* if the cell is not empty and DOES NOT store the current symbol,
+	|  then a collision has occured and we need to move ahead to the
+	|  next cell.  Be sure to wrap around sure to the front of the symtab
+	|  if you happen to reach the back.
+	+------------------------------------------------------------------*/
+	if( curr_symtab->symtab[hash] != 0   &&   strcmp(spname->id,sym->id) )
+	{   ++hash;
+
+            if(hash > NHASH-1)
+            {   hash=0;
+		sp= (struct declarator *) &curr_symtab->symtab[hash];
+            }
+        }
+    }
+
+    if(curr_symtab->parent != NULL)
+    {   curr_symtab= curr_symtab->parent;
+        goto search_table;
+    }
+
+    printf("Error: Symbol '%s' not found in symbol table\n", sym->id);
+    exit(-1);
+}
+
+
+
+
+
+
+
+
+
+
+
 /*-----------------------------------------------
  | addref
  +---------------------------------------------*/
@@ -1122,23 +1258,26 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     {   printf("DEBUG: id_to_symtab invoked with NULL.  exting...\n");
     }
 
-    /* 
+    /*
     printf("DEBUG: id_to_symtab has been called with dstat type: %d\n", dstat->nodetype);
     printf("%s", print_expr(dstat,tmpstr));
     clearstr(tmpstr);
     printf("\n\n");
     */
 
-    else if(dstat->nodetype == POINTER_DECLARATOR)
+    if(dstat->nodetype == POINTER_DECLARATOR)
     {   while(d->next != NULL)
         {   d= d->next;
 	}
     }
 
-    else if(dstat->nodetype == SIMPLE_DECLARATOR)
+    if(dstat->nodetype == SIMPLE_DECLARATOR)
     {   printf("I found an identifier: ");
         d= (struct declarator *)dstat;
-	printf("%s\n", d->id);
+	if(d != NULL)
+	{   printf("%s\n", d->id);
+	}
+	resolve_id(dstat,curr_symtab);
     }
 
 
@@ -1149,6 +1288,29 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
 
     if( (dstat->r != NULL)  &&  (dstat->r->nodetype != INTEGER_CONSTANT))
     {   locate_ids(dstat->r,curr_symtab);
+    }
+}
+
+
+
+
+void resolve_id(struct ast *dstat, struct symtabl *curr_symtab)
+{
+    struct declarator *d;
+
+
+    if(dstat->nodetype == POINTER_DECLARATOR)
+    {   while(d->next != NULL)
+        {   d= d->next;
+	}
+    }
+
+    if(dstat->nodetype == SIMPLE_DECLARATOR)
+    {   d= (struct declarator *)dstat;
+        printf("DEBUG: original address of '%s': %ld\n", d->id, d);
+
+        d= resolve(d,curr_symtab);
+        printf("DEBUG: updated address: %ld\n",d);
     }
 }
 
