@@ -477,11 +477,6 @@ struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
     struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
-    printf("DEBUG: resolve called with declarator type: %d\n", sym->nodetype);
-    if(sym->nodetype == SIMPLE_DECLARATOR)
-    {   printf("DEBUG: id is: %s\n", sym->id);
-    }
-
 
     /* fastforward to the id of the declarator parameter
      +----------------------------------------------------*/
@@ -502,7 +497,6 @@ struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
 
 
     /* hash the symbol name */
-    printf("DEBUG: looking up symbol '%s'\n", sym->id);
     hash= symhash(sym->id) % NHASH;
 
 
@@ -558,8 +552,7 @@ search_table:
 	+----------------------------------------------------*/
 	if(curr_symtab->symtab[hash] == 0)
 	{   if(curr_symtab->parent != 0)
-	    {   printf("DEBUG: Searching parent table for '%s'...\n", sym->id);
-	        curr_symtab= curr_symtab->parent;
+	    {   curr_symtab= curr_symtab->parent;
 	        goto search_table;
 	    }
         }
@@ -1177,8 +1170,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
     int j;
     for(j=0; j<100; j++)
     {   if(goto_q[j].populated == 1)
-        {   printf("DEBUG: investigating goto stmt: %d\n", j+1);
-	    locate_ids(goto_q[j].dstat,goto_q[j].symtab);
+        {   locate_ids(goto_q[j].dstat,goto_q[j].symtab);
 	}
     }
 
@@ -1293,8 +1285,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 
 	else
-	{   printf("DEBUG: Making call #%d to id_to_symtab.\n", i++);
-	    locate_ids(dstat,curr_symtab);
+	{   locate_ids(dstat,curr_symtab);
 	}
 
 
@@ -1325,10 +1316,6 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     {   printf("DEBUG: id_to_symtab invoked with NULL.  exting...\n");
     }
 
-    printf("DEBUG: locate_ids has been called with dstat type: %d\n", dstat->nodetype);
-    printf("%s", print_expr(dstat,tmpstr));
-    clearstr(tmpstr);
-    printf("\n\n");
 
     if(dstat->nodetype == RW_GOTO)
     {   resolve_id(dstat,curr_symtab->labels);
@@ -1388,10 +1375,7 @@ void resolve_id(struct ast *dstat, struct symtabl *curr_symtab)
 
     if(dstat->nodetype == SIMPLE_DECLARATOR)
     {   d= (struct declarator *)dstat;
-        printf("DEBUG: original address of '%s': %ld\n", d->id, d);
-
         d= resolve(d,curr_symtab);
-        printf("DEBUG: updated address: %ld\n",d);
     }
 }
 
