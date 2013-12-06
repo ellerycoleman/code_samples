@@ -8,7 +8,17 @@
 #-----------------------------------------------------------------------------
 
 
-1st cut of symbol table... more to come.
+This version of the compiler implements a symbol table management system.
+It uses hashing with linear probing to store the symbols in the symbol table.
+
+There is a 'struct symtabl' which has an id (name), sid (number), and an
+array of 'struct declarator *'s which serves as the actual symbol table.
+
+All the code and configuration for the symbol table management system is
+stored in symbol_table.c and symbol_table.h.  The code basically crawls the
+parse tree and inserts all decls into the symbol table.  It also stores labels
+in the symbol table, and complains if identifiers or labels are used without
+being defined.
 
 
 
