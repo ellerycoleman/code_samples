@@ -9,8 +9,8 @@
 
 
 
-all:    clean bison_parser.o flex_scanner.o e95_parser.c e95_parser.h symbol_table.c symbol_table.h
-	gcc -g flex_scanner.o bison_parser.o e95_parser.c -o e95_parser -lfl #symbol table code included in e95_parser.*
+all:    clean bison_parser.o flex_scanner.o e95_parser.c e95_parser.h symbol_table.c symbol_table.h 
+	gcc -g flex_scanner.o bison_parser.o e95_parser.c -o e95_parser -lfl #symbol table/ir code included in e95_parser.*
 	ln -s e95_parser parser
 	ln -s e95_parser a.out
 
@@ -49,7 +49,7 @@ clean:
 	rm -f bison_parser.tab.*
 	rm -f e95_parser parser
 	rm -f testprog*
-	sleep 2;
+	rm -f stdin.ir
 
 
 test:	all

@@ -65,10 +65,10 @@ int main(int argc, char **argv)
 {
 
     /* Configure input/output sources based on
-     * user invocation of command.
-     *------------------------------------------*/
-     connect_io(argc,argv);
-     yyin= input;
+    * user invocation of command.
+    *-------------------------------------------*/
+    connect_io(argc,argv);
+    yyin= input;
 
 
     printf("in e95_parser.c::main() about to run yyparse()\n\n\n");
@@ -89,10 +89,15 @@ int main(int argc, char **argv)
     create_symbol_tables(parse_tree);
 
 
+    /* traverse parse tree to generate IR.
+    +-------------------------------------------------*/
+    generate_ir(parse_tree);
+
+
     /* traverse parse tree to generate pretty print
     +-------------------------------------------------*/
     indent_count=0;
-    print_tree(parse_tree);
+    /* print_tree(parse_tree); */
 
 
     return 0;
@@ -2120,8 +2125,6 @@ char * funcdecl_to_string(struct declarator *funcdp,char fdec[])
 
 
 
-
-
 void clearstr(char *str)
 {   int i;
     for(i=0; i<TMPSTRSZ; i++)
@@ -2146,7 +2149,7 @@ char * indent(char *str)
 
 
 #include "symbol_table.c"
-
+#include "generate_ir.c"
 
 
 

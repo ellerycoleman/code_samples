@@ -150,6 +150,8 @@ cs295/hw4/e95_tokens.c -text
 cs295/hw4/e95_tokens.h -text
 cs295/hw4/flex_scanner.l -text
 cs295/hw4/gdb.cmd -text
+cs295/hw4/generate_ir.c -text
+cs295/hw4/generate_ir.h -text
 cs295/hw4/symbol_table.c -text
 cs295/hw4/symbol_table.h -text
 cs295/hw4/test.sh -text
