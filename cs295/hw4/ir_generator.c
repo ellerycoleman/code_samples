@@ -25,6 +25,17 @@ void generate_ir(struct ast *parse_tree)
     char symtab_name[100];
 
 
+    /* initialize ircodenames
+    +--------------------------*/
+    {   ircodenames[0]  = "UNINITIALIZED";
+        ircodenames[100]= "BEGINPROC";
+        ircodenames[101]= "LoaDADDRESS";
+        ircodenames[102]= "STOREWORDINDIRECT";
+        ircodenames[103]= "ENDPROC";
+    };
+
+
+
     /* initialize irlist_front and irlist.
     +---------------------------------------*/
     irlist_front= emalloc(sizeof(struct irnode));
@@ -41,7 +52,8 @@ void generate_ir(struct ast *parse_tree)
 
     /* Open IR output file
     +-------------------------*/
-    strcpy(irfname,"stdin.ir");  /* update later to create an IR file based on input filename. */
+    strcpy(irfname,"stdin.ir");  /* update later to create an IR file
+                                    based on input filename. */
     irout= fopen(irfname,"w+");
     if(irout == NULL)
     {   printf("Error opening IR output file: %s\n", irfname);
@@ -136,7 +148,6 @@ void generate_ir(struct ast *parse_tree)
 	    strcat(symtab_name,"_funcdef");
 	    printf("symtab_name: %s\n", symtab_name);
 	    
-
 
 
 	    /* switch to appropriate symbol table
@@ -271,9 +282,33 @@ void print_irnodes(void)
     }
 
     while(irlist != NULL)
-    {   printf("irnode_sid: %d, code %d\n", irlist->sid, irlist->ircode);
+    {   printf("irnode_sid: %3d, code: %s (%d), symptr: %s\n", irlist->sid, ircodenames[irlist->ircode],irlist->ircode, print_declarator_id(irlist->symptr));
         irlist= irlist->next;
     }
+}
+
+
+
+
+char *print_declarator_id(struct declarator *sym)
+{   
+    if(sym == NULL)
+    {   return "NULL";
+    }
+
+    if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
+    {   sym= sym->adeclarator;
+    }
+    else if(sym->nodetype == POINTER_DECLARATOR)  /* ffwd to appropriate declarator */
+    {   while(sym->next)
+        {   sym= sym->next;
+        }
+        if(!sym->id)
+        {   sym= sym->adeclarator;
+        }
+    }
+
+    return sym->id;
 }
 
 

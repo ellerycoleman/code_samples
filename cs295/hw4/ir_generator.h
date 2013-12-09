@@ -8,6 +8,8 @@
 +===========================================================================*/
 
 
+#ifndef _GENERATE_IR_H_
+#define _GENERATE_IR_H_ 1
 
 
 /*-------------------------------
@@ -19,6 +21,9 @@ enum ircodes
     STOREWORDINDIRECT,
     ENDPROC
 };
+
+
+char *ircodenames[200];
 
 
 struct irnode
@@ -33,11 +38,14 @@ struct irnode
 
 
 
+
+
 /*-------------------------------
 | Function Prototypes
 +------------------------------*/
 void generate_ir(struct ast *parse_tree);
 void print_irnodes(void);
+char *print_declarator_id(struct declarator *sym);;
 
 
 
@@ -52,3 +60,4 @@ struct irnode *irlist_front;
 int irnodenum;
 
 
+#endif

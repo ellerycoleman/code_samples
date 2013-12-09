@@ -599,9 +599,9 @@ search_table:
 struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
 {   int i;
     int hash;
-    struct declarator *sp;               /* used to keep current place in symbol table     */
-    struct declarator *spname= sym;      /* used to investigate name of symbol in table    */
-    struct declarator *symorig= sym;     /* used to keep location of original param        */
+    struct declarator *sp;            /* used to keep current place in symbol table   */
+    struct declarator *spname= sym;   /* used to investigate name of symbol in table  */
+    struct declarator *symorig= sym;  /* used to keep location of original param      */
 
 
 
