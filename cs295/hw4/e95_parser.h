@@ -287,6 +287,6 @@ char * indent(char *str);
 
 
 #include "symbol_table.h"
-#include "generate_ir.h"
+#include "ir_generator.h"
 
 

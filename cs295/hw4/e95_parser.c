@@ -2149,7 +2149,7 @@ char * indent(char *str)
 
 
 #include "symbol_table.c"
-#include "generate_ir.c"
+#include "ir_generator.c"
 
 
 
