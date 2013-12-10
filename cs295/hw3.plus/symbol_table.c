@@ -153,6 +153,7 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
         do
         {   dp= decolist->d;
 	    dporig= decolist->d;
+	    dporig->tspecptr= tdecl->tspecptr;
 
 
 	    /* ffwd pointer declarators */
@@ -907,6 +908,8 @@ void print_symtab(struct symtabl *curr_symtab)
 
     int i;
     struct declarator *sp;
+    char typename[30];
+
 
     printf("\n\n\n\n\n\n\n");
     printf("=====================================================\n");
@@ -932,6 +935,8 @@ void print_symtab(struct symtabl *curr_symtab)
             printf("(contents %ld) ", curr_symtab->symtab[i]);
 
 	    sp= curr_symtab->symtab[i];
+	    sprintf(typename,"%s",print_type(sp->tspecptr->type));
+
 
             /* fastforward to declarator name for sp */
             while(sp->next != NULL)
@@ -941,7 +946,8 @@ void print_symtab(struct symtabl *curr_symtab)
             {   sp= sp->adeclarator;
             }
 
-	    printf("     name: %s\n", sp->id);
+	    printf("     name: %s", sp->id);
+	    printf("     type: %s\n", typename);
 	}
     }
     printf("\n\n\n");
@@ -979,7 +985,7 @@ void global_symtab_init(void)
  | funcdef_to_symtab
  +---------------------------------------------*/
 void funcdef_to_symtab(struct function_def *funcdef)
-{   
+{
 
     /* a function defintion is composed of a
     |  fuction_defspec and a compound statement.
@@ -1007,6 +1013,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
     |  and a declarator.  Retrieve the declarator.
     +--------------------------------------------------------------*/
     dporig= fdspec->d;
+    dporig->tspecptr= &basic_types[fdspec->typespec];
 
 
 
@@ -1189,7 +1196,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 {   struct decostat_list *decolist;
     struct ast *dstat;
     int i=0, j;
-    
+
 
 
     /* search the compound statement block for decls, labels,
@@ -1266,7 +1273,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 	else if(dstat->nodetype == RW_GOTO)
 	{   for(j=0; j<100; j++)
 	    {   if(goto_q[j].populated != 1)
-	        {   
+	        {
                     /* Navigate to the appropriate symtab for labels. */
 		    struct symtabl *tsymtab= curr_symtab;
 		    while( (strstr(curr_symtab->id,"_funcdef") == NULL)  &&
@@ -1358,7 +1365,7 @@ void resolve_id(struct ast *dstat, struct symtabl *curr_symtab)
 
     if(dstat->nodetype == RW_GOTO)
     {   d= new_simple_declarator((char *)dstat->l);
-        d= lookup(d,curr_symtab);   
+        d= lookup(d,curr_symtab);
 	if(d == NULL)
 	{   printf("ERROR: Label '%s' used but not defined.\n", dstat->l);
 	    exit(-1);
