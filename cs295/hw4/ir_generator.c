@@ -216,6 +216,7 @@ void generate_ir(struct ast *parse_tree)
 void print_irnodes(void)
 {   struct irnode *irlist= irlist_front;
     char regnum[5];
+    char reg2[5];
 
     printf("\n\n\n");
     printf("#=========================================\n");
@@ -230,7 +231,7 @@ void print_irnodes(void)
 
     while(irlist != NULL)
     {   
-        /* record reg num */
+        /* record reg1 num */
         if(irlist->regnum == 0)
 	{   sprintf(regnum, "%s", "N/A");
 	}
@@ -238,13 +239,25 @@ void print_irnodes(void)
 	{   sprintf(regnum, "r%d", irlist->regnum);
 	}
 
+        /* record reg2 num */
+        if(irlist->reg2 == 0)
+	{   sprintf(reg2, "%s", "N/A");
+	}
+	else
+	{   sprintf(reg2, "r%d", irlist->reg2);
+	}
+
+
+
+
         /* add IR to irlist */
-        printf("irnode_sid: %3d, code: %15s (%d), symptr: %10s, regnum: %s\n",
+        printf("irnode_sid: %3d, code: %18s (%d), symptr: %10s, regnum: %5s,       reg2: %5s\n",
                 irlist->sid,
 		ircodenames[irlist->ircode],
 		irlist->ircode,
 		print_declarator_id(irlist->symptr),
-		regnum
+		regnum,
+		reg2
 	      );
         irlist= irlist->next;
     }
@@ -382,6 +395,7 @@ void decostat_to_ir(struct ast *decostat)
                irlist->sid= ++irnodenum;
                irlist->ircode= STOREWORDINDIRECT;
                irlist->regnum= prepl->regnum;
+	       irlist->reg2= prepr->regnum;
            }
 
 	   printf(" left type: %d\n", prepl->nodetype);
