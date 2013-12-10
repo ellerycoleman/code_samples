@@ -298,6 +298,7 @@ void compound_to_ir(struct ast *cstmt)
 
         /* Generate IR node
         +--------------------*/
+	regnum=0;   /* reset register count to 0 */
 	printf("c2ir calling d2ir...\n");
         decostat_to_ir(decostat);
 
