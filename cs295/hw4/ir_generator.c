@@ -335,8 +335,8 @@ void decostat_to_ir(struct ast *decostat)
 {
     struct ast *dstat;
     struct decostat_list *dlist= (struct decostat_list *)decostat;
-    struct irprep *prepl;
-    struct irprep *prepr;
+    struct irinfo *prepl;
+    struct irinfo *prepr;
     int i;
 
 
@@ -388,7 +388,7 @@ void decostat_to_ir(struct ast *decostat)
 
 
 
-struct irprep *typecheck(struct ast *subtree)
+struct irinfo *typecheck(struct ast *subtree)
 {   
 
     if(subtree == NULL)
@@ -396,7 +396,7 @@ struct irprep *typecheck(struct ast *subtree)
         return NULL;
     }
 
-    struct irprep *prepresult=  emalloc(sizeof(struct irprep));
+    struct irinfo *prepresult=  emalloc(sizeof(struct irinfo));
 
 
     /* figure out what type of node i'm looking at */

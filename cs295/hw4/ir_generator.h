@@ -40,7 +40,7 @@ struct irnode
 #define RVALUE 1
 
 
-struct irprep
+struct irinfo
 {  int nodetype; 
    int regnum;
 };    
@@ -60,7 +60,7 @@ void print_irnodes(void);
 char *print_declarator_id(struct declarator *sym);
 void compound_to_ir(struct ast *cstmt);
 void decostat_to_ir(struct ast *decostat);
-struct irprep *typecheck(struct ast *subtree);
+struct irinfo *typecheck(struct ast *subtree);
 
 
 
