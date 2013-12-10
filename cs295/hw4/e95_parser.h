@@ -137,7 +137,7 @@ struct expr
 typedef struct declarator
 {   ntype nodetype;               /* signifies what type of declarator this is  */
     struct basic_type *tspecptr;  /* typespec for parameter_decl's              */
-    dadtype dadtype;          /* dadtype for direcect abstract declarators  */
+    dadtype dadtype;              /* dadtype for direcect abstract declarators  */
     char *id;
     struct declarator *next;
     struct declarator *adeclarator; /* for use with function/abstract declarators */

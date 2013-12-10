@@ -25,14 +25,26 @@ enum ircodes
 
 char *ircodenames[200];
 
-
 struct irnode
-{   enum ircodes ircode;
+{   
+    int sid;
+    enum ircodes ircode;
+    int regnum;
     struct irnode *prev;
     struct irnode *next;
     struct declarator *symptr;
-    int sid;
 };
+
+
+#define LVALUE 0
+#define RVALUE 1
+
+
+struct irprep
+{  int nodetype; 
+   int regnum;
+};    
+    
 
 
 
@@ -45,7 +57,10 @@ struct irnode
 +------------------------------*/
 void generate_ir(struct ast *parse_tree);
 void print_irnodes(void);
-char *print_declarator_id(struct declarator *sym);;
+char *print_declarator_id(struct declarator *sym);
+void compound_to_ir(struct ast *cstmt);
+void decostat_to_ir(struct ast *decostat);
+struct irprep *typecheck(struct ast *subtree);
 
 
 
@@ -56,8 +71,10 @@ char *print_declarator_id(struct declarator *sym);;
 +------------------------------*/
 FILE *irout;
 char irfname[100];
-struct irnode *irlist_front;
 int irnodenum;
+struct irnode *irlist_front;
+struct irnode *irlist;
+int regnum;
 
 
 #endif
