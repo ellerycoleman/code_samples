@@ -935,7 +935,12 @@ void print_symtab(struct symtabl *curr_symtab)
             printf("(contents %ld) ", curr_symtab->symtab[i]);
 
 	    sp= curr_symtab->symtab[i];
-	    sprintf(typename,"%s",print_type(sp->tspecptr->type));
+	    if(sp->tspecptr)
+	    {   sprintf(typename,"%s",print_type(sp->tspecptr->type));
+	    }
+	    else
+	    {   sprintf(typename,"%s", "N/A");
+	    }
 
 
             /* fastforward to declarator name for sp */
