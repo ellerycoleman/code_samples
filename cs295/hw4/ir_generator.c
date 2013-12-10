@@ -396,7 +396,7 @@ struct irinfo *typecheck(struct ast *subtree)
         return NULL;
     }
 
-    struct irinfo *prepresult=  emalloc(sizeof(struct irinfo));
+    struct irinfo *tcresult=  emalloc(sizeof(struct irinfo));
 
 
     /* figure out what type of node i'm looking at */
@@ -404,14 +404,14 @@ struct irinfo *typecheck(struct ast *subtree)
 
     
     if(subtree->nodetype == INTEGER_CONSTANT)
-    {   prepresult->nodetype= RVALUE;
-        prepresult->regnum= ++regnum;
-        return prepresult;
+    {   tcresult->nodetype= RVALUE;
+        tcresult->regnum= ++regnum;
+        return tcresult;
     }
 
     else if(subtree->nodetype == SIMPLE_DECLARATOR)
-    {   prepresult->nodetype= LVALUE;
-        prepresult->regnum= ++regnum;
+    {   tcresult->nodetype= LVALUE;
+        tcresult->regnum= ++regnum;
 
         irlist= irlist_front;
         while(irlist->next != NULL)
@@ -420,10 +420,10 @@ struct irinfo *typecheck(struct ast *subtree)
         irlist->next= emalloc(sizeof(struct irnode));
         irlist= irlist->next;
         irlist->ircode= LOADADDRESS;
-        irlist->regnum= prepresult->regnum;
+        irlist->regnum= tcresult->regnum;
         irlist->symptr= (struct declarator *)subtree;
 
-        return prepresult;
+        return tcresult;
     }
 
 
@@ -439,7 +439,7 @@ struct irinfo *typecheck(struct ast *subtree)
 
 */
 
-    return prepresult;
+    return tcresult;
 }
 
 
