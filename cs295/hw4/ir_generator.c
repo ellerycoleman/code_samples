@@ -187,6 +187,7 @@ void generate_ir(struct ast *parse_tree)
             {   irlist= irlist->next;
             }
             irlist->next= emalloc(sizeof(struct irnode));
+	    irlist->next->prev= irlist;
             irlist= irlist->next;
             irlist->sid= ++irnodenum;
             irlist->ircode= ENDPROC;
@@ -418,6 +419,7 @@ struct irinfo *typecheck(struct ast *subtree)
         {   irlist= irlist->next;
         }
         irlist->next= emalloc(sizeof(struct irnode));
+	irlist->next->prev= irlist;
         irlist= irlist->next;
         irlist->ircode= LOADADDRESS;
         irlist->regnum= tcresult->regnum;
