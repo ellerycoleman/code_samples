@@ -30,8 +30,9 @@ void generate_ir(struct ast *parse_tree)
     {   ircodenames[0]  = "UNINITIALIZED";
         ircodenames[100]= "BEGINPROC";
         ircodenames[101]= "LOADADDRESS";
-        ircodenames[102]= "STOREWORDINDIRECT";
-        ircodenames[103]= "ENDPROC";
+	ircodenames[102]= "LOADCONSTANT";
+        ircodenames[103]= "STOREWORDINDIRECT";
+        ircodenames[104]= "ENDPROC";
     };
 
 
@@ -238,7 +239,7 @@ void print_irnodes(void)
 	}
 
         /* add IR to irlist */
-        printf("irnode_sid: %3d, code: %s (%d), symptr: %s, register: %s\n",
+        printf("irnode_sid: %3d, code: %15s (%d), symptr: %10s, register: %s\n",
                 irlist->sid,
 		ircodenames[irlist->ircode],
 		irlist->ircode,
@@ -407,6 +408,18 @@ struct irinfo *typecheck(struct ast *subtree)
     if(subtree->nodetype == INTEGER_CONSTANT)
     {   tcresult->nodetype= RVALUE;
         tcresult->regnum= ++regnum;
+
+        irlist= irlist_front;
+        while(irlist->next != NULL)
+        {   irlist= irlist->next;
+        }
+        irlist->next= emalloc(sizeof(struct irnode));
+	irlist->next->prev= irlist;
+        irlist= irlist->next;
+        irlist->sid= ++irnodenum;
+        irlist->ircode= LOADCONSTANT;
+        irlist->regnum= tcresult->regnum;
+
         return tcresult;
     }
 
@@ -421,6 +434,7 @@ struct irinfo *typecheck(struct ast *subtree)
         irlist->next= emalloc(sizeof(struct irnode));
 	irlist->next->prev= irlist;
         irlist= irlist->next;
+        irlist->sid= ++irnodenum;
         irlist->ircode= LOADADDRESS;
         irlist->regnum= tcresult->regnum;
         irlist->symptr= (struct declarator *)subtree;

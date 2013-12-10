@@ -18,6 +18,7 @@
 enum ircodes 
 {   BEGINPROC=100,
     LOADADDRESS,
+    LOADCONSTANT,
     STOREWORDINDIRECT,
     ENDPROC
 };
