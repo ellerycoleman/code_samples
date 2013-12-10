@@ -32,7 +32,8 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[101]= "LOADADDRESS";
 	ircodenames[102]= "LOADCONSTANT";
         ircodenames[103]= "STOREWORDINDIRECT";
-        ircodenames[104]= "ENDPROC";
+        ircodenames[104]= "LOADWORDINDIRECT";
+        ircodenames[105]= "ENDPROC";
     };
 
 
@@ -389,6 +390,8 @@ void decostat_to_ir(struct ast *decostat)
                while(irlist->next != NULL)
                {   irlist= irlist->next;
                }
+
+	       /* add node for storewordindirect */
                irlist->next= emalloc(sizeof(struct irnode));
 	       irlist->next->prev= irlist;
                irlist= irlist->next;
@@ -396,6 +399,32 @@ void decostat_to_ir(struct ast *decostat)
                irlist->ircode= STOREWORDINDIRECT;
                irlist->regnum= prepl->regnum;
 	       irlist->reg2= prepr->regnum;
+           }
+	   else if((prepl->nodetype == LVALUE) && (prepr->nodetype == LVALUE))
+	   {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+
+	       /* add nodes for load/storewordindirect */
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= LOADWORDINDIRECT;
+               irlist->regnum= ++regnum;
+	       irlist->reg2= prepr->regnum;
+
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= STOREWORDINDIRECT;
+               irlist->regnum= regnum;
+	       irlist->reg2= prepl->regnum;
+
+
            }
 
 	   printf(" left type: %d\n", prepl->nodetype);
