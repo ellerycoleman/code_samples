@@ -239,7 +239,7 @@ void print_irnodes(void)
 	}
 
         /* add IR to irlist */
-        printf("irnode_sid: %3d, code: %15s (%d), symptr: %10s, register: %s\n",
+        printf("irnode_sid: %3d, code: %15s (%d), symptr: %10s, regnum: %s\n",
                 irlist->sid,
 		ircodenames[irlist->ircode],
 		irlist->ircode,
@@ -370,6 +370,20 @@ void decostat_to_ir(struct ast *decostat)
 	   printf("found an OP_ASSIGNMENT...\n\n\n");
 	   prepl= typecheck(decostat->l);
 	   prepr= typecheck(decostat->r);
+
+	   if((prepl->nodetype == LVALUE) && (prepr->nodetype == RVALUE))
+	   {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= STOREWORDINDIRECT;
+               irlist->regnum= prepl->regnum;
+           }
+
 	   printf(" left type: %d\n", prepl->nodetype);
 	   printf("right type: %d\n", prepr->nodetype);
 	   break;

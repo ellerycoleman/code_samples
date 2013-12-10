@@ -31,6 +31,7 @@ struct irnode
     int sid;
     enum ircodes ircode;
     int regnum;
+    int reg2;
     struct irnode *prev;
     struct irnode *next;
     struct declarator *symptr;
