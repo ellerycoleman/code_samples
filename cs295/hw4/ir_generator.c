@@ -241,11 +241,14 @@ void print_irnodes(void)
 	}
 
         /* record reg2 num */
-        if(irlist->reg2 == 0)
+        if((irlist->reg2 == 0) &&  (irlist->ircode != LOADCONSTANT))
 	{   sprintf(reg2, "%s", "N/A");
 	}
-	else
+	else if((irlist->reg2 != 0) &&  (irlist->ircode != LOADCONSTANT))
 	{   sprintf(reg2, "r%d", irlist->reg2);
+	}
+	else if((irlist->reg2 != 0) &&  (irlist->ircode == LOADCONSTANT))
+	{   sprintf(reg2, "%d", irlist->reg2);
 	}
 
 
@@ -477,6 +480,7 @@ struct irinfo *typecheck(struct ast *subtree)
         irlist->sid= ++irnodenum;
         irlist->ircode= LOADCONSTANT;
         irlist->reg1= tcresult->regnum;
+	irlist->reg2= (int)(long)((struct constant *)subtree)->value;
 
         return tcresult;
     }
