@@ -36,8 +36,6 @@ void generate_mips(void)
 
 
 
-
-
     /* Open MIPS output file
     +-------------------------*/
     strcpy(mipsfname,"stdin.mips");  /* update later to create an IR file
@@ -47,7 +45,6 @@ void generate_mips(void)
     {   printf("Error opening IR output file: %s\n", mipsfname);
     }
 
-
     if(irlist == NULL)
     {   printf("IRLIST IS EMPTY\n\n");
         return;
@@ -55,21 +52,22 @@ void generate_mips(void)
 
 
 
-    /* Check top_level_symbol table for all
-    |  non-function symbols.  Emit the appropriate
-    |  MIPS for these symbols.
-    +------------------------------------------------*/
+    /* Check top_level_symbol table for all non-function symbols.
+    |  Emit the appropriate MIPS instructions for these symbols.
+    +-------------------------------------------------------------*/
     declare_global_vars();
 
 
+    /* Print MIPS instructions for entering a function.
+    +----------------------------------------------------*/
+    int tmpstack= 56;
+    fprintf(mipsout,"\t.text\n");
+    fprintf(mipsout,"\t.globl\tmain\n\n");
 
 
     /* iterate through the irnodes and emit the
     |  appropriate MIPS assembly code
     +--------------------------------------------*/
-    int tmpstack= 56;
-    fprintf(mipsout,"\t.text\n");
-    fprintf(mipsout,"\t.globl\tmain\n\n");
     struct irnode *irlist= irlist_front;
     while(irlist != NULL)
     {   /* add IR to irlist */
@@ -78,40 +76,32 @@ void generate_mips(void)
         switch(irlist->ircode)
 	{
 	    case BEGINPROC:
+
+	       /* If the function is not "main", we should modify the function name to make
+	       |  sure the name doesn't match a SPIM reserved word.
+	       +---------------------------------------------------------------------------*/
 	       if(strcmp("main",print_declarator_id(irlist->symptr)) )
 	       {   fprintf(mipsout,"_VAR_%s:\n\n",print_declarator_id(irlist->symptr));
                }
+
+	       /* For function "main" we will leave the name as-is.
+	       +----------------------------------------------------*/
 	       else
 	       {   fprintf(mipsout,"%s:\n\n",print_declarator_id(irlist->symptr));
                }
 
-	       fprintf(mipsout,
-"\taddiu	$sp, $sp, -%d	# push space for our stack frame onto the stack\n"
-"\tsw	$fp, %d($sp)	# save the old $fp\n"
-"\taddiu	$fp, $sp, %d	# $fp -> stack frame\n"
-"\tsw	$ra, -4($fp)	# save the return address\n"
-"\tsw\t$a0, -8($fp)\t# save parameter $a0\n"
-"\tsw\t$a1, -12($fp)\t# save parameter $a1\n"
-"\tsw\t$a2, -16($fp)\t# save parameter $a2\n"
-"\tsw\t$a3, -20($fp)\t# save parameter $a3\n"
-"\tsw	$s0, -24($fp)	# save $s0\n"
-"\tsw	$s1, -28($fp)	# save $s1\n"
-"\tsw	$s2, -32($fp)	# save $s2\n"
-"\tsw	$s3, -36($fp)	# save $s3\n"
-"\tsw	$s4, -40($fp)	# save $s4\n"
-"\tsw	$s5, -44($fp)	# save $s5\n"
-"\tsw	$s6, -48($fp)	# save $s6\n"
-"\tsw	$s7, -52($fp)	# save $s7\n",
-        tmpstack,
-	tmpstack-4,
-	tmpstack-4
-               );
+               /* Print standard code to initialize stack for function execution
+	       +-----------------------------------------------------------------*/
+               write_function_entry_code(tmpstack);
+
 	       break;
+
 
 
             case LOADADDRESS:
 	       fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reg[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       break;
+
 
 
             case LOADCONSTANT:
@@ -211,3 +201,32 @@ void declare_global_vars(void)
     }
     fprintf(mipsout,"\n\n\n");
 }
+
+
+void write_function_entry_code(int stacksize)
+{
+    fprintf(mipsout,
+            "\taddiu\t$sp, $sp, -%d	# push space for our stack frame onto the stack\n"
+"\tsw\t$fp, %d($sp)	# save the old $fp\n"
+"\taddiu\t$fp, $sp, %d	# $fp -> stack frame\n"
+"\tsw	$ra, -4($fp)	# save the return address\n"
+"\tsw\t$a0, -8($fp)\t# save parameter $a0\n"
+"\tsw\t$a1, -12($fp)\t# save parameter $a1\n"
+"\tsw\t$a2, -16($fp)\t# save parameter $a2\n"
+"\tsw\t$a3, -20($fp)\t# save parameter $a3\n"
+"\tsw	$s0, -24($fp)	# save $s0\n"
+"\tsw	$s1, -28($fp)	# save $s1\n"
+"\tsw	$s2, -32($fp)	# save $s2\n"
+"\tsw	$s3, -36($fp)	# save $s3\n"
+"\tsw	$s4, -40($fp)	# save $s4\n"
+"\tsw	$s5, -44($fp)	# save $s5\n"
+"\tsw	$s6, -48($fp)	# save $s6\n"
+"\tsw	$s7, -52($fp)	# save $s7\n",
+        stacksize,
+	stacksize-4,
+	stacksize-4
+    );
+
+}
+
+

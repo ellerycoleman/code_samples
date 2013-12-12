@@ -20,6 +20,7 @@
 +------------------------------*/
 void generate_mips(void);
 void declare_global_vars(void);
+void write_function_entry_code(int stacksize);
 
 
 
