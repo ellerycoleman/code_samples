@@ -233,11 +233,11 @@ void print_irnodes(void)
     while(irlist != NULL)
     {   
         /* record reg1 num */
-        if(irlist->regnum == 0)
+        if(irlist->reg1 == 0)
 	{   sprintf(regnum, "%s", "N/A");
 	}
 	else
-	{   sprintf(regnum, "r%d", irlist->regnum);
+	{   sprintf(regnum, "r%d", irlist->reg1);
 	}
 
         /* record reg2 num */
@@ -252,7 +252,7 @@ void print_irnodes(void)
 
 
         /* add IR to irlist */
-        printf("irnode_sid: %3d, code: %18s (%d), symptr: %10s, regnum: %5s,       reg2: %5s\n",
+        printf("irnode_sid: %3d, code: %18s (%d), symptr: %10s, reg1: %5s,       reg2: %5s\n",
                 irlist->sid,
 		ircodenames[irlist->ircode],
 		irlist->ircode,
@@ -397,7 +397,7 @@ void decostat_to_ir(struct ast *decostat)
                irlist= irlist->next;
                irlist->sid= ++irnodenum;
                irlist->ircode= STOREWORDINDIRECT;
-               irlist->regnum= prepl->regnum;
+               irlist->reg1= prepl->regnum;
 	       irlist->reg2= prepr->regnum;
            }
 	   else if((prepl->nodetype == LVALUE) && (prepr->nodetype == LVALUE))
@@ -413,7 +413,7 @@ void decostat_to_ir(struct ast *decostat)
                irlist= irlist->next;
                irlist->sid= ++irnodenum;
                irlist->ircode= LOADWORDINDIRECT;
-               irlist->regnum= ++regnum;
+               irlist->reg1= ++regnum;
 	       irlist->reg2= prepr->regnum;
 
                irlist->next= emalloc(sizeof(struct irnode));
@@ -421,7 +421,7 @@ void decostat_to_ir(struct ast *decostat)
                irlist= irlist->next;
                irlist->sid= ++irnodenum;
                irlist->ircode= STOREWORDINDIRECT;
-               irlist->regnum= regnum;
+               irlist->reg1= regnum;
 	       irlist->reg2= prepl->regnum;
 
 
@@ -476,7 +476,7 @@ struct irinfo *typecheck(struct ast *subtree)
         irlist= irlist->next;
         irlist->sid= ++irnodenum;
         irlist->ircode= LOADCONSTANT;
-        irlist->regnum= tcresult->regnum;
+        irlist->reg1= tcresult->regnum;
 
         return tcresult;
     }
@@ -494,7 +494,7 @@ struct irinfo *typecheck(struct ast *subtree)
         irlist= irlist->next;
         irlist->sid= ++irnodenum;
         irlist->ircode= LOADADDRESS;
-        irlist->regnum= tcresult->regnum;
+        irlist->reg1= tcresult->regnum;
         irlist->symptr= (struct declarator *)subtree;
 
         return tcresult;
