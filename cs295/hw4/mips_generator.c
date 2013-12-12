@@ -31,7 +31,7 @@ void generate_mips(void)
     printf("\n\n\n\n\n");
     printf("===========================================================\n");
     printf(" Generate MIPS called...\n");
-    printf("===========================================================\n");
+    printf("===========================================================\n\n\n");
     irlist= irlist_front;
 
 
@@ -133,8 +133,6 @@ void generate_mips(void)
     }
 
 
-
-
     close(mipsout);
 }
 
@@ -192,6 +190,13 @@ void declare_global_vars(void)
 }
 
 
+
+
+
+
+/*-----------------------------------------------
+ | write_function_entry_code(int stacksize)
+ +---------------------------------------------*/
 void write_function_entry_code(int stacksize)
 {
     fprintf(mipsout,
@@ -221,6 +226,10 @@ void write_function_entry_code(int stacksize)
 
 
 
+
+/*-----------------------------------------------
+ | write_function_exit_code(int stacksize)
+ +---------------------------------------------*/
 void write_function_exit_code(int stacksize)
 {
     fprintf(mipsout,
@@ -240,3 +249,9 @@ void write_function_exit_code(int stacksize)
     );
 
 }
+
+
+
+
+
+
