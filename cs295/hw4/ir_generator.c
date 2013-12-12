@@ -216,7 +216,7 @@ void generate_ir(struct ast *parse_tree)
  +---------------------------------------------*/
 void print_irnodes(void)
 {   struct irnode *irlist= irlist_front;
-    char regnum[5];
+    char reg1[5];
     char reg2[5];
 
     printf("\n\n\n");
@@ -234,10 +234,10 @@ void print_irnodes(void)
     {   
         /* record reg1 num */
         if(irlist->reg1 == 0)
-	{   sprintf(regnum, "%s", "N/A");
+	{   sprintf(reg1, "%s", "N/A");
 	}
 	else
-	{   sprintf(regnum, "r%d", irlist->reg1);
+	{   sprintf(reg1, "r%d", irlist->reg1);
 	}
 
         /* record reg2 num */
@@ -257,7 +257,7 @@ void print_irnodes(void)
 		ircodenames[irlist->ircode],
 		irlist->ircode,
 		print_declarator_id(irlist->symptr),
-		regnum,
+		reg1,
 		reg2
 	      );
         irlist= irlist->next;
