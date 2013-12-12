@@ -94,6 +94,11 @@ int main(int argc, char **argv)
     generate_ir(parse_tree);
 
 
+    /* traverse irnode list to generate MIPS instructions.
+    +-------------------------------------------------------*/
+    generate_mips();
+    
+
     /* traverse parse tree to generate pretty print
     +-------------------------------------------------*/
     indent_count=0;
@@ -2150,6 +2155,6 @@ char * indent(char *str)
 
 #include "symbol_table.c"
 #include "ir_generator.c"
-
+#include "mips_generator.c"
 
 

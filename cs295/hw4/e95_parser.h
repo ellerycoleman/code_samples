@@ -288,5 +288,5 @@ char * indent(char *str);
 
 #include "symbol_table.h"
 #include "ir_generator.h"
-
+#include "mips_generator.h"
 
