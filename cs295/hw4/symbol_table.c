@@ -1341,11 +1341,8 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     }
 
     if(dstat->nodetype == SIMPLE_DECLARATOR)
-    {   printf("I found an identifier: ");
+    {   
         d= (struct declarator *)dstat;
-	if(d != NULL)
-	{   printf("%s\n", d->id);
-	}
 	resolve_id(dstat,curr_symtab);
     }
 

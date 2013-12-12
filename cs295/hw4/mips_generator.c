@@ -59,44 +59,7 @@ void generate_mips(void)
     |  non-function symbols.  Emit the appropriate
     |  MIPS for these symbols.
     +------------------------------------------------*/
-    struct symtabl *curr_symtab;
-    struct declarator *sp;
-    int i;
-
-    fprintf(mipsout,"\n\n\t.data\n");
-    curr_symtab= global_top_level;
-    for(i=0; i<NHASH; i++)
-    {   if(curr_symtab->symtab[i])
-        {   sp= curr_symtab->symtab[i];
-	    if( (sp->nodetype != FUNCTION_DEFINITION)  &&  (sp->nodetype != FUNCTION_DECLARATOR) )
-	    {   
-	        switch(sp->tspecptr->type)
-		{   case SIGNED_INT:
-		    case UNSIGNED_INT:
-		    case SIGNED_LONG_INT:
-		    case UNSIGNED_LONG_INT:
-		       fprintf(mipsout,"_VAR_%s:\t.word\t0\n",print_declarator_id(sp));
-		       break;
-
-		    case SIGNED_SHORT_INT:
-		    case UNSIGNED_SHORT_INT:
-		       fprintf(mipsout,"_VAR_%s:\t.half\t0\n",print_declarator_id(sp));
-		       break;
-
-		    case SIGNED_CHAR:
-		    case UNSIGNED_CHAR:
-		       fprintf(mipsout,"_VAR_%s:\t.byte\t0\n",print_declarator_id(sp));
-		       break;
-
-
-                    default:
-		       fprintf(mipsout,"# Found an unknown global variable type.\n");
-		       break;
-		}
-	    }
-        }
-    }
-    fprintf(mipsout,"\n\n\n");
+    declare_global_vars();
 
 
 
@@ -113,7 +76,7 @@ void generate_mips(void)
         /* fprintf(mipsout,"%18s", ircodenames[irlist->ircode]); */
 
         switch(irlist->ircode)
-	{   
+	{
 	    case BEGINPROC:
 	       if(strcmp("main",print_declarator_id(irlist->symptr)) )
 	       {   fprintf(mipsout,"_VAR_%s:\n\n",print_declarator_id(irlist->symptr));
@@ -147,24 +110,24 @@ void generate_mips(void)
 
 
             case LOADADDRESS:
-	       fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reg[irlist->oprnd1],print_declarator_id(irlist->symptr)); 
+	       fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reg[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       break;
-            
+
 
             case LOADCONSTANT:
-	       fprintf(mipsout,"\tli\t%s,%d\n",reg[irlist->oprnd1],irlist->oprnd2); 
+	       fprintf(mipsout,"\tli\t%s,%d\n",reg[irlist->oprnd1],irlist->oprnd2);
 	       break;
 
 
             case STOREWORDINDIRECT:
-	       fprintf(mipsout,"\tsw\t%s,(%s)\n",reg[irlist->oprnd1],reg[irlist->oprnd2]); 
+	       fprintf(mipsout,"\tsw\t%s,(%s)\n",reg[irlist->oprnd1],reg[irlist->oprnd2]);
 	       break;
 
 
             case LOADWORDINDIRECT:
-	       fprintf(mipsout,"\tlw\t%s,(%s)\n",reg[irlist->oprnd1],reg[irlist->oprnd2]); 
+	       fprintf(mipsout,"\tlw\t%s,(%s)\n",reg[irlist->oprnd1],reg[irlist->oprnd2]);
 	       break;
-            
+
 
 	    case ENDPROC:
                fprintf(mipsout,
@@ -184,7 +147,7 @@ void generate_mips(void)
                );
 
 	    default:
-	       fprintf(mipsout,"# encountered unknow IR code: %s\n", ircodenames[irlist->ircode]); 
+	       fprintf(mipsout,"# encountered unknow IR code: %s\n", ircodenames[irlist->ircode]);
 	}
 
         irlist= irlist->next;
@@ -201,3 +164,50 @@ void generate_mips(void)
 
 
 
+
+
+/*-----------------------------------------------
+ | declare_global_vars - prints data section of
+ |                       asm file.
+ +---------------------------------------------*/
+void declare_global_vars(void)
+{
+    struct symtabl *curr_symtab;
+    struct declarator *sp;
+    int i;
+
+    fprintf(mipsout,"\n\n\t.data\n");
+    curr_symtab= global_top_level;
+    for(i=0; i<NHASH; i++)
+    {   if(curr_symtab->symtab[i])
+        {   sp= curr_symtab->symtab[i];
+	    if( (sp->nodetype != FUNCTION_DEFINITION)  &&  (sp->nodetype != FUNCTION_DECLARATOR) )
+	    {
+	        switch(sp->tspecptr->type)
+		{   case SIGNED_INT:
+		    case UNSIGNED_INT:
+		    case SIGNED_LONG_INT:
+		    case UNSIGNED_LONG_INT:
+		       fprintf(mipsout,"_VAR_%s:\t.word\t0\n",print_declarator_id(sp));
+		       break;
+
+		    case SIGNED_SHORT_INT:
+		    case UNSIGNED_SHORT_INT:
+		       fprintf(mipsout,"_VAR_%s:\t.half\t0\n",print_declarator_id(sp));
+		       break;
+
+		    case SIGNED_CHAR:
+		    case UNSIGNED_CHAR:
+		       fprintf(mipsout,"_VAR_%s:\t.byte\t0\n",print_declarator_id(sp));
+		       break;
+
+
+                    default:
+		       fprintf(mipsout,"# Found an unknown global variable type.\n");
+		       break;
+		}
+	    }
+        }
+    }
+    fprintf(mipsout,"\n\n\n");
+}

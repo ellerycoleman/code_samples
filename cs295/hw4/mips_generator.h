@@ -19,6 +19,7 @@
 | Function Prototypes
 +------------------------------*/
 void generate_mips(void);
+void declare_global_vars(void);
 
 
 
