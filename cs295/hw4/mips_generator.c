@@ -120,24 +120,13 @@ void generate_mips(void)
 
 
 	    case ENDPROC:
-               fprintf(mipsout,
-"\tlw	$s7, -52($fp)	# restore $s7\n"
-"\tlw	$s6, -48($fp)	# restore $s6\n"
-"\tlw	$s5, -44($fp)	# restore $s5\n"
-"\tlw	$s4, -40($fp)	# restore $s4\n"
-"\tlw	$s3, -36($fp)	# restore $s3\n"
-"\tlw	$s2, -32($fp)	# restore $s2\n"
-"\tlw	$s1, -28($fp)	# restore $s1\n"
-"\tlw	$s0, -24($fp)	# restore $s0\n"
-"\tlw	$ra, -4($fp)	# restore $ra\n"
-"\tlw	$fp, ($fp)	# restore old $fp\n"
-"\taddiu	$sp, $sp, %d	# pop off our stack frame\n"
-"\tjr	$ra		# return to caller\n",
-        tmpstack
-               );
+               write_function_exit_code(tmpstack);
+	       break;
+
 
 	    default:
 	       fprintf(mipsout,"# encountered unknow IR code: %s\n", ircodenames[irlist->ircode]);
+	       break;
 	}
 
         irlist= irlist->next;
@@ -230,3 +219,24 @@ void write_function_entry_code(int stacksize)
 }
 
 
+
+
+void write_function_exit_code(int stacksize)
+{
+    fprintf(mipsout,
+"\tlw	$s7, -52($fp)	# restore $s7\n"
+"\tlw	$s6, -48($fp)	# restore $s6\n"
+"\tlw	$s5, -44($fp)	# restore $s5\n"
+"\tlw	$s4, -40($fp)	# restore $s4\n"
+"\tlw	$s3, -36($fp)	# restore $s3\n"
+"\tlw	$s2, -32($fp)	# restore $s2\n"
+"\tlw	$s1, -28($fp)	# restore $s1\n"
+"\tlw	$s0, -24($fp)	# restore $s0\n"
+"\tlw	$ra, -4($fp)	# restore $ra\n"
+"\tlw	$fp, ($fp)	# restore old $fp\n"
+"\taddiu	$sp, $sp, %d	# pop off our stack frame\n"
+"\tjr	$ra		# return to caller\n",
+        stacksize
+    );
+
+}
