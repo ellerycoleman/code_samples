@@ -412,8 +412,8 @@ void decostat_to_ir(struct ast *decostat)
                irlist= irlist->next;
                irlist->sid= ++irnodenum;
                irlist->ircode= STOREWORDINDIRECT;
-               irlist->oprnd1= prepl->regnum;
-	       irlist->oprnd2= prepr->regnum;
+               irlist->oprnd1= prepr->regnum;
+	       irlist->oprnd2= prepl->regnum;
            }
 	   else if((prepl->nodetype == LVALUE) && (prepr->nodetype == LVALUE))
 	   {   irlist= irlist_front;
@@ -436,9 +436,8 @@ void decostat_to_ir(struct ast *decostat)
                irlist= irlist->next;
                irlist->sid= ++irnodenum;
                irlist->ircode= STOREWORDINDIRECT;
-               irlist->oprnd1= regnum;
-	       irlist->oprnd2= prepl->regnum;
-
+               irlist->oprnd1=  regnum;
+	       irlist->oprnd2=  prepl->regnum;
 
            }
 

@@ -153,6 +153,7 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
         do
         {   dp= decolist->d;
 	    dporig= decolist->d;
+	    dporig->tspecptr= tdecl->tspecptr;
 
 
 	    /* ffwd pointer declarators */
@@ -599,9 +600,9 @@ search_table:
 struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
 {   int i;
     int hash;
-    struct declarator *sp;            /* used to keep current place in symbol table   */
-    struct declarator *spname= sym;   /* used to investigate name of symbol in table  */
-    struct declarator *symorig= sym;  /* used to keep location of original param      */
+    struct declarator *sp;               /* used to keep current place in symbol table     */
+    struct declarator *spname= sym;      /* used to investigate name of symbol in table    */
+    struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
 
@@ -907,6 +908,8 @@ void print_symtab(struct symtabl *curr_symtab)
 
     int i;
     struct declarator *sp;
+    char typename[30];
+
 
     printf("\n\n\n\n\n\n\n");
     printf("=====================================================\n");
@@ -932,6 +935,13 @@ void print_symtab(struct symtabl *curr_symtab)
             printf("(contents %ld) ", curr_symtab->symtab[i]);
 
 	    sp= curr_symtab->symtab[i];
+	    if(sp->tspecptr)
+	    {   sprintf(typename,"%s",print_type(sp->tspecptr->type));
+	    }
+	    else
+	    {   sprintf(typename,"%s", "N/A");
+	    }
+
 
             /* fastforward to declarator name for sp */
             while(sp->next != NULL)
@@ -941,7 +951,8 @@ void print_symtab(struct symtabl *curr_symtab)
             {   sp= sp->adeclarator;
             }
 
-	    printf("     name: %s\n", sp->id);
+	    printf("     name: %s", sp->id);
+	    printf("     type: %s\n", typename);
 	}
     }
     printf("\n\n\n");
@@ -1007,6 +1018,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
     |  and a declarator.  Retrieve the declarator.
     +--------------------------------------------------------------*/
     dporig= fdspec->d;
+    dporig->tspecptr= &basic_types[fdspec->typespec];
 
 
 
@@ -1329,7 +1341,11 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     }
 
     if(dstat->nodetype == SIMPLE_DECLARATOR)
-    {   d= (struct declarator *)dstat;
+    {   printf("I found an identifier: ");
+        d= (struct declarator *)dstat;
+	if(d != NULL)
+	{   printf("%s\n", d->id);
+	}
 	resolve_id(dstat,curr_symtab);
     }
 
