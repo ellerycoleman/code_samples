@@ -8,6 +8,8 @@
 +===========================================================================*/
 
 
+int statement_begin_sid=0;
+int statement_end_sid=0;
 
 
 /*-----------------------------------------------
@@ -166,14 +168,18 @@ void generate_ir(struct ast *parse_tree)
 
 
 
-
             /* print parameter list
 	    +-------------------------*/
 	    print_parameter_list(plist,genstr);
 	    sprintf(&genstr[strlen(genstr)],")");
-	    sprintf(&genstr[strlen(genstr)],"\n#{\n\n\n");
+	    sprintf(&genstr[strlen(genstr)],"\n#{\n");
 	    fprintf(irout,"%s",genstr); clearstr(genstr);
 
+
+	    /* print IR for entering function
+	    +----------------------------------*/
+	    fprintf(irout,"BEGINPROC(%s)\n\n\n", funcname);
+            statement_begin_sid= irnodenum + 1;
 
 
             /* Generate IR for compound statement block
@@ -196,7 +202,8 @@ void generate_ir(struct ast *parse_tree)
 	    irlist->symptr= fdspec->d;
 
 
-            fprintf(irout,"\n#}\n\n");
+            fprintf(irout,"\n#}\n");
+	    fprintf(irout,"ENDPROC(%s)\n\n\n", funcname);
 	}
 
     }while( (tldlist= tldlist->next) != NULL );
@@ -206,6 +213,9 @@ void generate_ir(struct ast *parse_tree)
     printf("EXITING\n");
     print_irnodes();
 }
+
+
+
 
 
 
@@ -282,6 +292,94 @@ void print_irnodes(void)
 
 
 
+
+
+
+
+
+/*-----------------------------------------------
+ | print_irnode_sids
+ +---------------------------------------------*/
+void print_irnode_sids(int begin_sid,int end_sid)
+{   struct irnode *irlist= irlist_front;
+    char oprnd1[5];
+    char oprnd2[5];
+    char oprnd3[5];
+
+    printf("\n\n\n");
+    printf("#=========================================\n");
+    printf("#         IRNODE LIST DISPLAY\n");
+    printf("#=========================================\n\n");
+
+
+    if(irlist == NULL)
+    {   printf("IRLIST IS EMPTY\n\n");
+        return;
+    }
+
+    while(irlist != NULL)
+    {   
+
+        if( (irlist->sid >= begin_sid)  &&  (irlist->sid <= end_sid) )
+	{
+
+        /* record oprnd1 num */
+        if(irlist->oprnd1 == 0)
+	{   sprintf(oprnd1, "%s", "N/A");
+	}
+	else
+	{   sprintf(oprnd1, "r%d", irlist->oprnd1);
+	}
+
+        /* record oprnd2 num */
+        if((irlist->oprnd2 == 0) &&  (irlist->ircode != LOADCONSTANT))
+	{   sprintf(oprnd2, "%s", "N/A");
+	}
+	else if((irlist->oprnd2 != 0) &&  (irlist->ircode != LOADCONSTANT))
+	{   sprintf(oprnd2, "r%d", irlist->oprnd2);
+	}
+	else if((irlist->oprnd2 != 0) &&  (irlist->ircode == LOADCONSTANT))
+	{   sprintf(oprnd2, "%d", irlist->oprnd2);
+	}
+
+        /* record oprnd3 num */
+        if((irlist->oprnd3 == 0) &&  (irlist->ircode != LOADCONSTANT))
+	{   sprintf(oprnd3, "%s", "N/A");
+	}
+	else if((irlist->oprnd3 != 0) &&  (irlist->ircode != LOADCONSTANT))
+	{   sprintf(oprnd3, "r%d", irlist->oprnd3);
+	}
+	else if((irlist->oprnd3 != 0) &&  (irlist->ircode == LOADCONSTANT))
+	{   sprintf(oprnd3, "%d", irlist->oprnd3);
+	}
+
+
+
+        /* add IR to irlist */
+        fprintf(irout,"irnode_sid: %3d, code: %18s (%d), symptr: %10s, oprnd1: %5s,     oprnd2: %5s,    oprnd3: %5s\n",
+                irlist->sid,
+		ircodenames[irlist->ircode],
+		irlist->ircode,
+		print_declarator_id(irlist->symptr),
+		oprnd1,
+		oprnd2,
+		oprnd3
+	      );
+        } /* end if */
+        irlist= irlist->next;
+    }/* end while */
+}
+
+
+
+
+
+
+
+
+
+
+
 /*-----------------------------------------------
  | print_declarator_id
  +---------------------------------------------*/
@@ -332,8 +430,8 @@ void compound_to_ir(struct ast *cstmt)
         decostat_to_ir(decostat);
 
 
-        /* write IR to file
-	+--------------------*/
+        /* write C statement to file
+	+----------------------------*/
         clearstr(genstr);
         sprintf(genstr,"#");
         indent(genstr);
@@ -348,9 +446,21 @@ void compound_to_ir(struct ast *cstmt)
         {   fprintf(irout,"\n\n");
         }
         else
-        {   fprintf(irout,"%s;\n\n\n",genstr); clearstr(genstr);
+        {   fprintf(irout,"%s;\n",genstr); clearstr(genstr);
         }
         fprintf(irout,"%s",genstr); clearstr(genstr);
+
+
+
+
+        /* write IR nodes to file
+	+----------------------------*/
+	statement_end_sid= irnodenum;
+	print_irnode_sids(statement_begin_sid,statement_end_sid);
+	statement_begin_sid= ++statement_end_sid;
+	fprintf(irout,"\n\n\n");
+
+
     } while( (dlist= dlist->next) != NULL);
     --indent_count;
 }
