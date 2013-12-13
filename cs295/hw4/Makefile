@@ -50,6 +50,7 @@ clean:
 	rm -f e95_parser parser
 	rm -f testprog*
 	rm -f stdin.ir
+	rm -f stdin.mips
 
 
 test:	all
