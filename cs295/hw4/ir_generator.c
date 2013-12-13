@@ -10,7 +10,7 @@
 
 int statement_begin_sid=0;
 int statement_end_sid=0;
-
+int inside_function=0;
 
 /*-----------------------------------------------
  | generate_ir
@@ -180,6 +180,7 @@ void generate_ir(struct ast *parse_tree)
 	    +----------------------------------*/
 	    fprintf(irout,"BEGINPROC(%s)\n\n\n", funcname);
             statement_begin_sid= irnodenum + 1;
+	    inside_function=1;
 
 
             /* Generate IR for compound statement block
@@ -204,6 +205,7 @@ void generate_ir(struct ast *parse_tree)
 
             fprintf(irout,"\n#}\n");
 	    fprintf(irout,"ENDPROC(%s)\n\n\n", funcname);
+	    inside_function=0;
 	}
 
     }while( (tldlist= tldlist->next) != NULL );
@@ -524,6 +526,7 @@ void decostat_to_ir(struct ast *decostat)
                irlist->ircode= STOREWORDINDIRECT;
                irlist->oprnd1= prepr->regnum;
 	       irlist->oprnd2= prepl->regnum;
+	       irlist->oprnd3= inside_function;
            }
 	   else if((prepl->nodetype == LVALUE) && (prepr->nodetype == LVALUE))
 	   {   irlist= irlist_front;
@@ -573,7 +576,7 @@ void decostat_to_ir(struct ast *decostat)
 
 
 struct irinfo *typecheck(struct ast *subtree)
-{   
+{
 
     if(subtree == NULL)
     {   printf("received a null subtree...\n");
@@ -621,6 +624,7 @@ struct irinfo *typecheck(struct ast *subtree)
         irlist->ircode= LOADADDRESS;
         irlist->oprnd1= tcresult->regnum;
         irlist->symptr= (struct declarator *)subtree;
+        irlist->oprnd3= inside_function;
 
         return tcresult;
     }

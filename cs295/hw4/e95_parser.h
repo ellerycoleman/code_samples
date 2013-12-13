@@ -144,6 +144,7 @@ typedef struct declarator
     struct expr *exp;
     struct parameter_list *plist;
     int funcdef_true;   /* set by symbol table generator */
+    int offset;         /* set by mips generator */
 } declarator;
 
 

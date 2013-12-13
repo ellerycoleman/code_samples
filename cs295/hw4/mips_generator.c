@@ -29,7 +29,7 @@ char *reg[]= { "NULL",
 void generate_mips(void)
 {
     int stacksize;
-
+    int offset;
 
     printf("\n\n\n\n\n");
     printf("===========================================================\n");
@@ -59,8 +59,6 @@ void generate_mips(void)
     |  Emit the appropriate MIPS instructions for these symbols.
     +-------------------------------------------------------------*/
     declare_global_vars();
-
-
 
 
 
@@ -103,8 +101,8 @@ void generate_mips(void)
                {   curr_symtab= curr_symtab->rsibling;
                }
 
-
-               stacksize= calculate_stack_size(curr_symtab) + 56;
+               offset=0;
+               stacksize= calculate_stack_size(curr_symtab,offset) + 56;
 
 
 	       /* round up to nearest double-word boundary */
@@ -136,7 +134,12 @@ void generate_mips(void)
 
 
             case LOADADDRESS:
-	       fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reg[irlist->oprnd1],print_declarator_id(irlist->symptr));
+	       if(irlist->oprnd3)
+	       {   fprintf(mipsout,"\tla\t%s,%d($fp)\n",reg[irlist->oprnd1],(irlist->symptr->offset + 56));
+	       }
+	       else
+	       {   fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reg[irlist->oprnd1],print_declarator_id(irlist->symptr));
+	       }
 	       break;
 
 
@@ -291,15 +294,21 @@ void write_function_exit_code(int stacksize)
 
 
 
-int calculate_stack_size(struct symtabl *curr_symtab)
-{   int currsymtabsize;
+/*-----------------------------------------------
+ | calculate_stack_size()
+ +---------------------------------------------*/
+int calculate_stack_size(struct symtabl *curr_symtab, int offset)
+{
+    int currsymtabsize;
     int maxchildsize;
     int i;
     struct declarator *sp;
 
+
     /* Count the size of the current symtable's variables
     +------------------------------------------------------*/
     currsymtabsize=0;
+    offset=0;
     for(i=0; i<NHASH; i++)
     {   if(curr_symtab->symtab[i])
         {   sp= curr_symtab->symtab[i];
@@ -309,16 +318,21 @@ int calculate_stack_size(struct symtabl *curr_symtab)
 	        case SIGNED_LONG_INT:
 	        case UNSIGNED_LONG_INT:
 	           currsymtabsize += 4;
+		   sp->offset= offset + 4;
 	           break;
+
 
 	        case SIGNED_SHORT_INT:
 	        case UNSIGNED_SHORT_INT:
 	           currsymtabsize += 2;
+		   sp->offset= offset + 2;
 	           break;
+
 
 	        case SIGNED_CHAR:
 	        case UNSIGNED_CHAR:
 	           currsymtabsize += 1;
+		   sp->offset= offset + 1;
 	           break;
 
 
@@ -337,7 +351,7 @@ int calculate_stack_size(struct symtabl *curr_symtab)
     curr_symtab= curr_symtab->child;
     if(curr_symtab)
     {   while(curr_symtab)
-        {   i= calculate_stack_size(curr_symtab);
+        {   i= calculate_stack_size(curr_symtab,offset);
 	    if(i>maxchildsize)
 	    {   maxchildsize= i;
 	    }
@@ -348,16 +362,22 @@ int calculate_stack_size(struct symtabl *curr_symtab)
     {   printf("CHILD is null\n");
     }
 
-    printf("currsymtabsize: %5d   maxchildsize: %5d\n", currsymtabsize, maxchildsize);  
+    printf("currsymtabsize: %5d   maxchildsize: %5d\n", currsymtabsize, maxchildsize);
     return currsymtabsize + maxchildsize;
 }
 
 
 
+
+/*-----------------------------------------------
+ | round_to_doubleword()
+ +---------------------------------------------*/
 int round_to_doubleword(int stacksize)
 {   int align=8;
     return ((stacksize + align - 1) / align) * align;
 }
+
+
 
 
 
