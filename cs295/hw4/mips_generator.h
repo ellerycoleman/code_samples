@@ -22,7 +22,8 @@ void generate_mips(void);
 void declare_global_vars(void);
 void write_function_entry_code(int stacksize);
 void write_function_exit_code(int stacksize);
-int calculate_stack_size(void);
+int calculate_stack_size(struct symtabl *curr_symtab);
+int round_to_doubleword(int stacksize);
 
 
 
