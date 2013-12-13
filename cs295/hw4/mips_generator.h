@@ -22,6 +22,7 @@ void generate_mips(void);
 void declare_global_vars(void);
 void write_function_entry_code(int stacksize);
 void write_function_exit_code(int stacksize);
+int calculate_stack_size(void);
 
 
 

@@ -27,6 +27,8 @@ char *reg[]= { "NULL",
  +---------------------------------------------*/
 void generate_mips(void)
 {
+    int stacksize;
+
 
     printf("\n\n\n\n\n");
     printf("===========================================================\n");
@@ -58,17 +60,22 @@ void generate_mips(void)
     declare_global_vars();
 
 
+    
+
+
+
     /* Print MIPS instructions for entering a function.
     +----------------------------------------------------*/
-    int tmpstack= 56;
     fprintf(mipsout,"\t.text\n");
     fprintf(mipsout,"\t.globl\tmain\n\n");
+
+
 
 
     /* iterate through the irnodes and emit the
     |  appropriate MIPS assembly code
     +--------------------------------------------*/
-    struct irnode *irlist= irlist_front;
+    irlist= irlist_front;
     while(irlist != NULL)
     {   /* add IR to irlist */
         /* fprintf(mipsout,"%18s", ircodenames[irlist->ircode]); */
@@ -77,6 +84,13 @@ void generate_mips(void)
 	{
 	    case BEGINPROC:
 
+               /* Calculate the stack size. It will be 56 bytes at minimum,
+               |  plus space for each of the symbols within current function
+               |  symbol table and its nested symbol tables.
+               +--------------------------------------------------------------*/
+               stacksize= calculate_stack_size();
+    
+
 	       /* If the function is not "main", we should modify the function name to make
 	       |  sure the name doesn't match a SPIM reserved word.
 	       +---------------------------------------------------------------------------*/
@@ -84,15 +98,17 @@ void generate_mips(void)
 	       {   fprintf(mipsout,"_VAR_%s:\n\n",print_declarator_id(irlist->symptr));
                }
 
+
 	       /* For function "main" we will leave the name as-is.
 	       +----------------------------------------------------*/
 	       else
 	       {   fprintf(mipsout,"%s:\n\n",print_declarator_id(irlist->symptr));
                }
 
+
                /* Print standard code to initialize stack for function execution
 	       +-----------------------------------------------------------------*/
-               write_function_entry_code(tmpstack);
+               write_function_entry_code(stacksize);
 
 	       break;
 
@@ -120,7 +136,7 @@ void generate_mips(void)
 
 
 	    case ENDPROC:
-               write_function_exit_code(tmpstack);
+               write_function_exit_code(stacksize);
 	       break;
 
 
@@ -254,4 +270,6 @@ void write_function_exit_code(int stacksize)
 
 
 
-
+int calculate_stack_size(void)
+{   return 56;
+}
