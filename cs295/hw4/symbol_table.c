@@ -123,9 +123,6 @@ void create_symbol_tables(struct ast *parse_tree)
 	    /* Set global member
 	    +---------------------*/
 	    d->global=1;
-	    printf("DEBUG: just set global member for %s (%ld) to %d\n",
-	            print_declarator_id(d), d, d->global
-	          );
 
 
 
@@ -163,37 +160,6 @@ void create_symbol_tables(struct ast *parse_tree)
 
 
 }
-
-
-/*-----------------------------------------------
- | process_change_list()
- +---------------------------------------------*/
- process_change_list()
- {   struct declarator *unresolved;
-     struct declarator *resolved;
-
-
-     clist= clist_front;
-     while(clist)
-     {   unresolved= clist->c->unresolved;
-         resolved= clist->c->resolved;
-
-
-         printf("processing change from %s (%ld) to %s (%ld)...\n",
-	        print_declarator_id(unresolved),
-		unresolved,
-                print_declarator_id(resolved),
-		resolved
-	       );
-
-        *unresolved= *resolved;
-	clist= clist->next;
-     }
-
- }
-
-
-
 
 /*-----------------------------------------------
  | ast_to_symtab
@@ -1358,32 +1324,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 
 	else
-	{   struct ast *l;
-	    struct ast *r;
-
-	    l= dstat->l;
-	    r= dstat->r;
-
-	    printf("DEBUG: about to locate_id for this statement: %s\n", print_expr(dstat,tmpstr));
-	    if(l!= NULL)
-	    {   clearstr(tmpstr);
-	        printf("dstat->l: %s\n", print_expr(l,tmpstr));
-		printf("dstat->l->l: %s (%ld)\n", print_declarator_id((struct declarator *)dstat->l->l), dstat->l->l);
-	        clearstr(tmpstr);
-	    }
-	    else
-	    {   printf("l is NULL\n");
-	    }
-
-	    if(r!= NULL)
-	    {   clearstr(tmpstr);
-	        printf("right type: %ld\n", r->nodetype);
-	        clearstr(tmpstr);
-	    }
-	    else
-	    {   printf("r is NULL\n");
-	    }
-
+	{  
 	    locate_ids(dstat,curr_symtab);
 	}
 
@@ -1463,27 +1404,12 @@ void resolve_id(struct ast *dstat, struct symtabl *curr_symtab)
     }
 
 
-    if(dstat->nodetype == POINTER_DECLARATOR)
-    {
-        d= (struct declarator *)dstat;
-        d= resolve(d,curr_symtab);
 
-        /*
-        while(d->next != NULL)
-        {   d= d->next;
-	}
-	*/
-    }
-
-
-    if(dstat->nodetype == SIMPLE_DECLARATOR)
+    if((dstat->nodetype == SIMPLE_DECLARATOR)  ||  (dstat->nodetype == POINTER_DECLARATOR))
     {
 
         d= (struct declarator *)dstat;
-        printf("DEBUG resolve id: addr before resolving %s (%ld)\n", print_declarator_id(d), d);
         resolved= resolve(d,curr_symtab);
-        printf("DEBUG resolve id: addr AFTER resolving %s (%ld)\n", print_declarator_id(resolved), resolved);
-
 
 
         /* record change for change list */
@@ -1686,6 +1612,27 @@ void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
 }
 
 
+
+
+
+
+
+/*-----------------------------------------------
+ | process_change_list()
+ +---------------------------------------------*/
+void process_change_list(void)
+{   struct declarator *unresolved;
+     struct declarator *resolved;
+
+
+     clist= clist_front;
+     while(clist)
+     {   unresolved= clist->c->unresolved;
+         resolved= clist->c->resolved;
+        *unresolved= *resolved;
+	clist= clist->next;
+     }
+}
 
 
 

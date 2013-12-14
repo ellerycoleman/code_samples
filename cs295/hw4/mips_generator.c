@@ -133,7 +133,6 @@ void generate_mips(void)
 
 
             case LOADADDRESS:
-	       printf("global for %s (%ld) set to %d\n", print_declarator_id(irlist->symptr),irlist->symptr, irlist->symptr->global);
 	       if(irlist->symptr->global)
 	       {   fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reg[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       }
