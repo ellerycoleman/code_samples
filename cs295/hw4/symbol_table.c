@@ -94,6 +94,7 @@ void create_symbol_tables(struct ast *parse_tree)
 
     /* Cycle through all symbols in the global_top_level symtab and
     |  verify that there are no more function declarators left.
+    |  Also set global member within each declarator.
     +------------------------------------------------------------------*/
     for(i=0; i<NHASH; i++)
     {   /*printf("global_top_level->symtab[%d]: %ld\n",    i,global_top_level->symtab[i]); */
@@ -101,6 +102,16 @@ void create_symbol_tables(struct ast *parse_tree)
         if(global_top_level->symtab[i])
 	{   d= global_top_level->symtab[i];
 	    dporig= d;
+
+
+
+	    /* Set global member
+	    +---------------------*/
+	    d->global=1;
+	    printf("DEBUG: just set global member for %s (%ld) to %d\n",
+	            print_declarator_id(d), d, d->global
+	          );
+
 
 
             /* ffwd pointer declarators */

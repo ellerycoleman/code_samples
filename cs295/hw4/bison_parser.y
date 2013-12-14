@@ -495,7 +495,15 @@ comma_expr:  assignment_expr
 
 
 assignment_expr:  conditional_expr
-|                 unary_expr assignment_op assignment_expr  { $$= new_expr($2,$1,$3); }
+|                 unary_expr assignment_op assignment_expr  {  $$= new_expr($2,$1,$3); 
+                                                               printf("New expr created with left side type: %d, name: %s\n", $1->nodetype, print_declarator_id($1));
+							       printf("addr of left %s: %ld, type %d\n\n", print_declarator_id($1),$1,$1->nodetype);
+							       if($3->nodetype == SIMPLE_DECLARATOR)
+							       {
+                                                                   printf("New expr created with right side type: %d, name: %s\n", $3->nodetype, print_declarator_id($3));
+							           printf("addr of right %s: %ld, type %d\n\n", print_declarator_id($3),$3, $3->nodetype);
+							       }
+                                                            }
 ;
 
 
