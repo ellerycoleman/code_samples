@@ -59,6 +59,7 @@ void label_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab);
 void locate_ids(struct ast *dstat, struct symtabl *curr_symtab);
 void resolve_id(struct ast *dstat, struct symtabl *curr_symtab);
 struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab);
+void process_change_list(void);
 
 
 

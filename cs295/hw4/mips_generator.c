@@ -132,16 +132,15 @@ void generate_mips(void)
 	       break;
 
 
-
             case LOADADDRESS:
-	       if(irlist->oprnd3)
-	       {   fprintf(mipsout,"\tla\t%s,%d($fp)\n",reg[irlist->oprnd1],(irlist->symptr->offset + 56));
-	       }
-	       else
+	       printf("global for %s (%ld) set to %d\n", print_declarator_id(irlist->symptr),irlist->symptr, irlist->symptr->global);
+	       if(irlist->symptr->global)
 	       {   fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reg[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       }
+	       else
+	       {   fprintf(mipsout,"\tla\t%s,%d($fp)\n",reg[irlist->oprnd1],(irlist->symptr->offset + 56));
+	       }
 	       break;
-
 
 
             case LOADCONSTANT:
