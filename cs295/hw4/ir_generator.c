@@ -10,7 +10,6 @@
 
 int statement_begin_sid=0;
 int statement_end_sid=0;
-int inside_function=0;
 
 /*-----------------------------------------------
  | generate_ir
@@ -172,15 +171,16 @@ void generate_ir(struct ast *parse_tree)
 	    +-------------------------*/
 	    print_parameter_list(plist,genstr);
 	    sprintf(&genstr[strlen(genstr)],")");
+	    /*
 	    sprintf(&genstr[strlen(genstr)],"\n#{\n");
 	    fprintf(irout,"%s",genstr); clearstr(genstr);
+	    */
 
 
 	    /* print IR for entering function
 	    +----------------------------------*/
 	    fprintf(irout,"BEGINPROC(%s)\n\n\n", funcname);
             statement_begin_sid= irnodenum + 1;
-	    inside_function=1;
 
 
             /* Generate IR for compound statement block
@@ -203,9 +203,6 @@ void generate_ir(struct ast *parse_tree)
 	    irlist->symptr= fdspec->d;
 
 
-            fprintf(irout,"\n#}\n");
-	    fprintf(irout,"ENDPROC(%s)\n\n\n", funcname);
-	    inside_function=0;
 	}
 
     }while( (tldlist= tldlist->next) != NULL );
@@ -244,7 +241,7 @@ void print_irnodes(void)
     }
 
     while(irlist != NULL)
-    {   
+    {
         /* record oprnd1 num */
         if(irlist->oprnd1 == 0)
 	{   sprintf(oprnd1, "%s", "N/A");
@@ -320,7 +317,7 @@ void print_irnode_sids(int begin_sid,int end_sid)
     }
 
     while(irlist != NULL)
-    {   
+    {
 
         if( (irlist->sid >= begin_sid)  &&  (irlist->sid <= end_sid) )
 	{
@@ -420,6 +417,11 @@ void compound_to_ir(struct ast *cstmt)
     struct decostat_list *dlist= (struct decostat_list *) cstmt->l;
 
 
+    sprintf(&genstr[strlen(genstr)],"#");
+    indent(genstr);
+    sprintf(&genstr[strlen(genstr)],"{\n");
+    fprintf(irout,"%s",genstr); clearstr(genstr);
+
     ++indent_count;
     do
     {   decostat= dlist->decostat;
@@ -437,7 +439,13 @@ void compound_to_ir(struct ast *cstmt)
         clearstr(genstr);
         sprintf(genstr,"#");
         indent(genstr);
-        print_expr(dlist->decostat,genstr);
+	if(decostat->nodetype == COMPOUND_STATEMENT)
+	{   clearstr(genstr);
+	    compound_to_ir(decostat);
+	}
+	else
+        {   print_expr(dlist->decostat,genstr);
+	}
 
         /* no semicolons after compound statements */
         if(   (dlist->decostat->nodetype == COMPOUND_STATEMENT)      ||
@@ -465,6 +473,12 @@ void compound_to_ir(struct ast *cstmt)
 
     } while( (dlist= dlist->next) != NULL);
     --indent_count;
+
+
+    sprintf(&genstr[strlen(genstr)],"#");
+    indent(genstr);
+    sprintf(&genstr[strlen(genstr)],"}\n");
+    fprintf(irout,"%s",genstr); clearstr(genstr);
 }
 
 
@@ -526,7 +540,6 @@ void decostat_to_ir(struct ast *decostat)
                irlist->ircode= STOREWORDINDIRECT;
                irlist->oprnd1= prepr->regnum;
 	       irlist->oprnd2= prepl->regnum;
-	       irlist->oprnd3= inside_function;
            }
 	   else if((prepl->nodetype == LVALUE) && (prepr->nodetype == LVALUE))
 	   {   irlist= irlist_front;
@@ -589,7 +602,7 @@ struct irinfo *typecheck(struct ast *subtree)
     /* figure out what type of node i'm looking at */
     printf("\ttypecheck called with decostat type: %d\n", subtree->nodetype);
 
-    
+
     if(subtree->nodetype == INTEGER_CONSTANT)
     {   tcresult->nodetype= RVALUE;
         tcresult->regnum= ++regnum;
@@ -624,7 +637,6 @@ struct irinfo *typecheck(struct ast *subtree)
         irlist->ircode= LOADADDRESS;
         irlist->oprnd1= tcresult->regnum;
         irlist->symptr= (struct declarator *)subtree;
-        irlist->oprnd3= inside_function;
 
         return tcresult;
     }
