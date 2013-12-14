@@ -314,7 +314,23 @@ initialized_declarator_list:   declarator
                                {$$= new_declarator_list($1,NULL); }
 
 |                              initialized_declarator_list SEP_COMMA declarator
-                               {$$= new_declarator_list($3,$1);   }
+                               {$$= new_declarator_list($3,$1);   
+
+			        printf("DEBUG: just created a new declarator list...\n");
+				int i=0;
+				struct declarator_list *dl;
+				struct declarator *d;
+                                dl= $$;
+				do
+				{   d= dl->d;
+                                    printf("item %d: %s (%ld)\n", ++i, print_declarator_id(d), d);
+				    dl= dl->next;
+
+				}while(dl != NULL);
+				
+
+			       
+			       }
 ;
 
 

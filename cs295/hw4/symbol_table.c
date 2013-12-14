@@ -1308,7 +1308,33 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 
 	else
-	{   locate_ids(dstat,curr_symtab);
+	{   struct ast *l;
+	    struct ast *r;
+
+	    l= dstat->l;
+	    r= dstat->r;
+
+	    printf("DEBUG: about to locate_id for this statement: %s\n", print_expr(dstat,tmpstr));
+	    if(l!= NULL) 
+	    {   clearstr(tmpstr);
+	        printf("dstat->l: %s\n", print_expr(l,tmpstr));
+		printf("dstat->l->l: %s (%ld)\n", print_declarator_id(dstat->l->l), dstat->l->l);
+	        clearstr(tmpstr);
+	    }
+	    else
+	    {   printf("l is NULL\n");
+	    }
+
+	    if(r!= NULL)
+	    {   clearstr(tmpstr);
+	        printf("right type: %ld\n", r->nodetype);
+	        clearstr(tmpstr);
+	    }
+	    else
+	    {   printf("r is NULL\n");
+	    }
+
+	    locate_ids(dstat,curr_symtab);
 	}
 
 
@@ -1387,15 +1413,24 @@ void resolve_id(struct ast *dstat, struct symtabl *curr_symtab)
 
 
     if(dstat->nodetype == POINTER_DECLARATOR)
-    {   while(d->next != NULL)
+    {   
+        d= (struct declarator *)dstat;
+        d= resolve(d,curr_symtab);
+    
+        /*
+        while(d->next != NULL)
         {   d= d->next;
 	}
+	*/
     }
 
 
     if(dstat->nodetype == SIMPLE_DECLARATOR)
-    {   d= (struct declarator *)dstat;
+    {   
+        d= (struct declarator *)dstat;
+        printf("DEBUG resolve id: addr before resolving %s (%ld)\n", print_declarator_id(d), d);
         d= resolve(d,curr_symtab);
+        printf("DEBUG resolve id: addr AFTER resolving %s (%ld)\n", print_declarator_id(d), d);
     }
 }
 
