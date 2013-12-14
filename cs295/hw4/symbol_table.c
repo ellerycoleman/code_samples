@@ -1318,7 +1318,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 	    if(l!= NULL) 
 	    {   clearstr(tmpstr);
 	        printf("dstat->l: %s\n", print_expr(l,tmpstr));
-		printf("dstat->l->l: %s (%ld)\n", print_declarator_id(dstat->l->l), dstat->l->l);
+		printf("dstat->l->l: %s (%ld)\n", print_declarator_id((struct declarator *)dstat->l->l), dstat->l->l);
 	        clearstr(tmpstr);
 	    }
 	    else
