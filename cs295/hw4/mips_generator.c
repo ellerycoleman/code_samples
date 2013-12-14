@@ -77,7 +77,7 @@ void generate_mips(void)
     irlist= irlist_front;
     while(irlist != NULL)
     {   /* add IR to irlist */
-        /* fprintf(mipsout,"%18s", ircodenames[irlist->ircode]); */
+        
 
         switch(irlist->ircode)
 	{
@@ -107,7 +107,6 @@ void generate_mips(void)
 
 	       /* round up to nearest double-word boundary */
 	       stacksize= round_to_doubleword(stacksize);
-	       printf("Final calculated stack size is: %d\n", stacksize);
 
 
 	       /* If the function is not "main", we should modify the function name to make
@@ -356,11 +355,7 @@ int calculate_stack_size(struct symtabl *curr_symtab, int offset)
 	    curr_symtab= curr_symtab->rsibling;
         }
     }
-    else
-    {   printf("CHILD is null\n");
-    }
 
-    printf("currsymtabsize: %5d   maxchildsize: %5d\n", currsymtabsize, maxchildsize);
     return currsymtabsize + maxchildsize;
 }
 

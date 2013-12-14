@@ -503,7 +503,6 @@ void decostat_to_ir(struct ast *decostat)
 
     switch(decostat->nodetype)
     {   case DECL:
-           printf("found a decl...\n\n\n");
            /* do nothing */
 	   break;
 
