@@ -138,13 +138,20 @@ void create_symbol_tables(struct ast *parse_tree)
             /* if this is a function declarator...
             +---------------------------------------*/
             if(d->nodetype == FUNCTION_DECLARATOR)
-            {
+            {   
+	        /* Allow exceptions for the builtin functions.
+		+----------------------------------------------*/
+		if( (! strcmp(print_declarator_id(d),"printint")) )
+		{   /* do nothing */
+		}
+
+
 
                 /* if this declarator doesn't belong to a function def,
                 |  then it's a declarator that has not been defined.
 	        |  Exit with an error.
 	        +--------------------------------------------------------*/
-	        if(!dporig->funcdef_true)
+	        else if(!dporig->funcdef_true)
 	        {   printf("\nError: function prototype for '%s' was never defined.\n", d->adeclarator->id);
 		    exit(-1);
 	        }
