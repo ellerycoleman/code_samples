@@ -474,7 +474,7 @@ void compound_to_ir(struct ast *cstmt)
 
     sprintf(&genstr[strlen(genstr)],"#");
     indent(genstr);
-    sprintf(&genstr[strlen(genstr)],"}\n");
+    sprintf(&genstr[strlen(genstr)],"}\n\n\n");
     fprintf(irout,"%s",genstr); clearstr(genstr);
 }
 
