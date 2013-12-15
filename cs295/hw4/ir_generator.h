@@ -21,7 +21,8 @@ enum ircodes
     LOADCONSTANT,
     STOREWORDINDIRECT,
     LOADWORDINDIRECT,
-    ENDPROC
+    ENDPROC,
+    PRINTINT
 };
 
 

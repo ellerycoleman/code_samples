@@ -35,6 +35,7 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[103]= "STOREWORDINDIRECT";
         ircodenames[104]= "LOADWORDINDIRECT";
         ircodenames[105]= "ENDPROC";
+        ircodenames[106]= "PRINTINT";
     };
 
 
@@ -489,9 +490,10 @@ void compound_to_ir(struct ast *cstmt)
 void decostat_to_ir(struct ast *decostat)
 {
     struct ast *dstat;
-    struct decostat_list *dlist= (struct decostat_list *)decostat;
+    struct decostat_list *dlist;
     struct irinfo *prepl;
     struct irinfo *prepr;
+    struct declarator *d;
     int i;
 
 
@@ -568,13 +570,65 @@ void decostat_to_ir(struct ast *decostat)
 	   break;
 
 
+
+
         case INTEGER_CONSTANT:
 	   printf("found an integer constant...\n\n\n");
 	   break;
 
 
+
+
+        case FUNCTION_CALL:
+	   ;
+	   char funcname[40];
+	   d= (struct declarator *)decostat->l;
+	   strcpy(funcname,d->adeclarator->id);
+
+	   /* If this is not a built-in function...
+	   +-----------------------------------------*/
+	   if( (strcmp(funcname,"printint"))  )
+	   {
+	   }
+
+
+
+	   /* If this IS a built-in function...
+	   +-----------------------------------------*/
+	   else
+	   {   
+	       /* printint function...
+	       +-------------------------*/
+	       if(! strcmp(funcname,"printint"))
+	       {   printf("printint invoked...\n");
+	           irlist= irlist_front;
+                   while(irlist->next != NULL)
+                   {   irlist= irlist->next;
+                   }
+
+	           /* add nodes for printint */
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= PRINTINT;
+                   irlist->oprnd1= ++regnum;
+	           irlist->symptr= (struct declarator *)decostat->r->l;
+
+	       }
+
+
+
+	   }
+
+	   printf("\tDEBUG: decostat->r->l type %d\n", decostat->r->l->nodetype);
+	   break;
+
+
+
+
         default:
-	   printf("default\n");
+	   printf("decostat_to_ir: UNKNOWN NODE TYPE: %d\n", decostat->nodetype);
 	   break;
     }
 }
