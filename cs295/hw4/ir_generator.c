@@ -171,15 +171,13 @@ void generate_ir(struct ast *parse_tree)
 	    +-------------------------*/
 	    print_parameter_list(plist,genstr);
 	    sprintf(&genstr[strlen(genstr)],")");
-	    /*
-	    sprintf(&genstr[strlen(genstr)],"\n#{\n");
+	    sprintf(&genstr[strlen(genstr)],"\n");
 	    fprintf(irout,"%s",genstr); clearstr(genstr);
-	    */
 
 
 	    /* print IR for entering function
 	    +----------------------------------*/
-	    fprintf(irout,"BEGINPROC(%s)\n\n\n", funcname);
+	    fprintf(irout,"\nBEGINPROC(%s)\n\n\n", funcname);
             statement_begin_sid= irnodenum + 1;
 
 
@@ -201,7 +199,6 @@ void generate_ir(struct ast *parse_tree)
             irlist->sid= ++irnodenum;
             irlist->ircode= ENDPROC;
 	    irlist->symptr= fdspec->d;
-
 
 	}
 
