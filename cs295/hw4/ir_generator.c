@@ -8,8 +8,16 @@
 +===========================================================================*/
 
 
+#define SYSCALL_REG 9
+#define SYSCALL_ARG_REG 10
+
 int statement_begin_sid=0;
 int statement_end_sid=0;
+
+extern char *reglist[];
+
+
+
 
 /*-----------------------------------------------
  | generate_ir
@@ -36,6 +44,8 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[104]= "LOADWORDINDIRECT";
         ircodenames[105]= "ENDPROC";
         ircodenames[106]= "PRINTINT";
+        ircodenames[107]= "SYSCALL";
+        ircodenames[108]= "LOADWORD";
     };
 
 
@@ -105,7 +115,6 @@ void generate_ir(struct ast *parse_tree)
             struct function_defspec *fdspec= funcdef->fdspec;
             struct ast *cstmt= funcdef->cstmt;
 	    struct decostat_list *dlist;
-
 
 
 	    /*
@@ -325,7 +334,7 @@ void print_irnode_sids(int begin_sid,int end_sid)
 	{   sprintf(oprnd1, "%s", "N/A");
 	}
 	else
-	{   sprintf(oprnd1, "r%d", irlist->oprnd1);
+	{   sprintf(oprnd1, "%s", reglist[irlist->oprnd1]);
 	}
 
         /* record oprnd2 num */
@@ -612,9 +621,20 @@ void decostat_to_ir(struct ast *decostat)
                    irlist= irlist->next;
                    irlist->sid= ++irnodenum;
                    irlist->ircode= PRINTINT;
-                   irlist->oprnd1= ++regnum;
+
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= LOADWORD;
+                   irlist->oprnd1= SYSCALL_ARG_REG;
 	           irlist->symptr= (struct declarator *)decostat->r->l;
 
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= SYSCALL;
 	       }
 
 

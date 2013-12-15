@@ -10,16 +10,19 @@
 
 #define max(i,j) ( (i) > (j) ? (i) : (j) )
 
-char *reg[]= { "NULL",
+char *reglist[]= { "NULL",
                "$s0",
-	       "$s1",
-	       "$s2",
-	       "$s3",
-	       "$s4",
-	       "$s5",
-	       "$s6",
-	       "$s7"
-           };
+               "$s1",
+               "$s2",
+               "$s3",
+               "$s4",
+               "$s5",
+               "$s6",
+               "$s7",
+               "$v0",
+	       "$a0"
+             };
+
 
 
 
@@ -133,32 +136,53 @@ void generate_mips(void)
 
             case LOADADDRESS:
 	       if(irlist->symptr->global)
-	       {   fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reg[irlist->oprnd1],print_declarator_id(irlist->symptr));
+	       {   fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reglist[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       }
 	       else
-	       {   fprintf(mipsout,"\tla\t%s,%d($fp)\n",reg[irlist->oprnd1],(irlist->symptr->offset + 56));
+	       {   fprintf(mipsout,"\tla\t%s,-%d($fp)\n",reglist[irlist->oprnd1],(irlist->symptr->offset + 56));
 	       }
 	       break;
 
 
+            case LOADWORD:
+	       if(irlist->symptr->global)
+	       {   fprintf(mipsout,"\tlw\t%s,_VAR_%s\n",reglist[irlist->oprnd1],print_declarator_id(irlist->symptr));
+	       }
+	       else
+	       {   fprintf(mipsout,"\tlw\t%s,-%d($fp)\n",reglist[irlist->oprnd1],(irlist->symptr->offset + 56));
+	       }
+	       break;
+
+
+
             case LOADCONSTANT:
-	       fprintf(mipsout,"\tli\t%s,%d\n",reg[irlist->oprnd1],irlist->oprnd2);
+	       fprintf(mipsout,"\tli\t%s,%d\n",reglist[irlist->oprnd1],irlist->oprnd2);
 	       break;
 
 
             case STOREWORDINDIRECT:
-	       fprintf(mipsout,"\tsw\t%s,(%s)\n",reg[irlist->oprnd1],reg[irlist->oprnd2]);
+	       fprintf(mipsout,"\tsw\t%s,(%s)\n",reglist[irlist->oprnd1],reglist[irlist->oprnd2]);
 	       break;
 
 
             case LOADWORDINDIRECT:
-	       fprintf(mipsout,"\tlw\t%s,(%s)\n",reg[irlist->oprnd1],reg[irlist->oprnd2]);
+	       fprintf(mipsout,"\tlw\t%s,(%s)\n",reglist[irlist->oprnd1],reglist[irlist->oprnd2]);
 	       break;
 
 
 	    case ENDPROC:
                write_function_exit_code(stacksize);
 	       break;
+
+
+            case PRINTINT:
+               fprintf(mipsout,"\tli\t$v0,1\t\t# load syscall code for printint\n");
+               break;
+
+
+            case SYSCALL:
+               fprintf(mipsout,"\tsyscall\t\t\t# execute syscall\n");
+               break;
 
 
 	    default:

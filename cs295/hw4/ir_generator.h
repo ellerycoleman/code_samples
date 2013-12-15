@@ -22,7 +22,9 @@ enum ircodes
     STOREWORDINDIRECT,
     LOADWORDINDIRECT,
     ENDPROC,
-    PRINTINT
+    PRINTINT,
+    SYSCALL,
+    LOADWORD
 };
 
 
