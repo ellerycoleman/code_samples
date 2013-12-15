@@ -469,12 +469,23 @@ char * print_expr(struct ast *expr,char *exprstr)
         case DECOSTAT_LIST:  /* comma separated statements */
 	    dlist= (struct decostat_list *)expr;
 	    dlist= reverse_decostat_list(dlist);
-	    while(dlist->next != NULL)
-	    {   print_expr(dlist->decostat,&exprstr[strlen(exprstr)]);
-	        sprintf(&exprstr[strlen(exprstr)],", ");
-	        dlist= dlist->next;
+
+	    if(dlist->decostat->nodetype == FUNCTION_CALL)
+	    {
+		d= (struct declarator *)dlist->decostat->l;
+                sprintf(&exprstr[strlen(exprstr)],"%s(", print_declarator_id(d));
+		print_expr(dlist->decostat->r,exprstr);
+		sprintf(&exprstr[strlen(exprstr)],")");
 	    }
-	    print_expr(dlist->decostat,exprstr);
+	    else
+	    {
+	        while(dlist->next != NULL)
+	        {   print_expr(dlist->decostat,&exprstr[strlen(exprstr)]);
+	            sprintf(&exprstr[strlen(exprstr)],", ");
+	            dlist= dlist->next;
+	        }
+	        print_expr(dlist->decostat,exprstr);
+            }
 	    break;
 
 

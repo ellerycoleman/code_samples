@@ -1636,6 +1636,14 @@ void process_change_list(void)
      while(clist)
      {   unresolved= clist->c->unresolved;
          resolved= clist->c->resolved;
+        
+	 printf("moving '%s' (%ld) to '%s' (%ld)\n",
+	        print_declarator_id(unresolved),
+		unresolved,
+	        print_declarator_id(resolved),
+		resolved
+               );
+
         *unresolved= *resolved;
 	clist= clist->next;
      }

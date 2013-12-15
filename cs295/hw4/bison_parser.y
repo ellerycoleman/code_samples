@@ -361,6 +361,15 @@ simple_declarator:    IDENTIFIER
 function_declarator:  direct_declarator SEP_LEFT_PAREN parameter_list SEP_RIGHT_PAREN
                       {   $3= reverse_parameter_list($3);
 		          $$= new_function_declarator($1,$3);
+			  printf("DEBUG: bison found a function declarator.\n");
+			  printf("\tDEBUG: addr of $$ is: %d\n", $$);
+			  printf("\tDEBUG: type of $1 is: %d\n", $1->nodetype);
+			  printf("\tDEBUG: addr of $1 is: %ld\n", $1);
+			  printf("\tDEBUG: addr of $1->id is: %ld\n", $1->id);
+			  printf("\tDEBUG: value of $1->id is: %s\n", $1->id);
+			  printf("\tDEBUG: addr of $$->adeclarator is: %ld\n", $$->adeclarator);
+			  printf("\tDEBUG: addr of $$->adeclarator->id is: %ld\n", $$->adeclarator->id);
+			  printf("\tDEBUG: $$->adeclarator->id is: %s\n", $$->adeclarator->id);
 		      }
 ;
 
@@ -435,12 +444,14 @@ array_declarator:  direct_declarator SEP_LEFT_BRACKET constant_expr SEP_RIGHT_BR
 
 function_definition:  function_def_specifier compound_statement
                       {    $$= new_function_definition($1,$2);
+		           printf("DEBUG: bison found a function definition. \n");
 		      }
 ;
 
 
 function_def_specifier: type_specifier declarator
                         {   $$= new_function_def_specifier($1,$2);
+		            printf("DEBUG: bison found a function_def_specifier. \n");
 			}
 ;
 
@@ -683,9 +694,20 @@ subscript_expr:  postfix_expr SEP_LEFT_BRACKET comma_expr SEP_RIGHT_BRACKET
 
 function_call:   postfix_expr SEP_LEFT_PAREN SEP_RIGHT_PAREN
                  {   $$= new_expr(FUNCTION_CALL,$1,NULL);
+		     extern char tmpstr[];
+		     printf("DEBUG: bison found a function call: %s (%ld)\n", print_expr($$,tmpstr),$$); clearstr(tmpstr);
+		     printf("\tDEBUG: type of function_call->l: %d\n", $$->l->nodetype);
+		     printf("\tDEBUG: addr of function_call->l: %ld\n", $$->l);
+		     printf("\tDEBUG: addr of function_call: %ld\n", $$);
 		 }
 |                postfix_expr SEP_LEFT_PAREN expression_list SEP_RIGHT_PAREN
                  {   $$= new_expr(FUNCTION_CALL,$1,$3);
+		     extern char tmpstr[];
+		     printf("DEBUG: bison found a function call: %s (%ld)\n", print_expr($$,tmpstr),$$); clearstr(tmpstr);
+		     printf("\tDEBUG: type of function_call->l: %d\n", $$->l->nodetype);
+		     printf("\tDEBUG: addr of function_call->l: %ld\n", $$->l);
+		     printf("\tDEBUG: string in function_call->l: %s\n", $$->l);
+		     printf("\tDEBUG: addr of function_call: %ld\n", $$);
 		 }
 ;
 
