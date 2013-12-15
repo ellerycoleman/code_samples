@@ -519,8 +519,8 @@ void decostat_to_ir(struct ast *decostat)
 
         case OP_ASSIGNMENT:
 	   printf("found an OP_ASSIGNMENT...\n\n\n");
-	   prepl= typecheck(decostat->l);
-	   prepr= typecheck(decostat->r);
+	   prepl= gen_expr_ir(decostat->l);
+	   prepr= gen_expr_ir(decostat->r);
 
 	   if((prepl->nodetype == LVALUE) && (prepr->nodetype == RVALUE))
 	   {   irlist= irlist_front;
@@ -584,7 +584,7 @@ void decostat_to_ir(struct ast *decostat)
 
 
 
-struct irinfo *typecheck(struct ast *subtree)
+struct irinfo *gen_expr_ir(struct ast *subtree)
 {
 
     if(subtree == NULL)
@@ -596,7 +596,7 @@ struct irinfo *typecheck(struct ast *subtree)
 
 
     /* figure out what type of node i'm looking at */
-    printf("\ttypecheck called with decostat type: %d\n", subtree->nodetype);
+    printf("\tgen_expr_ir called with decostat type: %d\n", subtree->nodetype);
 
 
     if(subtree->nodetype == INTEGER_CONSTANT)
@@ -641,11 +641,11 @@ struct irinfo *typecheck(struct ast *subtree)
 /*
 
     if((subtree->l != NULL)  &&  (subtree->l->nodetype != INTEGER_CONSTANT))
-    {   typecheck(subtree->l);
+    {   gen_expr_ir(subtree->l);
     }
 
     if((subtree->r != NULL)  &&  (subtree->r->nodetype != INTEGER_CONSTANT))
-    {   typecheck(subtree->r);
+    {   gen_expr_ir(subtree->r);
     }
 
 */
