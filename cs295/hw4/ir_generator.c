@@ -284,9 +284,6 @@ void print_irnodes(void)
 	else if((irlist->oprnd3 != 0) &&  (irlist->ircode == LOADCONSTANT))
 	{   sprintf(oprnd3, "%d", irlist->oprnd3);
 	}
-        if((irlist->oprnd3 == 0) &&  (irlist->ircode == LOADCONSTANT))
-	{   sprintf(oprnd3, "%d", irlist->oprnd3);
-	}
 
 
 
@@ -369,9 +366,6 @@ void print_irnode_sids(int begin_sid,int end_sid)
 	{   sprintf(oprnd3, "r%d", irlist->oprnd3);
 	}
 	else if((irlist->oprnd3 != 0) &&  (irlist->ircode == LOADCONSTANT))
-	{   sprintf(oprnd3, "%d", irlist->oprnd3);
-	}
-        if((irlist->oprnd3 == 0) &&  (irlist->ircode == LOADCONSTANT))
 	{   sprintf(oprnd3, "%d", irlist->oprnd3);
 	}
 
