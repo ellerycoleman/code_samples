@@ -191,6 +191,21 @@ void generate_mips(void)
                break;
 
 
+            case BRANCH_GT:
+	       fprintf(mipsout,"\tbgt\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], irlist->label);
+	       break;
+
+
+            case MIPSLABEL:
+	       fprintf(mipsout,"%s:\n", irlist->label);
+	       break;
+
+
+            case JUMP:
+	       fprintf(mipsout,"\tj %s\n", irlist->label);
+	       break;
+
+
 	    default:
 	       fprintf(mipsout,"# encountered unknow IR code: %s\n", ircodenames[irlist->ircode]);
 	       break;

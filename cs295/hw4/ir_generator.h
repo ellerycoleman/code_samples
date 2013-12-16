@@ -26,7 +26,8 @@ enum ircodes
     SYSCALL,
     LOADWORD,
     MIPSLABEL,
-    BRANCH_GT
+    BRANCH_GT,
+    JUMP
 };
 
 
@@ -86,6 +87,7 @@ int irnodenum;
 struct irnode *irlist_front;
 struct irnode *irlist;
 int regnum;
+int labelnum;
 
 
 #endif

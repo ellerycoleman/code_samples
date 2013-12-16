@@ -16,6 +16,7 @@ int statement_end_sid=0;
 
 extern char *reglist[];
 
+int context_clue=0;
 
 
 
@@ -48,6 +49,7 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[108]= "LOADWORD";
         ircodenames[109]= "MIPSLABEL";
         ircodenames[110]= "BRANCH_GT";
+        ircodenames[111]= "JUMP";
     };
 
 
@@ -60,6 +62,12 @@ void generate_ir(struct ast *parse_tree)
     irlist_front->sid= ++irnodenum;
     irlist= irlist_front;
 
+
+
+    /* initialize label num, used to avoid label name
+    |  collisions.
+    +------------------------------------------------*/
+    labelnum=0; 
 
 
 
@@ -717,9 +725,13 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   break;
 
 
+
+
         case SIMPLE_DECLARATOR:
            tcresult->nodetype= LVALUE;
            tcresult->regnum= ++regnum;
+
+	   printf("DEBUG: dealing with simple declarator, context clue is: %d\n", context_clue);
 
            irlist= irlist_front;
            while(irlist->next != NULL)
@@ -729,12 +741,22 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   irlist->next->prev= irlist;
            irlist= irlist->next;
            irlist->sid= ++irnodenum;
-           irlist->ircode= LOADADDRESS;
+
+	   if(context_clue == CONDITIONAL_STATEMENT)
+	   {   irlist->ircode= LOADWORD;
+	       printf("DEBUG: since context clue is %d, doing loadword...\n", context_clue);
+	   }
+	   else
+	   {   irlist->ircode= LOADADDRESS;
+	       printf("DEBUG: since context clue is %d, doing loadaddress...\n", context_clue);
+	   }
            irlist->oprnd1= tcresult->regnum;
            irlist->symptr= (struct declarator *)subtree;
 
            return tcresult;
            break;
+
+
 
 
 
@@ -744,19 +766,86 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            {   irlist= irlist->next;
            }
 
+           /* retrieve if statement components
+	   +-----------------------------------*/
            struct flow *tflow= (struct flow *)subtree;
            struct ast *cond= tflow->cond;
            struct ast *thendo= tflow->thendo;
 
 
+           /* Generate necessary labels
+	   +----------------------------*/
+           char elselabel[25]= "else";
+	   sprintf(&elselabel[strlen(elselabel)], "%d", ++labelnum);
+
+	   /*
+           char thenlabel[25]= "then";
+	   sprintf(&thenlabel[strlen(thenlabel)], "%d", ++labelnum);
+	   */
+
+           char endlabel[25]= "end";
+	   sprintf(&endlabel[strlen(endlabel)], "%d", ++labelnum);
+
+
            printf("\t\tDEBUG: type of condition: %d\n", cond->l->nodetype);
            printf("\t\tDEBUG: type of thendo: %d\n", thendo->nodetype);
+
+
+
+	   /* create node for conditional statement
+	   +-----------------------------------------*/
 	   expr_to_ir(cond->l);
+	   char truelabel[25]= "then";
+	   sprintf(&truelabel[strlen(truelabel)], "%d", labelnum);
+
+
+	   /* create node for empty else block
+	   +-----------------------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, elselabel);
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= JUMP;
+           strcpy(irlist->label, endlabel);
+
+
+
+           /* create nodes for then block */
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, truelabel);
 	   expr_to_ir(thendo);
+
+
+
+           /* create node for end block
+	   +-----------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, endlabel);
+
+
            break;
 
 
+
+
+
         case GREATER_THAN_SYMBOL:
+	   context_clue= CONDITIONAL_STATEMENT;
            irlist= irlist_front;
            while(irlist->next != NULL)
            {   irlist= irlist->next;
@@ -766,6 +855,10 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   struct irinfo *left   = expr_to_ir(subtree->l);
 	   struct irinfo *right  = expr_to_ir(subtree->r);
 
+           char gtthenlabel[25]= "then";
+	   sprintf(&gtthenlabel[strlen(gtthenlabel)], "%d", ++labelnum);
+
+
            irlist->next= emalloc(sizeof(struct irnode));
 	   irlist->next->prev= irlist;
            irlist= irlist->next;
@@ -773,8 +866,11 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->ircode= BRANCH_GT;
            irlist->oprnd1= left->regnum;
            irlist->oprnd2= right->regnum;
-	   strcpy(irlist->label,"then");
+           strcpy(irlist->label, gtthenlabel);
+	   context_clue= 0;
 	   break;
+
+
 
 
 
