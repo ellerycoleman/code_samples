@@ -616,7 +616,6 @@ void decostat_to_ir(struct ast *decostat)
                break;
 
 
-
         case FUNCTION_CALL:
 	   ;
 	   char funcname[40];
@@ -665,9 +664,6 @@ void decostat_to_ir(struct ast *decostat)
                    irlist->sid= ++irnodenum;
                    irlist->ircode= SYSCALL;
 	       }
-
-
-
 	   }
 
 	   printf("\tDEBUG: decostat->r->l type %d\n", decostat->r->l->nodetype);
@@ -778,6 +774,33 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
+        case OP_ASSIGNMENT:
+	/*
+	   printf("DEBUG: found an OP_ASSIGNMENT...\n\n\n");
+	   left= expr_to_ir(subtree->l);
+	   right= expr_to_ir(subtree->r);
+
+	   if((left->nodetype == LVALUE) && (right->nodetype == RVALUE))
+	   {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+	       
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= STOREWORDINDIRECT;
+               irlist->oprnd1= right->regnum;
+	       irlist->oprnd2= left->regnum;
+           }
+       */
+           decostat_to_ir(subtree);
+	   break;
+
+
+
 
         case IF_STATEMENT:
            irlist= irlist_front;
@@ -878,12 +901,18 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            /* Generate necessary labels
 	   +----------------------------*/
 	   sprintf(&elselabel[strlen(elselabel)], "%d", ++labelnum);
-
 	   sprintf(&endlabel[strlen(endlabel)], "%d", ++labelnum);
 
 
+           printf("\t\tDEBUG: type of forinit: %d\n", forinit->l->nodetype);
            printf("\t\tDEBUG: type of condition: %d\n", cond->l->nodetype);
            printf("\t\tDEBUG: type of thendo: %d\n", thendo->nodetype);
+           printf("\t\tDEBUG: type of forupdate: %d\n", forupdate->l->nodetype);
+
+
+	   /* create nodes for init statement
+	   +-----------------------------------------*/
+	   expr_to_ir(forinit->l);
 
 
 
@@ -891,6 +920,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   +-----------------------------------------*/
 	   expr_to_ir(cond->l);
 	   sprintf(&thenlabel[strlen(thenlabel)], "%d", labelnum);
+
 
 
 	   /* create node for empty else block
@@ -911,7 +941,8 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
-           /* create nodes for then block */
+           /* create nodes for then block
+	   +--------------------------------*/
            irlist->next= emalloc(sizeof(struct irnode));
 	   irlist->next->prev= irlist;
            irlist= irlist->next;

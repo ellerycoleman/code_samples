@@ -1313,7 +1313,6 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 	}
 
 
-        /* locate any identifiers  */
 
 
 	/* skip goto statements in first pass */
@@ -1338,6 +1337,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 	}
 
 
+        /* locate any identifiers  */
 	else
 	{
 	    locate_ids(dstat,curr_symtab);
@@ -1348,11 +1348,6 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 
 }
-
-
-
-
-
 
 
 
@@ -1377,28 +1372,68 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
 	return;
     }
 
-    if(dstat->nodetype == POINTER_DECLARATOR)
+    else if(dstat->nodetype == POINTER_DECLARATOR)
     {   while(d->next != NULL)
         {   d= d->next;
 	}
     }
 
-    if(dstat->nodetype == SIMPLE_DECLARATOR)
+    else if(dstat->nodetype == SIMPLE_DECLARATOR)
     {
         d= (struct declarator *)dstat;
 	resolve_id(dstat,curr_symtab);
     }
 
 
+    else if(dstat->nodetype == FOR_STATEMENT)
+    {
+        /* retrieve statement components
+	+--------------------------------*/
+        struct flow *tflow     = (struct flow *)dstat;
+        struct ast *forinit   = tflow->forinit;
+        struct ast *cond      = tflow->cond;
+        struct ast *forupdate = tflow->forupdate;
+        struct ast *thendo    = tflow->thendo;
+
+        
+	locate_ids(forinit,curr_symtab);
+	locate_ids(cond,curr_symtab);
+	locate_ids(forupdate,curr_symtab);
+	locate_ids(thendo,curr_symtab);
+    }
+
+
+    else if(dstat->nodetype == FOR_STATEMENT)
+    {
+        /* retrieve statement components
+	+--------------------------------*/
+        struct flow *tflow     = (struct flow *)dstat;
+        struct ast *forinit   = tflow->forinit;
+        struct ast *cond      = tflow->cond;
+        struct ast *forupdate = tflow->forupdate;
+        struct ast *thendo    = tflow->thendo;
+
+        
+	locate_ids(forinit,curr_symtab);
+	locate_ids(cond,curr_symtab);
+	locate_ids(forupdate,curr_symtab);
+	locate_ids(thendo,curr_symtab);
+    }
+
     if( (dstat->l != NULL)  &&  (dstat->l->nodetype != INTEGER_CONSTANT) )
-    {   locate_ids(dstat->l,curr_symtab);
+    {   
+        printf("DEBUG: locate_ids is not able to locate ids for decostat type: %d\n", dstat->nodetype);
+        locate_ids(dstat->l,curr_symtab);
     }
 
 
     if( (dstat->r != NULL)  &&  (dstat->r->nodetype != INTEGER_CONSTANT) )
-    {   locate_ids(dstat->r,curr_symtab);
+    {   
+        printf("DEBUG: locate_ids is not able to locate ids for decostat type: %d\n", dstat->nodetype);
+        locate_ids(dstat->r,curr_symtab);
     }
 }
+
 
 
 
