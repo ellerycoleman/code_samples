@@ -46,6 +46,7 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[106]= "PRINTINT";
         ircodenames[107]= "SYSCALL";
         ircodenames[108]= "LOADWORD";
+        ircodenames[109]= "MIPSLABEL";
     };
 
 
@@ -584,6 +585,11 @@ void decostat_to_ir(struct ast *decostat)
         case INTEGER_CONSTANT:
 	   printf("found an integer constant...\n\n\n");
 	   break;
+
+
+        case IF_STATEMENT:
+               gen_expr_ir(decostat);
+               break;
 
 
 

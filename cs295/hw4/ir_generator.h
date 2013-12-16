@@ -24,7 +24,8 @@ enum ircodes
     ENDPROC,
     PRINTINT,
     SYSCALL,
-    LOADWORD
+    LOADWORD,
+    MIPSLABEL
 };
 
 
@@ -40,6 +41,7 @@ struct irnode
     struct irnode *prev;
     struct irnode *next;
     struct declarator *symptr;
+    char label[20];
 };
 
 
