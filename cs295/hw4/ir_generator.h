@@ -25,7 +25,8 @@ enum ircodes
     PRINTINT,
     SYSCALL,
     LOADWORD,
-    MIPSLABEL
+    MIPSLABEL,
+    BRANCH_GT
 };
 
 

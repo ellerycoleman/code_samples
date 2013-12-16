@@ -47,6 +47,7 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[107]= "SYSCALL";
         ircodenames[108]= "LOADWORD";
         ircodenames[109]= "MIPSLABEL";
+        ircodenames[110]= "BRANCH_GT";
     };
 
 
@@ -260,7 +261,7 @@ void print_irnodes(void)
 
         /* record oprnd2 num */
         if((irlist->oprnd2 == 0) &&  (irlist->ircode != LOADCONSTANT))
-	{   sprintf(oprnd2, "%s", "N/A");
+	{   sprintf(oprnd2, "%s-", "N/A");
 	}
 	else if((irlist->oprnd2 != 0) &&  (irlist->ircode != LOADCONSTANT))
 	{   sprintf(oprnd2, "r%d", irlist->oprnd2);
@@ -268,6 +269,10 @@ void print_irnodes(void)
 	else if((irlist->oprnd2 != 0) &&  (irlist->ircode == LOADCONSTANT))
 	{   sprintf(oprnd2, "%d", irlist->oprnd2);
 	}
+        if((irlist->oprnd2 == 0) &&  (irlist->ircode == LOADCONSTANT))
+	{   sprintf(oprnd2, "%d", irlist->oprnd2);
+	}
+
 
         /* record oprnd3 num */
         if((irlist->oprnd3 == 0) &&  (irlist->ircode != LOADCONSTANT))
@@ -279,18 +284,22 @@ void print_irnodes(void)
 	else if((irlist->oprnd3 != 0) &&  (irlist->ircode == LOADCONSTANT))
 	{   sprintf(oprnd3, "%d", irlist->oprnd3);
 	}
+        if((irlist->oprnd3 == 0) &&  (irlist->ircode == LOADCONSTANT))
+	{   sprintf(oprnd3, "%d", irlist->oprnd3);
+	}
 
 
 
         /* add IR to irlist */
-        printf("irnode_sid: %3d, code: %18s (%d), symptr: %10s, oprnd1: %5s,     oprnd2: %5s,    oprnd3: %5s\n",
+        printf("irnode_sid: %3d, code: %18s (%d), symptr: %10s, oprnd1: %5s,     oprnd2: %5s,    oprnd3: %5s, label: %s\n",
                 irlist->sid,
 		ircodenames[irlist->ircode],
 		irlist->ircode,
 		print_declarator_id(irlist->symptr),
 		oprnd1,
 		oprnd2,
-		oprnd3
+		oprnd3,
+		irlist->label
 	      );
         irlist= irlist->next;
     }
@@ -348,6 +357,9 @@ void print_irnode_sids(int begin_sid,int end_sid)
 	else if((irlist->oprnd2 != 0) &&  (irlist->ircode == LOADCONSTANT))
 	{   sprintf(oprnd2, "%d", irlist->oprnd2);
 	}
+        if((irlist->oprnd2 == 0) &&  (irlist->ircode == LOADCONSTANT))
+	{   sprintf(oprnd2, "%d", irlist->oprnd2);
+	}
 
         /* record oprnd3 num */
         if((irlist->oprnd3 == 0) &&  (irlist->ircode != LOADCONSTANT))
@@ -359,18 +371,22 @@ void print_irnode_sids(int begin_sid,int end_sid)
 	else if((irlist->oprnd3 != 0) &&  (irlist->ircode == LOADCONSTANT))
 	{   sprintf(oprnd3, "%d", irlist->oprnd3);
 	}
+        if((irlist->oprnd3 == 0) &&  (irlist->ircode == LOADCONSTANT))
+	{   sprintf(oprnd3, "%d", irlist->oprnd3);
+	}
 
 
 
         /* add IR to irlist */
-        fprintf(irout,"irnode_sid: %3d, code: %18s (%d), symptr: %10s, oprnd1: %5s,     oprnd2: %5s,    oprnd3: %5s\n",
+        fprintf(irout,"irnode_sid: %3d, code: %18s (%d), symptr: %10s, oprnd1: %5s,     oprnd2: %5s,    oprnd3: %5s,  label: %s\n",
                 irlist->sid,
 		ircodenames[irlist->ircode],
 		irlist->ircode,
 		print_declarator_id(irlist->symptr),
 		oprnd1,
 		oprnd2,
-		oprnd3
+		oprnd3,
+		irlist->label
 	      );
         } /* end if */
         irlist= irlist->next;
@@ -611,7 +627,7 @@ void decostat_to_ir(struct ast *decostat)
 	   /* If this IS a built-in function...
 	   +-----------------------------------------*/
 	   else
-	   {   
+	   {
 	       /* printint function...
 	       +-------------------------*/
 	       if(! strcmp(funcname,"printint"))
@@ -696,6 +712,8 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->sid= ++irnodenum;
            irlist->ircode= LOADCONSTANT;
            irlist->oprnd1= tcresult->regnum;
+
+	   printf("DEBUG: loading constant: %d\n", (int)(long)((struct constant *)subtree)->value);
 	   irlist->oprnd2= (int)(long)((struct constant *)subtree)->value;
 
            return tcresult;
@@ -733,14 +751,32 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            struct ast *cond= tflow->cond;
            struct ast *thendo= tflow->thendo;
 
-           
+
            printf("\t\tDEBUG: type of condition: %d\n", cond->l->nodetype);
            printf("\t\tDEBUG: type of thendo: %d\n", thendo->nodetype);
+	   expr_to_ir(cond->l);
            break;
 
 
         case GREATER_THAN_SYMBOL:
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+
 	   printf("DEBUG: expr_to_ir(): received a greater than symbol....\n");
+	   struct irinfo *left   = expr_to_ir(subtree->l);
+	   struct irinfo *right  = expr_to_ir(subtree->r);
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= BRANCH_GT;
+           irlist->oprnd1= left->regnum;
+           irlist->oprnd2= right->regnum;
+	   strcpy(irlist->label,"then");
+
 	   break;
     }
 
