@@ -69,7 +69,7 @@ void print_irnodes(void);
 char *print_declarator_id(struct declarator *sym);
 void compound_to_ir(struct ast *cstmt);
 void decostat_to_ir(struct ast *decostat);
-struct irinfo *gen_expr_ir(struct ast *subtree);
+struct irinfo *expr_to_ir(struct ast *subtree);
 void print_irnode_sids(int begin_sid,int end_sid);
 
 

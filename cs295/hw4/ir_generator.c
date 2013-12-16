@@ -531,8 +531,8 @@ void decostat_to_ir(struct ast *decostat)
 
         case OP_ASSIGNMENT:
 	   printf("found an OP_ASSIGNMENT...\n\n\n");
-	   prepl= gen_expr_ir(decostat->l);
-	   prepr= gen_expr_ir(decostat->r);
+	   prepl= expr_to_ir(decostat->l);
+	   prepr= expr_to_ir(decostat->r);
 
 	   if((prepl->nodetype == LVALUE) && (prepr->nodetype == RVALUE))
 	   {   irlist= irlist_front;
@@ -588,7 +588,7 @@ void decostat_to_ir(struct ast *decostat)
 
 
         case IF_STATEMENT:
-               gen_expr_ir(decostat);
+               expr_to_ir(decostat);
                break;
 
 
@@ -664,7 +664,7 @@ void decostat_to_ir(struct ast *decostat)
 
 
 
-struct irinfo *gen_expr_ir(struct ast *subtree)
+struct irinfo *expr_to_ir(struct ast *subtree)
 {
 
     if(subtree == NULL)
@@ -676,56 +676,83 @@ struct irinfo *gen_expr_ir(struct ast *subtree)
 
 
     /* figure out what type of node i'm looking at */
-    printf("\tgen_expr_ir called with decostat type: %d\n", subtree->nodetype);
+    printf("\texpr_to_ir called with decostat type: %d\n", subtree->nodetype);
 
 
-    if(subtree->nodetype == INTEGER_CONSTANT)
-    {   tcresult->nodetype= RVALUE;
-        tcresult->regnum= ++regnum;
 
-        irlist= irlist_front;
-        while(irlist->next != NULL)
-        {   irlist= irlist->next;
-        }
-        irlist->next= emalloc(sizeof(struct irnode));
-	irlist->next->prev= irlist;
-        irlist= irlist->next;
-        irlist->sid= ++irnodenum;
-        irlist->ircode= LOADCONSTANT;
-        irlist->oprnd1= tcresult->regnum;
-	irlist->oprnd2= (int)(long)((struct constant *)subtree)->value;
+    switch(subtree->nodetype)
+    {
+        case INTEGER_CONSTANT:
+           tcresult->nodetype= RVALUE;
+           tcresult->regnum= ++regnum;
 
-        return tcresult;
-    }
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= LOADCONSTANT;
+           irlist->oprnd1= tcresult->regnum;
+	   irlist->oprnd2= (int)(long)((struct constant *)subtree)->value;
 
-    else if(subtree->nodetype == SIMPLE_DECLARATOR)
-    {   tcresult->nodetype= LVALUE;
-        tcresult->regnum= ++regnum;
+           return tcresult;
+	   break;
 
-        irlist= irlist_front;
-        while(irlist->next != NULL)
-        {   irlist= irlist->next;
-        }
-        irlist->next= emalloc(sizeof(struct irnode));
-	irlist->next->prev= irlist;
-        irlist= irlist->next;
-        irlist->sid= ++irnodenum;
-        irlist->ircode= LOADADDRESS;
-        irlist->oprnd1= tcresult->regnum;
-        irlist->symptr= (struct declarator *)subtree;
 
-        return tcresult;
+        case SIMPLE_DECLARATOR:
+           tcresult->nodetype= LVALUE;
+           tcresult->regnum= ++regnum;
+
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= LOADADDRESS;
+           irlist->oprnd1= tcresult->regnum;
+           irlist->symptr= (struct declarator *)subtree;
+
+           return tcresult;
+           break;
+
+
+
+        case IF_STATEMENT:
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+
+           struct flow *tflow= (struct flow *)subtree;
+           struct ast *cond= tflow->cond;
+           struct ast *thendo= tflow->thendo;
+
+           
+           printf("\t\tDEBUG: type of condition: %d\n", cond->l->nodetype);
+           printf("\t\tDEBUG: type of thendo: %d\n", thendo->nodetype);
+           break;
+
+
+        case GREATER_THAN_SYMBOL:
+	   printf("DEBUG: expr_to_ir(): received a greater than symbol....\n");
+	   break;
     }
 
 
 /*
 
     if((subtree->l != NULL)  &&  (subtree->l->nodetype != INTEGER_CONSTANT))
-    {   gen_expr_ir(subtree->l);
+    {   expr_to_ir(subtree->l);
     }
 
     if((subtree->r != NULL)  &&  (subtree->r->nodetype != INTEGER_CONSTANT))
-    {   gen_expr_ir(subtree->r);
+    {   expr_to_ir(subtree->r);
     }
 
 */
