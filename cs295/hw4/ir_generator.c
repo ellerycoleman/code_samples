@@ -434,6 +434,7 @@ void compound_to_ir(struct ast *cstmt)
     struct ast *decostat;
     struct decostat_list *dlist= (struct decostat_list *) cstmt->l;
 
+    printf("DEBUG: compound_to_ir called with nodetype: %d\n", cstmt->nodetype);
 
     sprintf(&genstr[strlen(genstr)],"#");
     indent(genstr);
@@ -676,10 +677,12 @@ void decostat_to_ir(struct ast *decostat)
 
 struct irinfo *expr_to_ir(struct ast *subtree)
 {
-
     if(subtree == NULL)
     {   printf("received a null subtree...\n");
         return NULL;
+    }
+    else
+    {   printf("DEBUG: expr_to_ir: ENTERED with NON NULL subtree...\n");
     }
 
     struct irinfo *tcresult=  emalloc(sizeof(struct irinfo));
@@ -749,6 +752,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            printf("\t\tDEBUG: type of condition: %d\n", cond->l->nodetype);
            printf("\t\tDEBUG: type of thendo: %d\n", thendo->nodetype);
 	   expr_to_ir(cond->l);
+	   expr_to_ir(thendo);
            break;
 
 
@@ -770,7 +774,22 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->oprnd1= left->regnum;
            irlist->oprnd2= right->regnum;
 	   strcpy(irlist->label,"then");
+	   break;
 
+
+
+        case COMPOUND_STATEMENT:
+	   printf("DEBUG: expr_to_ir() called with compound statement  ...\n");
+	   printf("\tDEBUG: subtree type: %d\n", subtree->nodetype);
+	   compound_to_ir(subtree);
+	   break;
+
+
+
+
+
+        default:
+	   printf("DEBUG: expr_to_ir: NOT SURE WHAT TO DO WITH TYPE: %d\n", subtree->nodetype);
 	   break;
     }
 
