@@ -139,7 +139,10 @@ void generate_mips(void)
 	       {   fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reglist[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       }
 	       else
-	       {   fprintf(mipsout,"\tla\t%s,-%d($fp)\n",reglist[irlist->oprnd1],(irlist->symptr->offset + 56));
+	       {   
+	           struct declarator *sp= resolve(irlist->symptr,irlist->symptr->curr_symtab);
+		   irlist->symptr= sp;
+	           fprintf(mipsout,"\tla\t%s,-%d($fp)\n",reglist[irlist->oprnd1],(irlist->symptr->offset + 56));
 	       }
 	       break;
 
@@ -149,7 +152,10 @@ void generate_mips(void)
 	       {   fprintf(mipsout,"\tlw\t%s,_VAR_%s\n",reglist[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       }
 	       else
-	       {   fprintf(mipsout,"\tlw\t%s,-%d($fp)\n",reglist[irlist->oprnd1],(irlist->symptr->offset + 56));
+	       {   
+	           struct declarator *sp= resolve(irlist->symptr,irlist->symptr->curr_symtab);
+		   irlist->symptr= sp;
+	           fprintf(mipsout,"\tlw\t%s,-%d($fp)\n",reglist[irlist->oprnd1],(irlist->symptr->offset + 56));
 	       }
 	       break;
 
@@ -340,6 +346,7 @@ int calculate_stack_size(struct symtabl *curr_symtab, int offset)
 	        case UNSIGNED_LONG_INT:
 	           currsymtabsize += 4;
 		   sp->offset= offset + 4;
+		   offset+= 4;
 	           break;
 
 
@@ -347,6 +354,7 @@ int calculate_stack_size(struct symtabl *curr_symtab, int offset)
 	        case UNSIGNED_SHORT_INT:
 	           currsymtabsize += 2;
 		   sp->offset= offset + 2;
+		   offset+= 2;
 	           break;
 
 
@@ -354,6 +362,7 @@ int calculate_stack_size(struct symtabl *curr_symtab, int offset)
 	        case UNSIGNED_CHAR:
 	           currsymtabsize += 1;
 		   sp->offset= offset + 1;
+		   offset+= 1;
 	           break;
 
 
