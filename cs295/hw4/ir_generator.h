@@ -27,6 +27,7 @@ enum ircodes
     LOADWORD,
     MIPSLABEL,
     BRANCH_GT,
+    BRANCH_LT,
     JUMP
 };
 

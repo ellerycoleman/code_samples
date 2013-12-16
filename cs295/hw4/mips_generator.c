@@ -196,6 +196,11 @@ void generate_mips(void)
 	       break;
 
 
+            case BRANCH_LT:
+	       fprintf(mipsout,"\tblt\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], irlist->label);
+	       break;
+
+
             case MIPSLABEL:
 	       fprintf(mipsout,"%s:\n", irlist->label);
 	       break;

@@ -49,7 +49,8 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[108]= "LOADWORD";
         ircodenames[109]= "MIPSLABEL";
         ircodenames[110]= "BRANCH_GT";
-        ircodenames[111]= "JUMP";
+        ircodenames[111]= "BRANCH_LT";
+        ircodenames[112]= "JUMP";
     };
 
 
@@ -685,6 +686,10 @@ void decostat_to_ir(struct ast *decostat)
 
 struct irinfo *expr_to_ir(struct ast *subtree)
 {
+    struct irinfo *left;
+    struct irinfo *right;
+
+
     if(subtree == NULL)
     {   printf("received a null subtree...\n");
         return NULL;
@@ -852,8 +857,8 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            }
 
 	   printf("DEBUG: expr_to_ir(): received a greater than symbol....\n");
-	   struct irinfo *left   = expr_to_ir(subtree->l);
-	   struct irinfo *right  = expr_to_ir(subtree->r);
+	   left   = expr_to_ir(subtree->l);
+	   right  = expr_to_ir(subtree->r);
 
            char gtthenlabel[25]= "then";
 	   sprintf(&gtthenlabel[strlen(gtthenlabel)], "%d", ++labelnum);
@@ -867,6 +872,38 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->oprnd1= left->regnum;
            irlist->oprnd2= right->regnum;
            strcpy(irlist->label, gtthenlabel);
+	   context_clue= 0;
+	   break;
+
+
+
+
+
+
+
+        case OP_RELATIONAL_LT:
+	   context_clue= CONDITIONAL_STATEMENT;
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+
+	   printf("DEBUG: expr_to_ir(): received a greater than symbol....\n");
+	   left   = expr_to_ir(subtree->l);
+	   right  = expr_to_ir(subtree->r);
+
+           char ltthenlabel[25]= "then";
+	   sprintf(&ltthenlabel[strlen(ltthenlabel)], "%d", ++labelnum);
+
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= BRANCH_LT;
+           irlist->oprnd1= left->regnum;
+           irlist->oprnd2= right->regnum;
+           strcpy(irlist->label, ltthenlabel);
 	   context_clue= 0;
 	   break;
 
