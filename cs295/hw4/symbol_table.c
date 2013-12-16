@@ -138,7 +138,7 @@ void create_symbol_tables(struct ast *parse_tree)
             /* if this is a function declarator...
             +---------------------------------------*/
             if(d->nodetype == FUNCTION_DECLARATOR)
-            {   
+            {
 	        /* Allow exceptions for the builtin functions.
 		+----------------------------------------------*/
 		if( (! strcmp(print_declarator_id(d),"printint")) )
@@ -161,12 +161,19 @@ void create_symbol_tables(struct ast *parse_tree)
     }
 
 
-
+    printf("\n\n");
+    process_change_list();
+    printf("\n\n=================== Rerunning process_change_list ==============\n\n");
     process_change_list();
 
-
-
 }
+
+
+
+
+
+
+
 
 /*-----------------------------------------------
  | ast_to_symtab
@@ -705,6 +712,7 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
 	 +--------------------------------------------------*/
 	if(curr_symtab->symtab[hash] == 0)
 	{   curr_symtab->symtab[hash]= symorig;
+	    curr_symtab->symtab[hash]->curr_symtab= curr_symtab;
 	    return sp;
         }
 
@@ -1331,7 +1339,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 
 	else
-	{  
+	{
 	    locate_ids(dstat,curr_symtab);
 	}
 
@@ -1636,15 +1644,19 @@ void process_change_list(void)
      while(clist)
      {   unresolved= clist->c->unresolved;
          resolved= clist->c->resolved;
-        
-	 printf("moving '%s' (%ld) to '%s' (%ld)\n",
+
+	 printf("moving '%s' (%ld) to '%s' (%ld) -- unresolved symtab: %ld, resolved symtab: %ld\n",
 	        print_declarator_id(unresolved),
 		unresolved,
 	        print_declarator_id(resolved),
-		resolved
+		resolved,
+		unresolved->curr_symtab,
+		resolved->curr_symtab
                );
 
         *unresolved= *resolved;
+
+
 	clist= clist->next;
      }
 }
