@@ -139,7 +139,7 @@ void generate_mips(void)
 	       {   fprintf(mipsout,"\tla\t%s,_VAR_%s\n",reglist[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       }
 	       else
-	       {   printf("DEBUG: about to call resolve for LoADADDRESS, symptr: '%s' (%ld), symtab: %ld...\n", print_declarator_id(irlist->symptr),irlist->symptr, irlist->symptr->curr_symtab);
+	       {   
 	           struct declarator *sp= resolve(irlist->symptr,irlist->symptr->curr_symtab);
 		   irlist->symptr= sp;
 	           fprintf(mipsout,"\tla\t%s,-%d($fp)\n",reglist[irlist->oprnd1],(irlist->symptr->offset + 56));
@@ -152,7 +152,7 @@ void generate_mips(void)
 	       {   fprintf(mipsout,"\tlw\t%s,_VAR_%s\n",reglist[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       }
 	       else
-	       {   printf("DEBUG: about to call resolve for LoADWORD, symptr: '%s' (%ld), symtab: %ld...\n", print_declarator_id(irlist->symptr),irlist->symptr, irlist->symptr->curr_symtab);
+	       {   
 	           struct declarator *sp= resolve(irlist->symptr,irlist->symptr->curr_symtab);
 		   irlist->symptr= sp;
 	           fprintf(mipsout,"\tlw\t%s,-%d($fp)\n",reglist[irlist->oprnd1],(irlist->symptr->offset + 56));
@@ -208,6 +208,11 @@ void generate_mips(void)
 
             case JUMP:
 	       fprintf(mipsout,"\tj %s\n", irlist->label);
+	       break;
+
+
+            case COMMENT:
+	       fprintf(mipsout,"\t\t\t\t# %s\n", irlist->label);
 	       break;
 
 

@@ -16,8 +16,9 @@ int statement_end_sid=0;
 
 extern char *reglist[];
 
-int context_clue=0;
 
+int context_clue=0;
+int forjump=0;
 
 
 /*-----------------------------------------------
@@ -33,6 +34,7 @@ void generate_ir(struct ast *parse_tree)
     struct symtabl *curr_symtab= global_top_level;
     struct irnode *irlist;
     char symtab_name[100];
+
 
 
     /* initialize ircodenames
@@ -51,6 +53,7 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[110]= "BRANCH_GT";
         ircodenames[111]= "BRANCH_LT";
         ircodenames[112]= "JUMP";
+	ircodenames[113]= "COMMENT";
     };
 
 
@@ -698,6 +701,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
     char elselabel[25]= "else";
     char thenlabel[25]= "then";
     char endlabel[25]= "end";
+    char testcondlabel[25]= "test";
 
 
     if(subtree == NULL)
@@ -901,7 +905,9 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            /* Generate necessary labels
 	   +----------------------------*/
 	   sprintf(&elselabel[strlen(elselabel)], "%d", ++labelnum);
+	   sprintf(&thenlabel[strlen(thenlabel)], "%d", ++labelnum);
 	   sprintf(&endlabel[strlen(endlabel)], "%d", ++labelnum);
+	   sprintf(&testcondlabel[strlen(testcondlabel)], "%d", ++labelnum);
 
 
            printf("\t\tDEBUG: type of forinit: %d\n", forinit->l->nodetype);
@@ -912,14 +918,37 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 	   /* create nodes for init statement
 	   +-----------------------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= COMMENT;
+           strncpy(irlist->label, "For Loop Initialization",49);
+
 	   expr_to_ir(forinit->l);
 
 
 
-	   /* create node for conditional statement
+	   /* create nodes for conditional statement
 	   +-----------------------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= COMMENT;
+           strncpy(irlist->label, "For Loop Test Condition",49);
+
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, testcondlabel);
+
+           forjump= atoi(&thenlabel[strlen(thenlabel)-1]);
 	   expr_to_ir(cond->l);
-	   sprintf(&thenlabel[strlen(thenlabel)], "%d", labelnum);
+	   forjump= 0;
 
 
 
@@ -950,6 +979,29 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->ircode= MIPSLABEL;
            strcpy(irlist->label, thenlabel);
 	   expr_to_ir(thendo);
+
+
+
+           /* create nodes for for loop update
+	   +-----------------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= COMMENT;
+           strncpy(irlist->label, "For Loop Update Statement",49);
+
+
+	   expr_to_ir(forupdate);
+
+           
+           /* jump back to evaluation block */
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= JUMP;
+           strcpy(irlist->label, thenlabel);
 
 
 
@@ -1017,7 +1069,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   right  = expr_to_ir(subtree->r);
 
            char ltthenlabel[25]= "then";
-	   sprintf(&ltthenlabel[strlen(ltthenlabel)], "%d", ++labelnum);
+	   sprintf(&ltthenlabel[strlen(ltthenlabel)], "%d", (forjump > 0)? forjump : ++labelnum);
 
 
            irlist->next= emalloc(sizeof(struct irnode));

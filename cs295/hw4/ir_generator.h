@@ -28,7 +28,8 @@ enum ircodes
     MIPSLABEL,
     BRANCH_GT,
     BRANCH_LT,
-    JUMP
+    JUMP,
+    COMMENT
 };
 
 
@@ -44,7 +45,7 @@ struct irnode
     struct irnode *prev;
     struct irnode *next;
     struct declarator *symptr;
-    char label[20];
+    char label[50];
 };
 
 
