@@ -703,11 +703,18 @@ function_call:   postfix_expr SEP_LEFT_PAREN SEP_RIGHT_PAREN
 |                postfix_expr SEP_LEFT_PAREN expression_list SEP_RIGHT_PAREN
                  {   $$= new_expr(FUNCTION_CALL,$1,$3);
 		     extern char tmpstr[];
-		     printf("DEBUG: bison found a function call: %s (%ld)\n", print_expr($$,tmpstr),$$); clearstr(tmpstr);
+		     printf("DEBUG: bison found a function call: '%s (%ld)'\n\n\n", print_expr($1,tmpstr),$$); clearstr(tmpstr);
+		     printf("\tDEBUG: function parameters: '%s'\n", print_expr($3,tmpstr));  clearstr(tmpstr);
+
+
+
+
+		     /*
 		     printf("\tDEBUG: type of function_call->l: %d\n", $$->l->nodetype);
 		     printf("\tDEBUG: addr of function_call->l: %ld\n", $$->l);
 		     printf("\tDEBUG: string in function_call->l: %s\n", $$->l);
 		     printf("\tDEBUG: addr of function_call: %ld\n", $$);
+		     */
 		 }
 ;
 

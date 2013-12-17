@@ -141,7 +141,9 @@ void create_symbol_tables(struct ast *parse_tree)
             {
 	        /* Allow exceptions for the builtin functions.
 		+----------------------------------------------*/
-		if( (! strcmp(print_declarator_id(d),"printint")) )
+		if( (! strcmp(print_declarator_id(d),"printint"))      ||
+                    (! strcmp(print_declarator_id(d),"printstring"))
+		  )
 		{   /* do nothing */
 		}
 

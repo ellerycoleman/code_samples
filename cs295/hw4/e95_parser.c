@@ -404,18 +404,19 @@ char * print_expr(struct ast *expr,char *exprstr)
 	   break;
 
         case STRING_CONSTANT:
+	   printf("DEBUG: print_expr printing a string constant...\n");
 	   k= (struct constant *)expr;
 	   c= (char *)(k->value);
-	   putchar('"');
+	   sprintf(&exprstr[strlen(exprstr)],"%c", '"');
 	   for(i=0; i<=strlen(c); i++)
 	   {   if(c[i] == '\n')  /* unescape return chars */
 	       {   sprintf(&exprstr[strlen(exprstr)],"\\n");
 	       }
 	       else
-	       {   putchar(c[i]);
+	       {   sprintf(&exprstr[strlen(exprstr)],"%c", c[i]);
 	       }
 	   }
-	   putchar('"');
+	   sprintf(&exprstr[strlen(exprstr)],"%c", '"');
 	   break;
 
         case LABEL:

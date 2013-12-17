@@ -628,19 +628,17 @@ void decostat_to_ir(struct ast *decostat)
 	   ;
 	   char funcname[40];
 	   d= (struct declarator *)decostat->l;
+	   struct parameter_list *plist;
+	   plist=d->plist;
 	   strcpy(funcname,d->adeclarator->id);
+	   printf("DEBUG: expr_to_ir FUNCTION CALL: %s\n", funcname);
 
-	   /* If this is not a built-in function...
+
+	   /* If this is a built-in function...
 	   +-----------------------------------------*/
-	   if( (strcmp(funcname,"printint"))  )
-	   {
-	   }
-
-
-
-	   /* If this IS a built-in function...
-	   +-----------------------------------------*/
-	   else
+	   if( (!strcmp(funcname,"printint"))  ||
+               (!strcmp(funcname,"printstring"))
+	     )
 	   {
 	       /* printint function...
 	       +-------------------------*/
@@ -672,7 +670,27 @@ void decostat_to_ir(struct ast *decostat)
                    irlist->sid= ++irnodenum;
                    irlist->ircode= SYSCALL;
 	       }
+
+
+	       /* printstring function...
+	       +--------------------------*/
+	       if(! strcmp(funcname,"printstring"))
+	       {
+	           printf("printstring invoked...\n");
+	           printf("DEBUG: address of plist: %ld\n",plist);
+		   d= plist->pd;
+		   printf("DEBUG: subtree node type: %d\n", decostat->nodetype);
+		   printf("DEBUG: first parameter node type: %d\n", d->nodetype);
+	           irlist= irlist_front;
+                   while(irlist->next != NULL)
+                   {   irlist= irlist->next;
+                   }
+
+               }
+
+
 	   }
+
 
 	   printf("\tDEBUG: decostat->r->l type %d\n", decostat->r->l->nodetype);
 	   break;
