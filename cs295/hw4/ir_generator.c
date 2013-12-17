@@ -64,6 +64,7 @@ void generate_ir(struct ast *parse_tree)
 	ircodenames[120]= "BRANCH_LTE";
 	ircodenames[121]= "REMAINDER";
 	ircodenames[122]= "SUBTRACT";
+	ircodenames[123]= "BREAK";
     };
 
 
@@ -618,6 +619,9 @@ void decostat_to_ir(struct ast *decostat)
            expr_to_ir(decostat);
 	   break;
 
+        case RW_BREAK:
+           expr_to_ir(decostat);
+	   break;
 
         case LABELED_STATEMENT:
            expr_to_ir(decostat);
@@ -915,6 +919,46 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
            return tcresult;
            break;
+
+
+
+
+        case RW_BREAK:
+	   printf("DEBUG: found a RW_BREAK...\n\n\n");
+	   ;
+	   char tlabel[50];
+
+	   {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+	       while( (strstr(irlist->label,"forelse")) == NULL  &&   (irlist != NULL))
+	       {   irlist=irlist->prev;   
+	           printf("rewinding from irnode %d\n", irlist->sid);
+	       }
+	       if(irlist != NULL)
+	       {   strcpy(tlabel,irlist->label);
+	           printf("tlabel set to: %s\n", tlabel);
+               }
+
+
+
+
+	       irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= JUMP;
+	       strcpy(irlist->label,tlabel);
+
+           }
+	   break;
 
 
 
@@ -1226,7 +1270,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
            /* Generate necessary labels
 	   +----------------------------*/
-	   sprintf(&elselabel[strlen(elselabel)], "%d", ++labelnum);
+	   sprintf(elselabel, "forelse%d", ++labelnum);
 	   sprintf(&thenlabel[strlen(thenlabel)], "%d", ++labelnum);
 	   sprintf(&endlabel[strlen(endlabel)], "%d", ++labelnum);
 	   sprintf(&testcondlabel[strlen(testcondlabel)], "%d", ++labelnum);

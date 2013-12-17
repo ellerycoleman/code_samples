@@ -39,7 +39,8 @@ enum ircodes
     BRANCH_LTE,
     BRANCH_EQ,
     REMAINDER,
-    SUBTRACT
+    SUBTRACT,
+    BREAK
 };
 
 
