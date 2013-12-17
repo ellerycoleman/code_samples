@@ -19,6 +19,7 @@ extern char *reglist[];
 
 int context_clue=0;
 int forjump=0;
+int stringvarnum=0;
 
 
 /*-----------------------------------------------
@@ -706,6 +707,7 @@ void decostat_to_ir(struct ast *decostat)
                    irlist->sid= ++irnodenum;
                    irlist->ircode= CREATE_STRINGVAR;
 		   irlist->symptr= (struct declarator *)param;
+		   sprintf(irlist->label,"stringvar%d", ++stringvarnum);
 
 
                    irlist->next= emalloc(sizeof(struct irnode));

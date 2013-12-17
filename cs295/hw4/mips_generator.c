@@ -60,6 +60,7 @@ void generate_mips(void)
 
     /* Check top_level_symbol table for all non-function symbols.
     |  Emit the appropriate MIPS instructions for these symbols.
+    |  Also create necessary variables for any string constants.
     +-------------------------------------------------------------*/
     declare_global_vars();
 
@@ -186,10 +187,18 @@ void generate_mips(void)
                break;
 
 
+
             case PRINTSTRING:
                fprintf(mipsout,"\tli\t$v0,4\t\t# load syscall code for printint\n");
-               fprintf(mipsout,"\tlw\t$a0,%ld\t\t# address of string for printint\n", irlist->label);
                break;
+
+
+            case CREATE_STRINGVAR:
+	       /* Stringvar is created as part of declare_global vars.
+	       |  Now we will load the created stringvar into the $a0 register.
+	       +----------------------------------------------------------------*/
+               fprintf(mipsout,"\tla\t$a0,%s\t\t# address of string for printint\n", irlist->label);
+	       break;
 
 
             case SYSCALL:
@@ -233,7 +242,7 @@ void generate_mips(void)
 
 
 	    default:
-	       fprintf(mipsout,"# encountered unknow IR code: %s\n", ircodenames[irlist->ircode]);
+	       fprintf(mipsout,"# encountered unknown IR code: %s\n", ircodenames[irlist->ircode]);
 	       break;
 	}
 
@@ -261,7 +270,11 @@ void declare_global_vars(void)
     struct declarator *sp;
     int i;
 
-    fprintf(mipsout,"\n\n\t.data\n");
+    /* Create global variable definitions for all non-function symbols in
+    |  the global_top_level symtable.
+    +---------------------------------------------------------------------*/
+    fprintf(mipsout,"\n\n\t.data\n\n");
+    fprintf(mipsout,"#Global Variable Declarations\n\n");
     curr_symtab= global_top_level;
     for(i=0; i<NHASH; i++)
     {   if(curr_symtab->symtab[i])
@@ -294,6 +307,19 @@ void declare_global_vars(void)
 	    }
         }
     }
+
+
+    /* Cycle through all irnodes and look for CREATE_STRINGVAR nodes.
+    |  Create a variable for each node.
+    +-----------------------------------------------------------------*/
+    irlist= irlist_front;
+    while(irlist != NULL)
+    {   if(irlist->ircode == CREATE_STRINGVAR)
+        {   fprintf(mipsout,"%s:\t.asciiz\t\"%s\"\n",irlist->label, (char *)irlist->symptr);
+	}
+	irlist= irlist->next;
+    }
+    fprintf(mipsout,"\n\n\n#String variables for printstring function\n\n");
     fprintf(mipsout,"\n\n\n");
 }
 
