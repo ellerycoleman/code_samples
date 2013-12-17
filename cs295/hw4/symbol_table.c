@@ -31,6 +31,8 @@ struct change_list
 struct change_list *clist;
 struct change_list *clist_front;
 
+int label_lookup=1;
+
 
 
 /*-----------------------------------------------
@@ -662,6 +664,9 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
 	{   sym= sym->adeclarator;
 	}
     }
+    else if(sym->nodetype == LABELED_STATEMENT)
+    {   printf("DEBUG: addref has declarator with type: %d\n", sym->nodetype);
+    }
 
 
     /* hash the symbol name */
@@ -1222,14 +1227,6 @@ void funcdef_to_symtab(struct function_def *funcdef)
 
 
 
-    /* Resolve goto statements.
-    +-----------------------------*/
-    int j;
-    for(j=0; j<100; j++)
-    {   if(goto_q[j].populated == 1)
-        {   locate_ids(goto_q[j].dstat,goto_q[j].symtab);
-	}
-    }
 
 }
 
@@ -1312,7 +1309,8 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 	}
 	else if(dstat->nodetype == LABELED_STATEMENT)
-	{   label_to_symtab(dstat,curr_symtab);
+	{  printf("\t\t\tDEBUG: found a labeled statement: %s\n", print_expr(dstat,tmpstr)); clearstr(tmpstr);
+	   label_to_symtab(dstat,curr_symtab);
 	}
 
 
@@ -1320,13 +1318,24 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 
 	/* skip goto statements in first pass */
 	else if(dstat->nodetype == RW_GOTO)
-	{   for(j=0; j<100; j++)
-	    {   if(goto_q[j].populated != 1)
+	{   
+            printf("DEBUG: found a goto statement...\n");	
+	    
+	    for(j=0; j<100; j++)
+	    {   
+	        printf("Iterating through the goto queue on item: %d\n", j);
+	        if(goto_q[j].populated != 1)
 	        {
                     /* Navigate to the appropriate symtab for labels. */
 		    struct symtabl *tsymtab= curr_symtab;
-		    while( (strstr(curr_symtab->id,"_funcdef") == NULL)  &&
-		           (curr_symtab->parent != NULL)
+
+                    printf("DEBUG: current symtab: %s\n", tsymtab->id);
+		    int tmp= (int)(long)strstr(tsymtab->id,"_funcdef");
+		    printf("strstr returns: %d (NULL IS %d)\n", tmp, NULL);
+		    printf("tsymtab->parent is: %ld\n", tsymtab->parent);
+
+		    while( (strstr(tsymtab->id,"_funcdef") == NULL)  &&
+		           (tsymtab->parent != NULL)
 		         )
 		    {   tsymtab= tsymtab->parent;
 		    }
@@ -1335,7 +1344,7 @@ void compound_to_symtab(struct ast *cstmt, struct symtabl *curr_symtab)
 		    goto_q[j].dstat= dstat;
 		    goto_q[j].symtab= tsymtab;
 		    j=200;
-                 }
+                }
             }
 	}
 
@@ -1370,9 +1379,9 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
         return;
     }
 
-
-    if(dstat->nodetype == RW_GOTO)
-    {   resolve_id(dstat,curr_symtab->labels);
+    if( (dstat->nodetype == RW_GOTO)  &&  (label_lookup != 0) )
+    {   printf("DEBUG: about to look for labels in here: %s->labels\n", curr_symtab->id);
+        resolve_id(dstat->r,curr_symtab->labels);
 	return;
     }
 
@@ -1405,6 +1414,23 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
 	locate_ids(forupdate,curr_symtab);
 	locate_ids(thendo,curr_symtab);
     }
+
+
+
+    else if(dstat->nodetype == LABELED_STATEMENT)
+    {
+        /* retrieve statement 
+	+----------------------*/
+	struct ast *statement= dstat->r;
+	printf("Are you ready to proceed?: ");
+	char a;
+	scanf("%c", &a);
+
+	locate_ids(statement->l,curr_symtab);
+
+    }
+
+
 
 
     else if(dstat->nodetype == FOR_STATEMENT)
@@ -1454,6 +1480,12 @@ void resolve_id(struct ast *dstat, struct symtabl *curr_symtab)
     struct declarator *resolved;
 
 
+	if(dstat == NULL)
+	{   printf("Warning: dstat is null.\n");
+	    return;
+        }
+
+
     if(dstat->nodetype == RW_GOTO)
     {   d= new_simple_declarator((char *)dstat->l);
         d= lookup(d,curr_symtab);
@@ -1461,6 +1493,33 @@ void resolve_id(struct ast *dstat, struct symtabl *curr_symtab)
 	{   printf("ERROR: Label '%s' used but not defined.\n", dstat->l);
 	    exit(-1);
         }
+
+
+        resolved= d;
+
+
+        /* record change for change list */
+        if(clist_front == NULL)
+        {   clist_front= emalloc(sizeof(struct change_list));
+	    clist=clist_front;
+	    clist->c= emalloc(sizeof(struct change));
+	    clist->c->unresolved= d;
+	    clist->c->resolved= resolved;
+	}
+	else
+	{   clist=clist_front;
+	    while(clist->next != NULL)
+	    {   clist= clist->next;
+	    }
+	    clist->next= emalloc(sizeof(struct change_list));
+	    clist= clist->next;
+	    clist->c= emalloc(sizeof(struct change));
+	    clist->c->unresolved= d;
+	    clist->c->resolved= resolved;
+	}
+
+
+
     }
 
 
@@ -1621,6 +1680,9 @@ void compound_to_symtab_case4(struct symtabl *curr_symtab, struct ast *dstat)
 
 void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
 {
+   
+
+    printf("DEBUG: label_to_symtab was called\n");
 
     /* retrieve the label name.
     +---------------------------*/
@@ -1659,7 +1721,6 @@ void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
 
 
 
-
     /* switch to labels symtab
     +---------------------------*/
     curr_symtab= curr_symtab->labels;
@@ -1682,7 +1743,20 @@ void label_to_symtab(struct ast *labelstmt, struct symtabl *curr_symtab)
  +---------------------------------------------*/
 void process_change_list(void)
 {   struct declarator *unresolved;
-     struct declarator *resolved;
+    struct declarator *resolved;
+
+
+    /* Resolve goto statements.
+    +-----------------------------*/
+    int j;
+    label_lookup=1;
+    for(j=0; j<100; j++)
+    {   
+        if(goto_q[j].populated == 1)
+        {    printf("DEBUG: looking up goto statements...\n");
+	     locate_ids(goto_q[j].dstat,goto_q[j].symtab);
+	}
+    }
 
 
      clist= clist_front;
@@ -1704,6 +1778,7 @@ void process_change_list(void)
 
 	clist= clist->next;
      }
+
 }
 
 

@@ -202,7 +202,7 @@ void generate_mips(void)
 	       |  all the stringvars.  Now we will load the specified stringvar
 	       |  into the $a0 register for printing.
 	       +------------------------------------------------------------------*/
-               fprintf(mipsout,"\tla\t$a0,%s\t\t# address of string for printint\n", irlist->label);
+               fprintf(mipsout,"\tla\t$a0,%s\t\t# address of string for printstring\n", irlist->label);
 	       break;
 
 
@@ -258,6 +258,11 @@ void generate_mips(void)
 
             case ADD1:
 	       fprintf(mipsout,"\taddi\t%s, %s, 1\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]); 
+	       break;
+
+
+            case SUBTRACT:
+	       fprintf(mipsout,"\tsub\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]); 
 	       break;
 
 

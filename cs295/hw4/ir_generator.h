@@ -38,7 +38,8 @@ enum ircodes
     BRANCH_GTE,
     BRANCH_LTE,
     BRANCH_EQ,
-    REMAINDER
+    REMAINDER,
+    SUBTRACT
 };
 
 
