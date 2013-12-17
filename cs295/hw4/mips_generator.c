@@ -186,6 +186,12 @@ void generate_mips(void)
                break;
 
 
+            case PRINTSTRING:
+               fprintf(mipsout,"\tli\t$v0,4\t\t# load syscall code for printint\n");
+               fprintf(mipsout,"\tlw\t$a0,%ld\t\t# address of string for printint\n", irlist->label);
+               break;
+
+
             case SYSCALL:
                fprintf(mipsout,"\tsyscall\t\t\t# execute syscall\n");
                break;

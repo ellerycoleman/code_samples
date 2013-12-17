@@ -56,6 +56,8 @@ void generate_ir(struct ast *parse_tree)
 	ircodenames[113]= "COMMENT";
 	ircodenames[114]= "ADD";
 	ircodenames[115]= "ADD1";
+	ircodenames[116]= "PRINTSTRING";
+	ircodenames[117]= "CREATE_STRINGVAR";
     };
 
 
@@ -257,6 +259,7 @@ void print_irnodes(void)
     printf("#         IRNODE LIST DISPLAY\n");
     printf("#=========================================\n\n");
 
+    printf("made it this far...\n");
 
     if(irlist == NULL)
     {   printf("IRLIST IS EMPTY\n\n");
@@ -306,7 +309,7 @@ void print_irnodes(void)
                 irlist->sid,
 		ircodenames[irlist->ircode],
 		irlist->ircode,
-		print_declarator_id(irlist->symptr),
+		(irlist->ircode != CREATE_STRINGVAR) ? print_declarator_id(irlist->symptr) : "N/A",
 		oprnd1,
 		oprnd2,
 		oprnd3,
@@ -390,7 +393,7 @@ void print_irnode_sids(int begin_sid,int end_sid)
                 irlist->sid,
 		ircodenames[irlist->ircode],
 		irlist->ircode,
-		print_declarator_id(irlist->symptr),
+		(irlist->ircode != CREATE_STRINGVAR) ? print_declarator_id(irlist->symptr) : "N/A",
 		oprnd1,
 		oprnd2,
 		oprnd3,
@@ -464,6 +467,7 @@ void compound_to_ir(struct ast *cstmt)
         +--------------------*/
 	regnum=0;   /* reset register count to 0 */
 	printf("c2ir calling d2ir...\n");
+	printf("decostat addr: %ld\n", decostat);
         decostat_to_ir(decostat);
 
 
@@ -531,9 +535,8 @@ void decostat_to_ir(struct ast *decostat)
     struct declarator *d;
     int i;
 
-
-    printf("decostat_to_ir() invoked with decostat type: %d \n", decostat->nodetype);
-
+    printf("decostat_to_ir() invoked ");
+    printf("with decostat type: %d \n", decostat->nodetype);
 
     switch(decostat->nodetype)
     {   case DECL:
@@ -676,15 +679,40 @@ void decostat_to_ir(struct ast *decostat)
 	       +--------------------------*/
 	       if(! strcmp(funcname,"printstring"))
 	       {
-	           printf("printstring invoked...\n");
-	           printf("DEBUG: address of plist: %ld\n",plist);
-		   d= plist->pd;
-		   printf("DEBUG: subtree node type: %d\n", decostat->nodetype);
-		   printf("DEBUG: first parameter node type: %d\n", d->nodetype);
+	           /* Retrieve parameter
+		   +----------------------*/
+		   struct constant *k= (struct constant *)decostat->r->l;
+		   char *param= k->value;
+		   printf("param: %s (%ld)\n", param, param);
+
 	           irlist= irlist_front;
                    while(irlist->next != NULL)
                    {   irlist= irlist->next;
                    }
+
+
+	           /* add nodes for printstring */
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= PRINTSTRING;
+		   irlist->oprnd1= ++regnum;
+	           
+
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= CREATE_STRINGVAR;
+		   irlist->symptr= (struct declarator *)param;
+
+
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= SYSCALL;
 
                }
 
@@ -1198,18 +1226,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   break;
     }
 
-
-/*
-
-    if((subtree->l != NULL)  &&  (subtree->l->nodetype != INTEGER_CONSTANT))
-    {   expr_to_ir(subtree->l);
-    }
-
-    if((subtree->r != NULL)  &&  (subtree->r->nodetype != INTEGER_CONSTANT))
-    {   expr_to_ir(subtree->r);
-    }
-
-*/
 
     return tcresult;
 }

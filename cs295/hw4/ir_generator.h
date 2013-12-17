@@ -31,7 +31,9 @@ enum ircodes
     JUMP,
     COMMENT,
     ADD,
-    ADD1
+    ADD1,
+    PRINTSTRING,
+    CREATE_STRINGVAR
 };
 
 
