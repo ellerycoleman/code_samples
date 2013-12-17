@@ -187,9 +187,13 @@ void generate_mips(void)
                break;
 
 
+            case READINT:
+               fprintf(mipsout,"\tli\t$v0,5\t\t# load syscall code for readint\n");
+               break;
+
 
             case PRINTSTRING:
-               fprintf(mipsout,"\tli\t$v0,4\t\t# load syscall code for printint\n");
+               fprintf(mipsout,"\tli\t$v0,4\t\t# load syscall code for printstring\n");
                break;
 
 

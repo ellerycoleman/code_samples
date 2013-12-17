@@ -33,7 +33,8 @@ enum ircodes
     ADD,
     ADD1,
     PRINTSTRING,
-    CREATE_STRINGVAR
+    CREATE_STRINGVAR,
+    READINT
 };
 
 

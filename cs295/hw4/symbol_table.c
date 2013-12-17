@@ -142,7 +142,8 @@ void create_symbol_tables(struct ast *parse_tree)
 	        /* Allow exceptions for the builtin functions.
 		+----------------------------------------------*/
 		if( (! strcmp(print_declarator_id(d),"printint"))      ||
-                    (! strcmp(print_declarator_id(d),"printstring"))
+                    (! strcmp(print_declarator_id(d),"printstring"))   ||
+                    (! strcmp(print_declarator_id(d),"readint")) 
 		  )
 		{   /* do nothing */
 		}
@@ -1421,6 +1422,12 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
 	locate_ids(forupdate,curr_symtab);
 	locate_ids(thendo,curr_symtab);
     }
+
+
+    else if(dstat->nodetype == STRING_CONSTANT)
+    {   return;
+    }
+
 
     if( (dstat->l != NULL)  &&  (dstat->l->nodetype != INTEGER_CONSTANT) )
     {   
