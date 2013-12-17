@@ -29,7 +29,8 @@ enum ircodes
     BRANCH_GT,
     BRANCH_LT,
     JUMP,
-    COMMENT
+    COMMENT,
+    ADD
 };
 
 

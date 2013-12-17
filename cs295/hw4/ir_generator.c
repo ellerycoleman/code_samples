@@ -54,6 +54,7 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[111]= "BRANCH_LT";
         ircodenames[112]= "JUMP";
 	ircodenames[113]= "COMMENT";
+	ircodenames[114]= "ADD";
     };
 
 
@@ -71,7 +72,7 @@ void generate_ir(struct ast *parse_tree)
     /* initialize label num, used to avoid label name
     |  collisions.
     +------------------------------------------------*/
-    labelnum=0; 
+    labelnum=0;
 
 
 
@@ -273,7 +274,7 @@ void print_irnodes(void)
 
         /* record oprnd2 num */
         if((irlist->oprnd2 == 0) &&  (irlist->ircode != LOADCONSTANT))
-	{   sprintf(oprnd2, "%s-", "N/A");
+	{   sprintf(oprnd2, "%s", "N/A");
 	}
 	else if((irlist->oprnd2 != 0) &&  (irlist->ircode != LOADCONSTANT))
 	{   sprintf(oprnd2, "r%d", irlist->oprnd2);
@@ -761,7 +762,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist= irlist->next;
            irlist->sid= ++irnodenum;
 
-	   if(context_clue == CONDITIONAL_STATEMENT)
+	   if(context_clue != 0)
 	   {   irlist->ircode= LOADWORD;
 	       printf("DEBUG: since context clue is %d, doing loadword...\n", context_clue);
 	   }
@@ -779,10 +780,10 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
         case OP_ASSIGNMENT:
-	/*
 	   printf("DEBUG: found an OP_ASSIGNMENT...\n\n\n");
 	   left= expr_to_ir(subtree->l);
 	   right= expr_to_ir(subtree->r);
+	   printf("\t\tDEBUG: Right of OP_ASSIGNMENT returned with regnum: %d\n", right->regnum);
 
 	   if((left->nodetype == LVALUE) && (right->nodetype == RVALUE))
 	   {   irlist= irlist_front;
@@ -790,7 +791,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
                {   irlist= irlist->next;
                }
 
-	       
                irlist->next= emalloc(sizeof(struct irnode));
 	       irlist->next->prev= irlist;
                irlist= irlist->next;
@@ -799,10 +799,38 @@ struct irinfo *expr_to_ir(struct ast *subtree)
                irlist->oprnd1= right->regnum;
 	       irlist->oprnd2= left->regnum;
            }
-       */
-           decostat_to_ir(subtree);
 	   break;
 
+
+
+        case PLUS_SIGN:
+
+	   context_clue= PLUS_SIGN;
+	   printf("DEBUG: found an PLUS_SIGN...\n\n\n");
+	   left= expr_to_ir(subtree->l);
+	   right= expr_to_ir(subtree->r);
+
+	   {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= ADD;
+               irlist->oprnd1= ++regnum;
+	       irlist->oprnd2= left->regnum;
+               irlist->oprnd3= right->regnum;
+
+               tcresult->nodetype= RVALUE;
+               tcresult->regnum= irlist->oprnd1;
+
+           }
+	   context_clue= 0;
+	   return tcresult;
+           break;
 
 
 
@@ -877,7 +905,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
            break;
-
 
 
 
@@ -994,7 +1021,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 	   expr_to_ir(forupdate);
 
-           
+
            /* jump back to evaluation block */
            irlist->next= emalloc(sizeof(struct irnode));
 	   irlist->next->prev= irlist;
