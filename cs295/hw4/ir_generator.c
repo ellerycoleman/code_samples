@@ -1018,17 +1018,18 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->ircode= COMMENT;
            strncpy(irlist->label, "For Loop Update Statement",49);
 
+	   expr_to_ir(forupdate->l);
 
-	   expr_to_ir(forupdate);
 
 
-           /* jump back to evaluation block */
+           /* jump back to test condition
+	   +-------------------------------*/
            irlist->next= emalloc(sizeof(struct irnode));
 	   irlist->next->prev= irlist;
            irlist= irlist->next;
            irlist->sid= ++irnodenum;
            irlist->ircode= JUMP;
-           strcpy(irlist->label, thenlabel);
+           strcpy(irlist->label, testcondlabel);
 
 
 
