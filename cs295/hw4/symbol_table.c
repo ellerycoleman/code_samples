@@ -1367,6 +1367,7 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
 
     if(dstat == NULL)
     {   printf("DEBUG: id_to_symtab invoked with NULL.  exting...\n");
+        return;
     }
 
 

@@ -1082,23 +1082,26 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   sprintf(&endlabel[strlen(endlabel)], "%d", ++labelnum);
 	   sprintf(&testcondlabel[strlen(testcondlabel)], "%d", ++labelnum);
 
-
+           /*
            printf("\t\tDEBUG: type of forinit: %d\n", forinit->l->nodetype);
            printf("\t\tDEBUG: type of condition: %d\n", cond->l->nodetype);
            printf("\t\tDEBUG: type of thendo: %d\n", thendo->nodetype);
            printf("\t\tDEBUG: type of forupdate: %d\n", forupdate->l->nodetype);
+	   */
 
 
 	   /* create nodes for init statement
 	   +-----------------------------------------*/
-           irlist->next= emalloc(sizeof(struct irnode));
-	   irlist->next->prev= irlist;
-           irlist= irlist->next;
-           irlist->sid= ++irnodenum;
-           irlist->ircode= COMMENT;
-           strncpy(irlist->label, "For Loop Initialization",49);
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= COMMENT;
+               strncpy(irlist->label, "For Loop Initialization",49);
 
-	   expr_to_ir(forinit->l);
+	       if(forinit != NULL)
+	       {   expr_to_ir(forinit->l);
+	       }
 
 
 
@@ -1120,7 +1123,9 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            strcpy(irlist->label, testcondlabel);
 
            forjump= atoi(&thenlabel[strlen(thenlabel)-1]);
-	   expr_to_ir(cond->l);
+	   if(cond != NULL)
+	   {   expr_to_ir(cond->l);
+	   }
 	   forjump= 0;
 
 
@@ -1151,7 +1156,9 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->sid= ++irnodenum;
            irlist->ircode= MIPSLABEL;
            strcpy(irlist->label, thenlabel);
-	   expr_to_ir(thendo);
+	   if(thendo != NULL)
+	   {   expr_to_ir(thendo);
+	   }
 
 
 
@@ -1164,7 +1171,9 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->ircode= COMMENT;
            strncpy(irlist->label, "For Loop Update Statement",49);
 
-	   expr_to_ir(forupdate->l);
+           if(forupdate != NULL)
+	   {   expr_to_ir(forupdate->l);
+	   }
 
 
 
@@ -1232,7 +1241,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
         case OP_RELATIONAL_LT:
-	   context_clue= CONDITIONAL_STATEMENT;
+	   context_clue= OP_RELATIONAL_LT;
            irlist= irlist_front;
            while(irlist->next != NULL)
            {   irlist= irlist->next;
