@@ -34,7 +34,11 @@ enum ircodes
     ADD1,
     PRINTSTRING,
     CREATE_STRINGVAR,
-    READINT
+    READINT,
+    BRANCH_GTE,
+    BRANCH_LTE,
+    BRANCH_EQ,
+    REMAINDER
 };
 
 

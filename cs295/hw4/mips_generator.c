@@ -198,9 +198,10 @@ void generate_mips(void)
 
 
             case CREATE_STRINGVAR:
-	       /* Stringvar is created as part of declare_global vars.
-	       |  Now we will load the created stringvar into the $a0 register.
-	       +----------------------------------------------------------------*/
+	       /* The irlist was processed by declare_global_vars(); this created
+	       |  all the stringvars.  Now we will load the specified stringvar
+	       |  into the $a0 register for printing.
+	       +------------------------------------------------------------------*/
                fprintf(mipsout,"\tla\t$a0,%s\t\t# address of string for printint\n", irlist->label);
 	       break;
 
@@ -210,13 +211,28 @@ void generate_mips(void)
                break;
 
 
+            case BRANCH_EQ:
+	       fprintf(mipsout,"\tbeq\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], irlist->label);
+	       break;
+
+
             case BRANCH_GT:
 	       fprintf(mipsout,"\tbgt\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], irlist->label);
 	       break;
 
 
+            case BRANCH_GTE:
+	       fprintf(mipsout,"\tbge\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], irlist->label);
+	       break;
+
+
             case BRANCH_LT:
 	       fprintf(mipsout,"\tblt\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], irlist->label);
+	       break;
+
+
+            case BRANCH_LTE:
+	       fprintf(mipsout,"\tble\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], irlist->label);
 	       break;
 
 
@@ -242,6 +258,11 @@ void generate_mips(void)
 
             case ADD1:
 	       fprintf(mipsout,"\taddi\t%s, %s, 1\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]); 
+	       break;
+
+
+            case REMAINDER:
+	       fprintf(mipsout,"\trem\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]); 
 	       break;
 
 

@@ -60,6 +60,9 @@ void generate_ir(struct ast *parse_tree)
 	ircodenames[116]= "PRINTSTRING";
 	ircodenames[117]= "CREATE_STRINGVAR";
 	ircodenames[118]= "READINT";
+	ircodenames[119]= "BRANCH_GTE";
+	ircodenames[120]= "BRANCH_LTE";
+	ircodenames[121]= "REMAINDER";
     };
 
 
@@ -904,7 +907,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
         case PLUS_SIGN:
-
 	   context_clue= PLUS_SIGN;
 	   printf("DEBUG: found an PLUS_SIGN...\n\n\n");
 	   left= expr_to_ir(subtree->l);
@@ -932,6 +934,36 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   return tcresult;
            break;
 
+
+
+
+        case OP_REMAINDER:
+	   context_clue= PLUS_SIGN;
+	   printf("DEBUG: found an PLUS_SIGN...\n\n\n");
+	   left= expr_to_ir(subtree->l);
+	   right= expr_to_ir(subtree->r);
+
+	   {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= REMAINDER;
+               irlist->oprnd1= ++regnum;
+	       irlist->oprnd2= left->regnum;
+               irlist->oprnd3= right->regnum;
+
+               tcresult->nodetype= RVALUE;
+               tcresult->regnum= irlist->oprnd1;
+
+           }
+	   context_clue= 0;
+	   return tcresult;
+           break;
 
 
 
@@ -1207,6 +1239,35 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
+        case OP_EQUALITY:
+	   context_clue= CONDITIONAL_STATEMENT;
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+
+	   printf("DEBUG: expr_to_ir(): received a greater than symbol....\n");
+	   left   = expr_to_ir(subtree->l);
+	   right  = expr_to_ir(subtree->r);
+
+           char eqthenlabel[25]= "then";
+	   sprintf(&eqthenlabel[strlen(eqthenlabel)], "%d", ++labelnum);
+
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= BRANCH_EQ;
+           irlist->oprnd1= left->regnum;
+           irlist->oprnd2= right->regnum;
+           strcpy(irlist->label, eqthenlabel);
+	   context_clue= 0;
+	   break;
+
+
+
+
 
         case GREATER_THAN_SYMBOL:
 	   context_clue= CONDITIONAL_STATEMENT;
@@ -1239,6 +1300,34 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
+        case OP_RELATIONAL_GTE:
+	   context_clue= CONDITIONAL_STATEMENT;
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+
+	   printf("DEBUG: expr_to_ir(): received a greater than symbol....\n");
+	   left   = expr_to_ir(subtree->l);
+	   right  = expr_to_ir(subtree->r);
+
+           char gtethenlabel[25]= "then";
+	   sprintf(&gtethenlabel[strlen(gtethenlabel)], "%d", ++labelnum);
+
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= BRANCH_GTE;
+           irlist->oprnd1= left->regnum;
+           irlist->oprnd2= right->regnum;
+           strcpy(irlist->label, gtethenlabel);
+	   context_clue= 0;
+	   break;
+
+
+
 
         case OP_RELATIONAL_LT:
 	   context_clue= OP_RELATIONAL_LT;
@@ -1263,6 +1352,37 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->oprnd1= left->regnum;
            irlist->oprnd2= right->regnum;
            strcpy(irlist->label, ltthenlabel);
+	   context_clue= 0;
+	   break;
+
+
+
+
+
+
+        case OP_RELATIONAL_LTE:
+	   context_clue= OP_RELATIONAL_LTE;
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+
+	   printf("DEBUG: expr_to_ir(): received a greater than symbol....\n");
+	   left   = expr_to_ir(subtree->l);
+	   right  = expr_to_ir(subtree->r);
+
+           char ltethenlabel[25]= "then";
+	   sprintf(&ltethenlabel[strlen(ltethenlabel)], "%d", (forjump > 0)? forjump : ++labelnum);
+
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= BRANCH_LTE;
+           irlist->oprnd1= left->regnum;
+           irlist->oprnd2= right->regnum;
+           strcpy(irlist->label, ltethenlabel);
 	   context_clue= 0;
 	   break;
 
