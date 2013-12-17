@@ -30,7 +30,8 @@ enum ircodes
     BRANCH_LT,
     JUMP,
     COMMENT,
-    ADD
+    ADD,
+    ADD1
 };
 
 

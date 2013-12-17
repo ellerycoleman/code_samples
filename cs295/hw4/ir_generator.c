@@ -55,6 +55,7 @@ void generate_ir(struct ast *parse_tree)
         ircodenames[112]= "JUMP";
 	ircodenames[113]= "COMMENT";
 	ircodenames[114]= "ADD";
+	ircodenames[115]= "ADD1";
     };
 
 
@@ -619,6 +620,9 @@ void decostat_to_ir(struct ast *decostat)
                expr_to_ir(decostat);
                break;
 
+        case POSTINCREMENT_EXPR:
+               expr_to_ir(decostat);
+               break;
 
         case FUNCTION_CALL:
 	   ;
@@ -831,6 +835,52 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   context_clue= 0;
 	   return tcresult;
            break;
+
+
+
+
+
+        case POSTINCREMENT_EXPR:
+	   context_clue= POSTINCREMENT_EXPR;
+	   printf("DEBUG: found a POSTINCREMENT_EXPR...\n\n\n");
+	   printf("\tDEBUG: subtree->l type: %d\n", subtree->l->nodetype);
+	   left= expr_to_ir(subtree->l);
+
+           int tmpreg;
+	   {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= ADD1;
+	       tmpreg= ++regnum;
+               irlist->oprnd1= tmpreg;
+	       irlist->oprnd2= left->regnum;
+
+               tcresult->nodetype= RVALUE;
+               tcresult->regnum= irlist->oprnd1;
+	       context_clue= 0;
+
+
+               /* store result */
+	       left= expr_to_ir(subtree->l);
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= STOREWORDINDIRECT;
+               irlist->oprnd1= tmpreg;
+	       irlist->oprnd2= left->regnum;
+
+           }
+	   return tcresult;
+           break;
+
+
 
 
 

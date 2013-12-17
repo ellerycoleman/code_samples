@@ -221,6 +221,11 @@ void generate_mips(void)
 	       break;
 
 
+            case ADD1:
+	       fprintf(mipsout,"\taddi\t%s, %s, 1\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]); 
+	       break;
+
+
 	    default:
 	       fprintf(mipsout,"# encountered unknow IR code: %s\n", ircodenames[irlist->ircode]);
 	       break;
