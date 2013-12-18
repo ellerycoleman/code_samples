@@ -64,7 +64,6 @@ void generate_ir(struct ast *parse_tree)
 	ircodenames[120]= "BRANCH_LTE";
 	ircodenames[121]= "REMAINDER";
 	ircodenames[122]= "SUBTRACT";
-	ircodenames[123]= "BREAK";
     };
 
 
@@ -615,21 +614,7 @@ void decostat_to_ir(struct ast *decostat)
 	   break;
 
 
-        case RW_GOTO:
-           expr_to_ir(decostat);
-	   break;
 
-        case RW_BREAK:
-           expr_to_ir(decostat);
-	   break;
-
-        case LABELED_STATEMENT:
-           expr_to_ir(decostat);
-	   break;
-
-        case COMPOUND_STATEMENT:
-           expr_to_ir(decostat);
-	   break;
 
         case INTEGER_CONSTANT:
 	   printf("found an integer constant...\n\n\n");
@@ -644,25 +629,30 @@ void decostat_to_ir(struct ast *decostat)
                expr_to_ir(decostat);
                break;
 
+        case COMPOUND_STATEMENT:
+	   expr_to_ir(decostat);
+	   break;
+
+        case RW_BREAK:
+               expr_to_ir(decostat);
+               break;
+
         case POSTINCREMENT_EXPR:
                expr_to_ir(decostat);
                break;
 
-
-
         case FUNCTION_CALL:
 	   ;
 	   char funcname[40];
-	   struct declarator *d= (struct declarator *)decostat->l;
+	   d= (struct declarator *)decostat->l;
 	   struct parameter_list *plist;
 	   plist=d->plist;
-	   if(d->nodetype == SIMPLE_DECLARATOR)
-	   {   strcpy(funcname,d->id);
-	   }
-	   else
-	   {   strcpy(funcname,d->adeclarator->id);
-	   }
-	      
+           if(d->nodetype == SIMPLE_DECLARATOR)
+           {   strcpy(funcname,d->id);
+           }
+           else
+           {   strcpy(funcname,d->adeclarator->id);
+           }
 	   printf("DEBUG: expr_to_ir FUNCTION CALL: %s\n", funcname);
 
 
@@ -794,6 +784,9 @@ void decostat_to_ir(struct ast *decostat)
 
                }
 	   }
+
+
+
 	   printf("\tDEBUG: decostat->r->l type %d\n", decostat->r->l->nodetype);
 	   break;
 
@@ -830,7 +823,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
     struct ast *dstat;
     struct decostat_list *dlist;
-
     int i;
 
 
@@ -860,11 +852,10 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   do
 	   {   dstat= dlist->decostat;
 	       printf("calling expr_to_ir from expr_to_ir\n");
-	       expr_to_ir(dstat);
+	       decostat_to_ir(dstat);
 	       printf("\t\t\t----> %d\n", ++i);
 	   }while( (dlist= dlist->next) != NULL);
 	   break;
-
 
 
         case INTEGER_CONSTANT:
@@ -923,94 +914,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
-        case RW_BREAK:
-	   printf("DEBUG: found a RW_BREAK...\n\n\n");
-	   ;
-	   char tlabel[50];
-
-	   {   irlist= irlist_front;
-               while(irlist->next != NULL)
-               {   irlist= irlist->next;
-               }
-
-	       while( (strstr(irlist->label,"forelse")) == NULL  &&   (irlist != NULL))
-	       {   irlist=irlist->prev;   
-	           printf("rewinding from irnode %d\n", irlist->sid);
-	       }
-	       if(irlist != NULL)
-	       {   strcpy(tlabel,irlist->label);
-	           printf("tlabel set to: %s\n", tlabel);
-               }
-
-
-
-
-	       irlist= irlist_front;
-               while(irlist->next != NULL)
-               {   irlist= irlist->next;
-               }
-
-               irlist->next= emalloc(sizeof(struct irnode));
-	       irlist->next->prev= irlist;
-               irlist= irlist->next;
-               irlist->sid= ++irnodenum;
-               irlist->ircode= JUMP;
-	       strcpy(irlist->label,tlabel);
-
-           }
-	   break;
-
-
-
-
-
-        case RW_GOTO:
-	   printf("DEBUG: found a RW_GOTO...\n\n\n");
-	   printf("DEBUG: subtree->l type: %s\n", subtree->l);
-
-	   char *gotag= (char *)subtree->l;
-	   printf("Gotag: '%s'\n", gotag);
-
-	   {   irlist= irlist_front;
-               while(irlist->next != NULL)
-               {   irlist= irlist->next;
-               }
-
-               irlist->next= emalloc(sizeof(struct irnode));
-	       irlist->next->prev= irlist;
-               irlist= irlist->next;
-               irlist->sid= ++irnodenum;
-               irlist->ircode= JUMP;
-	       strcpy(irlist->label,gotag);
-           }
-	   break;
-
-
-        case LABELED_STATEMENT:
-	   printf("DEBUG: found a LABELED_STATEMENT...\n\n\n");
-	   struct constant *k= (struct constant *)subtree->l;
-
-	   printf("Labled statement name: %s\n", k->value);
-
-	   {   irlist= irlist_front;
-               while(irlist->next != NULL)
-               {   irlist= irlist->next;
-               }
-
-               irlist->next= emalloc(sizeof(struct irnode));
-	       irlist->next->prev= irlist;
-               irlist= irlist->next;
-               irlist->sid= ++irnodenum;
-               irlist->ircode= MIPSLABEL;
-	       strcpy(irlist->label,k->value);
-           }
-	   printf("DEBUG: LABELED_STATEMENT about to handle right subtree...\n");
-           decostat_to_ir(subtree->r);
-	   printf("DEBUG: current MIPSLABEL irnode has: %s\n", irlist->label);
-           break;
-           
-
-
         case OP_ASSIGNMENT:
 	   printf("DEBUG: found an OP_ASSIGNMENT...\n\n\n");
 	   left= expr_to_ir(subtree->l);
@@ -1064,35 +967,32 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            break;
 
 
-
-
-
         case MINUS_SIGN:
-	   context_clue= MINUS_SIGN;
-	   printf("DEBUG: found a MINUS_SIGN...\n\n\n");
-	   left= expr_to_ir(subtree->l);
-	   right= expr_to_ir(subtree->r);
+           context_clue= MINUS_SIGN;
+           printf("DEBUG: found a MINUS_SIGN...\n\n\n");
+           left= expr_to_ir(subtree->l);
+           right= expr_to_ir(subtree->r);
 
-	   {   irlist= irlist_front;
+           {   irlist= irlist_front;
                while(irlist->next != NULL)
                {   irlist= irlist->next;
                }
 
                irlist->next= emalloc(sizeof(struct irnode));
-	       irlist->next->prev= irlist;
+               irlist->next->prev= irlist;
                irlist= irlist->next;
                irlist->sid= ++irnodenum;
                irlist->ircode= SUBTRACT;
                irlist->oprnd1= ++regnum;
-	       irlist->oprnd2= left->regnum;
+               irlist->oprnd2= left->regnum;
                irlist->oprnd3= right->regnum;
 
                tcresult->nodetype= RVALUE;
                tcresult->regnum= irlist->oprnd1;
 
            }
-	   context_clue= 0;
-	   return tcresult;
+           context_clue= 0;
+           return tcresult;
            break;
 
 
@@ -1189,7 +1089,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            /* Generate necessary labels
 	   +----------------------------*/
 	   sprintf(&elselabel[strlen(elselabel)], "%d", ++labelnum);
-
 	   sprintf(&endlabel[strlen(endlabel)], "%d", ++labelnum);
 
 
@@ -1396,6 +1295,46 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
+        case RW_BREAK:
+           printf("DEBUG: found a RW_BREAK...\n\n\n");
+           ;
+           char tlabel[50];
+
+           {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+               while( (strstr(irlist->label,"forelse")) == NULL  &&   (irlist != NULL))
+               {   irlist=irlist->prev; 
+                   printf("rewinding from irnode %d\n", irlist->sid);
+               }
+               if(irlist != NULL)
+               {   strcpy(tlabel,irlist->label);
+                   printf("tlabel set to: %s\n", tlabel);
+               }
+
+
+
+
+               irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+               irlist->next= emalloc(sizeof(struct irnode));
+               irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= JUMP;
+               strcpy(irlist->label,tlabel);
+          }
+          break;
+
+
+
+
+
 
 
 
@@ -1556,8 +1495,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   printf("\tDEBUG: subtree type: %d\n", subtree->nodetype);
 	   compound_to_ir(subtree);
 	   break;
-
-
 
 
 
