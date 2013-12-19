@@ -163,12 +163,14 @@ cs295/hw4/e95_parser.h -text
 cs295/hw4/e95_scanner.c -text
 cs295/hw4/e95_tokens.c -text
 cs295/hw4/e95_tokens.h -text
+cs295/hw4/fibonacci.c -text
 cs295/hw4/flex_scanner.l -text
 cs295/hw4/gdb.cmd -text
 cs295/hw4/ir_generator.c -text
 cs295/hw4/ir_generator.h -text
 cs295/hw4/mips_generator.c -text
 cs295/hw4/mips_generator.h -text
+cs295/hw4/prime_number.c -text
 cs295/hw4/symbol_table.c -text
 cs295/hw4/symbol_table.h -text
 cs295/hw4/test.sh -text
