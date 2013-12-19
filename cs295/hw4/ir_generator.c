@@ -534,15 +534,6 @@ void compound_to_ir(struct ast *cstmt)
  +---------------------------------------------*/
 void decostat_to_ir(struct ast *decostat)
 {
-    struct ast *dstat;
-    struct decostat_list *dlist;
-    struct irinfo *prepl;
-    struct irinfo *prepr;
-    struct declarator *d;
-    int i;
-
-    printf("decostat_to_ir() invoked ");
-    printf("with decostat type: %d \n", decostat->nodetype);
 
     switch(decostat->nodetype)
     {   case DECL:
@@ -551,69 +542,13 @@ void decostat_to_ir(struct ast *decostat)
 
 
         case DECOSTAT_LIST:
-	   printf("found a decostat_list...\n\n\n");
-	   i=0;
-	   dlist= (struct decostat_list *)decostat;
-	   do
-	   {   dstat= dlist->decostat;
-	       printf("calling decostat_to_ir from decostat_to_ir\n");
-	       decostat_to_ir(dstat);
-	       printf("\t\t\t----> %d\n", ++i);
-	   }while( (dlist= dlist->next) != NULL);
+	   expr_to_ir(decostat);
 	   break;
 
 
         case OP_ASSIGNMENT:
-	   printf("found an OP_ASSIGNMENT...\n\n\n");
-	   prepl= expr_to_ir(decostat->l);
-	   prepr= expr_to_ir(decostat->r);
-
-	   if((prepl->nodetype == LVALUE) && (prepr->nodetype == RVALUE))
-	   {   irlist= irlist_front;
-               while(irlist->next != NULL)
-               {   irlist= irlist->next;
-               }
-
-	       /* add node for storewordindirect */
-               irlist->next= emalloc(sizeof(struct irnode));
-	       irlist->next->prev= irlist;
-               irlist= irlist->next;
-               irlist->sid= ++irnodenum;
-               irlist->ircode= STOREWORDINDIRECT;
-               irlist->oprnd1= prepr->regnum;
-	       irlist->oprnd2= prepl->regnum;
-           }
-	   else if((prepl->nodetype == LVALUE) && (prepr->nodetype == LVALUE))
-	   {   irlist= irlist_front;
-               while(irlist->next != NULL)
-               {   irlist= irlist->next;
-               }
-
-
-	       /* add nodes for load/storewordindirect */
-               irlist->next= emalloc(sizeof(struct irnode));
-	       irlist->next->prev= irlist;
-               irlist= irlist->next;
-               irlist->sid= ++irnodenum;
-               irlist->ircode= LOADWORDINDIRECT;
-               irlist->oprnd1= ++regnum;
-	       irlist->oprnd2= prepr->regnum;
-
-               irlist->next= emalloc(sizeof(struct irnode));
-	       irlist->next->prev= irlist;
-               irlist= irlist->next;
-               irlist->sid= ++irnodenum;
-               irlist->ircode= STOREWORDINDIRECT;
-               irlist->oprnd1=  regnum;
-	       irlist->oprnd2=  prepl->regnum;
-
-           }
-
-	   printf(" left type: %d\n", prepl->nodetype);
-	   printf("right type: %d\n", prepr->nodetype);
+	   expr_to_ir(decostat);
 	   break;
-
-
 
 
         case INTEGER_CONSTANT:
@@ -642,155 +577,8 @@ void decostat_to_ir(struct ast *decostat)
                break;
 
         case FUNCTION_CALL:
-	   ;
-	   char funcname[40];
-	   d= (struct declarator *)decostat->l;
-	   struct parameter_list *plist;
-	   plist=d->plist;
-           if(d->nodetype == SIMPLE_DECLARATOR)
-           {   strcpy(funcname,d->id);
-           }
-           else
-           {   strcpy(funcname,d->adeclarator->id);
-           }
-	   printf("DEBUG: expr_to_ir FUNCTION CALL: %s\n", funcname);
-
-
-	   /* If this is a built-in function...
-	   +-----------------------------------------*/
-	   if( (!strcmp(funcname,"printint"))      ||
-               (!strcmp(funcname,"printstring"))   ||
-               (!strcmp(funcname,"readint"))
-	     )
-	   {
-	       /* printint function...
-	       +-------------------------*/
-	       if(! strcmp(funcname,"printint"))
-	       {   printf("printint invoked...\n");
-	           irlist= irlist_front;
-                   while(irlist->next != NULL)
-                   {   irlist= irlist->next;
-                   }
-
-	           /* add nodes for printint */
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= PRINTINT;
-
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= LOADWORD;
-                   irlist->oprnd1= SYSCALL_ARG_REG;
-	           irlist->symptr= (struct declarator *)decostat->r->l;
-
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= SYSCALL;
-	       }
-
-
-	       /* printstring function...
-	       +--------------------------*/
-	       if(! strcmp(funcname,"printstring"))
-	       {
-	           /* Retrieve parameter
-		   +----------------------*/
-		   struct constant *k= (struct constant *)decostat->r->l;
-		   char *param= k->value;
-		   printf("param: %s (%ld)\n", param, param);
-
-	           irlist= irlist_front;
-                   while(irlist->next != NULL)
-                   {   irlist= irlist->next;
-                   }
-
-
-	           /* add nodes for printstring */
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= PRINTSTRING;
-		   irlist->oprnd1= ++regnum;
-
-
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= CREATE_STRINGVAR;
-		   irlist->symptr= (struct declarator *)param;
-		   sprintf(irlist->label,"stringvar%d", ++stringvarnum);
-
-
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= SYSCALL;
-
-               }
-
-
-
-
-
-	       /* readint function...
-	       +--------------------------*/
-	       if(! strcmp(funcname,"readint"))
-	       {
-
-	           irlist= irlist_front;
-                   while(irlist->next != NULL)
-                   {   irlist= irlist->next;
-                   }
-
-	           /* add nodes for readint */
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= READINT;
-
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= SYSCALL;
-
-	           /* add nodes for result storage */
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= LOADADDRESS;
-                   irlist->oprnd1= ++regnum;
-	           irlist->symptr= (struct declarator *)decostat->r->l;
-
-                   irlist->next= emalloc(sizeof(struct irnode));
-	           irlist->next->prev= irlist;
-                   irlist= irlist->next;
-                   irlist->sid= ++irnodenum;
-                   irlist->ircode= STOREWORDINDIRECT;
-                   irlist->oprnd1= SYSCALL_REG;
-                   irlist->oprnd2= regnum;
-	           irlist->symptr= (struct declarator *)decostat->r->l;
-
-               }
-	   }
-
-
-
-	   printf("\tDEBUG: decostat->r->l type %d\n", decostat->r->l->nodetype);
-	   break;
-
-
+               expr_to_ir(decostat);
+               break;
 
 
         default:
@@ -838,7 +626,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
     /* figure out what type of node i'm looking at */
-    printf("\texpr_to_ir called with decostat type: %d\n", subtree->nodetype);
+    printf("\texpr_to_ir called with expr type: %d\n", subtree->nodetype);
 
 
 
@@ -918,7 +706,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   printf("DEBUG: found an OP_ASSIGNMENT...\n\n\n");
 	   left= expr_to_ir(subtree->l);
 	   right= expr_to_ir(subtree->r);
-	   printf("\t\tDEBUG: Right of OP_ASSIGNMENT returned with regnum: %d\n", right->regnum);
+
 
 	   if((left->nodetype == LVALUE) && (right->nodetype == RVALUE))
 	   {   irlist= irlist_front;
@@ -926,6 +714,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
                {   irlist= irlist->next;
                }
 
+	       /* add node for storewordindirect */
                irlist->next= emalloc(sizeof(struct irnode));
 	       irlist->next->prev= irlist;
                irlist= irlist->next;
@@ -934,6 +723,32 @@ struct irinfo *expr_to_ir(struct ast *subtree)
                irlist->oprnd1= right->regnum;
 	       irlist->oprnd2= left->regnum;
            }
+	   else if((left->nodetype == LVALUE) && (right->nodetype == LVALUE))
+	   {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+
+	       /* add nodes for load/storewordindirect */
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= LOADWORDINDIRECT;
+               irlist->oprnd1= ++regnum;
+	       irlist->oprnd2= right->regnum;
+
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= STOREWORDINDIRECT;
+               irlist->oprnd1=  regnum;
+	       irlist->oprnd2=  left->regnum;
+
+           }
+
 	   break;
 
 
@@ -1495,6 +1310,152 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   printf("\tDEBUG: subtree type: %d\n", subtree->nodetype);
 	   compound_to_ir(subtree);
 	   break;
+
+
+        case FUNCTION_CALL:
+	   ;
+	   char funcname[40];
+	   struct declarator *d= (struct declarator *)subtree->l;
+	   struct parameter_list *plist;
+	   plist=d->plist;
+           if(d->nodetype == SIMPLE_DECLARATOR)
+           {   strcpy(funcname,d->id);
+           }
+           else
+           {   strcpy(funcname,d->adeclarator->id);
+           }
+	   printf("DEBUG: expr_to_ir FUNCTION CALL: %s\n", funcname);
+
+
+	   /* If this is a built-in function...
+	   +-----------------------------------------*/
+	   if( (!strcmp(funcname,"printint"))      ||
+               (!strcmp(funcname,"printstring"))   ||
+               (!strcmp(funcname,"readint"))
+	     )
+	   {
+	       /* printint function...
+	       +-------------------------*/
+	       if(! strcmp(funcname,"printint"))
+	       {   printf("printint invoked...\n");
+	           irlist= irlist_front;
+                   while(irlist->next != NULL)
+                   {   irlist= irlist->next;
+                   }
+
+	           /* add nodes for printint */
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= PRINTINT;
+
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= LOADWORD;
+                   irlist->oprnd1= SYSCALL_ARG_REG;
+	           irlist->symptr= (struct declarator *)subtree->r->l;
+
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= SYSCALL;
+	       }
+
+
+	       /* printstring function...
+	       +--------------------------*/
+	       if(! strcmp(funcname,"printstring"))
+	       {
+	           /* Retrieve parameter
+		   +----------------------*/
+		   struct constant *k= (struct constant *)subtree->r->l;
+		   char *param= k->value;
+		   printf("param: %s (%ld)\n", param, param);
+
+	           irlist= irlist_front;
+                   while(irlist->next != NULL)
+                   {   irlist= irlist->next;
+                   }
+
+
+	           /* add nodes for printstring */
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= PRINTSTRING;
+		   irlist->oprnd1= ++regnum;
+
+
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= CREATE_STRINGVAR;
+		   irlist->symptr= (struct declarator *)param;
+		   sprintf(irlist->label,"stringvar%d", ++stringvarnum);
+
+
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= SYSCALL;
+
+               }
+
+
+
+
+
+	       /* readint function...
+	       +--------------------------*/
+	       if(! strcmp(funcname,"readint"))
+	       {
+
+	           irlist= irlist_front;
+                   while(irlist->next != NULL)
+                   {   irlist= irlist->next;
+                   }
+
+	           /* add nodes for readint */
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= READINT;
+
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= SYSCALL;
+
+	           /* add nodes for result storage */
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= LOADADDRESS;
+                   irlist->oprnd1= ++regnum;
+	           irlist->symptr= (struct declarator *)subtree->r->l;
+
+                   irlist->next= emalloc(sizeof(struct irnode));
+	           irlist->next->prev= irlist;
+                   irlist= irlist->next;
+                   irlist->sid= ++irnodenum;
+                   irlist->ircode= STOREWORDINDIRECT;
+                   irlist->oprnd1= SYSCALL_REG;
+                   irlist->oprnd2= regnum;
+	           irlist->symptr= (struct declarator *)subtree->r->l;
+
+               }
+	   }
+
 
 
 
