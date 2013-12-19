@@ -474,7 +474,7 @@ void compound_to_ir(struct ast *cstmt)
 	regnum=0;   /* reset register count to 0 */
 	printf("c2ir calling d2ir...\n");
 	printf("decostat addr: %ld\n", decostat);
-        decostat_to_ir(decostat);
+        expr_to_ir(decostat);
 
 
         /* write C statement to file
@@ -529,69 +529,11 @@ void compound_to_ir(struct ast *cstmt)
 
 
 
+
+
 /*-----------------------------------------------
- | decostat_to_ir - converts each statement to IR
+ | expr_to_ir
  +---------------------------------------------*/
-void decostat_to_ir(struct ast *decostat)
-{
-
-    switch(decostat->nodetype)
-    {   case DECL:
-           /* do nothing */
-	   break;
-
-
-        case DECOSTAT_LIST:
-	   expr_to_ir(decostat);
-	   break;
-
-
-        case OP_ASSIGNMENT:
-	   expr_to_ir(decostat);
-	   break;
-
-
-        case INTEGER_CONSTANT:
-	   printf("found an integer constant...\n\n\n");
-	   break;
-
-
-        case IF_STATEMENT:
-               expr_to_ir(decostat);
-               break;
-
-        case FOR_STATEMENT:
-               expr_to_ir(decostat);
-               break;
-
-        case COMPOUND_STATEMENT:
-	   expr_to_ir(decostat);
-	   break;
-
-        case RW_BREAK:
-               expr_to_ir(decostat);
-               break;
-
-        case POSTINCREMENT_EXPR:
-               expr_to_ir(decostat);
-               break;
-
-        case FUNCTION_CALL:
-               expr_to_ir(decostat);
-               break;
-
-
-        default:
-	   printf("decostat_to_ir: UNKNOWN NODE TYPE: %d\n", decostat->nodetype);
-	   break;
-    }
-}
-
-
-
-
-
-
 struct irinfo *expr_to_ir(struct ast *subtree)
 {
     struct irinfo *left;
@@ -632,6 +574,9 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
     switch(subtree->nodetype)
     {
+        case DECL:
+	   break;
+
 
         case DECOSTAT_LIST:
 	   printf("found a decostat_list...\n\n\n");
@@ -640,7 +585,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   do
 	   {   dstat= dlist->decostat;
 	       printf("calling expr_to_ir from expr_to_ir\n");
-	       decostat_to_ir(dstat);
+	       expr_to_ir(dstat);
 	       printf("\t\t\t----> %d\n", ++i);
 	   }while( (dlist= dlist->next) != NULL);
 	   break;
@@ -780,6 +725,9 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   context_clue= 0;
 	   return tcresult;
            break;
+
+
+
 
 
         case MINUS_SIGN:
@@ -964,9 +912,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
-
-
-
         case FOR_STATEMENT:
            irlist= irlist_front;
            while(irlist->next != NULL)
@@ -1104,8 +1049,9 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->ircode= MIPSLABEL;
            strcpy(irlist->label, endlabel);
 
-
            break;
+
+
 
 
 
@@ -1145,9 +1091,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
                strcpy(irlist->label,tlabel);
           }
           break;
-
-
-
 
 
 
@@ -1244,6 +1187,8 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
+
+
         case OP_RELATIONAL_LT:
 	   context_clue= OP_RELATIONAL_LT;
            irlist= irlist_front;
@@ -1269,6 +1214,8 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            strcpy(irlist->label, ltthenlabel);
 	   context_clue= 0;
 	   break;
+
+
 
 
 
@@ -1310,6 +1257,9 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   printf("\tDEBUG: subtree type: %d\n", subtree->nodetype);
 	   compound_to_ir(subtree);
 	   break;
+
+
+
 
 
         case FUNCTION_CALL:
