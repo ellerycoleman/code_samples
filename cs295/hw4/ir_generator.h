@@ -1,5 +1,5 @@
 /*============================================================================
-| File:		generate_ir.h
+| File:		ir_generator.h
 | Date:		Tue Nov 12 21:03:13 GMT 2013
 | Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 | Abstract:	Header file for IR generation subsystem.

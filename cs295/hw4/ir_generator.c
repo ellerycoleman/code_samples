@@ -1,5 +1,5 @@
 /*============================================================================
-| File:		generate_ir.c
+| File:		ir_generator.c
 | Date:		Tue Nov 12 21:03:13 GMT 2013
 | Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 | Abstract:	Traverses the parse tree and generates IR code.

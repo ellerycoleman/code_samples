@@ -10,7 +10,8 @@
 
 
 all:    clean bison_parser.o flex_scanner.o e95_parser.c e95_parser.h symbol_table.c symbol_table.h 
-	gcc -g flex_scanner.o bison_parser.o e95_parser.c -o wdc -lfl #symbol table/ir code included in e95_parser.*
+	gcc -g flex_scanner.o bison_parser.o e95_parser.c -o wdc -lfl 
+	# code and header files for symtable, IR, and MIPS generation subsystems included at bottom of e95_parser.*
 	ln -s wdc parser
 
 
