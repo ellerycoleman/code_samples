@@ -381,7 +381,9 @@ char * print_expr(struct ast *expr,char *exprstr)
     struct cond_expr *cexpr;
     struct flow *tflow;
 
-
+    if(expr == NULL)
+    {   return NULL;
+    }
 
 
     switch(expr->nodetype)
@@ -1551,7 +1553,6 @@ declarator *new_parameter_decl(int typespec, declarator *d)
 
 char * print_parameter_list(parameter_list *plist,char *plistr)
 {
-    int tcount=0;
     declarator *d;
     declarator *ad;
     do
@@ -1576,12 +1577,11 @@ char * print_parameter_list(parameter_list *plist,char *plistr)
 
 	       tmplist= plist;
 	       do
-	       {   sprintf(&plistr[strlen(plistr)],"\ntmplist iter %d...\n", ++tcount);
+	       {   
 	           tmpd= tmplist->pd;
 	           if(tmpd != NULL)
 		   {   do
-		       {   sprintf(&plistr[strlen(plistr)],"\n\n\n* tmpd type is: %d\n", tmpd->nodetype);
-		           tmpd= tmpd->next;
+		       {   tmpd= tmpd->next;
                        }while(tmpd);
 		   }
 	       }while(tmplist= tmplist->next);
