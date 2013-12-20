@@ -216,6 +216,9 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 	    {   dporig->tspecptr= (struct basic_type *)tdecl->tspecptr;
 	        dp->tspecptr= (struct basic_type *)tdecl->tspecptr;
 	    }
+
+
+	    printf("DEBUG: addref called with '%s' and '%s'\n", print_declarator_id(dp), curr_symtab->id);
             addref(dporig,curr_symtab);
         }while(decolist= decolist->next);
     }
@@ -526,7 +529,7 @@ struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
     struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
-
+    printf("DEBUG: resolve() invoked...\n");
 
     /* fastforward to the id of the declarator parameter
      +----------------------------------------------------*/
@@ -546,7 +549,10 @@ struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
     }
 
 
-    printf("DEBUG: about to resolve symbol '%s' in symtab '%s'\n", print_declarator_id(sym), curr_symtab->id);
+    printf("DEBUG: about to resolve symbol '%s' ", print_declarator_id(sym));
+    printf("in symtabl: %s\n",curr_symtab->id);
+
+
     for(i=0; i<NHASH; i++)
     {   if(curr_symtab->symtab[i])
         {   sp= curr_symtab->symtab[i];
@@ -668,6 +674,8 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
     struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
+    symorig->curr_symtab= curr_symtab;
+
 
 
     if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
@@ -731,7 +739,8 @@ struct declarator *addref(struct declarator *sym, struct symtabl *curr_symtab)
 
 
 	/* if this cell is empty, store sym parameter there
-	 +--------------------------------------------------*/
+	|  AND set the curr_symtab setting for the declarator.
+        +-----------------------------------------------------*/
 	if(curr_symtab->symtab[hash] == 0)
 	{   curr_symtab->symtab[hash]= symorig;
 	    curr_symtab->symtab[hash]->curr_symtab= curr_symtab;
@@ -1424,7 +1433,7 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     {
         /* retrieve statement components
 	+--------------------------------*/
-        struct flow *tflow     = (struct flow *)dstat;
+        struct flow *tflow    = (struct flow *)dstat;
         struct ast *forinit   = tflow->forinit;
         struct ast *cond      = tflow->cond;
         struct ast *forupdate = tflow->forupdate;
@@ -1438,20 +1447,16 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     }
 
 
-    else if(dstat->nodetype == FOR_STATEMENT)
+    else if(dstat->nodetype == IF_STATEMENT)
     {
         /* retrieve statement components
 	+--------------------------------*/
-        struct flow *tflow     = (struct flow *)dstat;
-        struct ast *forinit   = tflow->forinit;
+        struct flow *tflow    = (struct flow *)dstat;
         struct ast *cond      = tflow->cond;
-        struct ast *forupdate = tflow->forupdate;
         struct ast *thendo    = tflow->thendo;
 
         
-	locate_ids(forinit,curr_symtab);
 	locate_ids(cond,curr_symtab);
-	locate_ids(forupdate,curr_symtab);
 	locate_ids(thendo,curr_symtab);
     }
 
@@ -1459,6 +1464,30 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     else if(dstat->nodetype == STRING_CONSTANT)
     {   return;
     }
+
+
+
+    else if(dstat->nodetype == IF_ELSE_STATEMENT)
+    {
+        /* retrieve statement components
+	+--------------------------------*/
+        struct flow *tflow    = (struct flow *)dstat;
+        struct ast *cond      = tflow->cond;
+        struct ast *thendo    = tflow->thendo;
+        struct ast *elsedo    = tflow->elsedo;
+
+        
+	locate_ids(cond,curr_symtab);
+	locate_ids(thendo,curr_symtab);
+	locate_ids(elsedo,curr_symtab);
+    }
+
+
+
+    else if(dstat->nodetype == STRING_CONSTANT)
+    {   return;
+    }
+
 
 
     if( (dstat->l != NULL)  &&  (dstat->l->nodetype != INTEGER_CONSTANT) )
@@ -1496,7 +1525,7 @@ void resolve_id(struct ast *dstat, struct symtabl *curr_symtab)
 
 
 
-    if((dstat->nodetype == SIMPLE_DECLARATOR)  ||  (dstat->nodetype == POINTER_DECLARATOR))
+    /* if((dstat->nodetype == SIMPLE_DECLARATOR)  ||  (dstat->nodetype == POINTER_DECLARATOR)) */
     {
 
         d= (struct declarator *)dstat;

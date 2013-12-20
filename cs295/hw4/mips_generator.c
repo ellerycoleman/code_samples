@@ -100,6 +100,7 @@ void generate_mips(void)
                char symtab_name[128];
                strcpy(symtab_name,print_declarator_id(irlist->symptr));
                strcat(symtab_name,"_funcdef");
+	       printf("DEBUG: name of symtab we're navigating to: %s\n", symtab_name);
 
 
                /* navigate to the symbol table */
@@ -155,11 +156,16 @@ void generate_mips(void)
 
 
             case LOADWORD:
+	       printf("loadword called with symptr addr: %ld, node_type: %ld, name: %s\n", irlist->symptr, irlist->symptr->nodetype,
+	                                                                                      print_declarator_id(irlist->symptr) );
 	       if(irlist->symptr->global)
-	       {   fprintf(mipsout,"\tlw\t%s,_VAR_%s\n",reglist[irlist->oprnd1],print_declarator_id(irlist->symptr));
+	       {   printf("\tDEBUG: Global!\n");   
+	           fprintf(mipsout,"\tlw\t%s,_VAR_%s\n",reglist[irlist->oprnd1],print_declarator_id(irlist->symptr));
 	       }
 	       else
 	       {   
+	           printf("\tDEBUG: Not a global var\n");   
+		   printf("about to look for symbol '%s' in '%ld'\n", print_declarator_id(irlist->symptr),irlist->symptr->curr_symtab);
 	           struct declarator *sp= resolve(irlist->symptr,irlist->symptr->curr_symtab);
 		   irlist->symptr= sp;
 	           fprintf(mipsout,"\tlw\t%s,-%d($fp)\n",reglist[irlist->oprnd1],(irlist->symptr->offset + 56));

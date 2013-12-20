@@ -560,10 +560,11 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
     /* vars for dealing with loops */
     struct flow *tflow;
-    struct ast *forinit;
     struct ast *cond;
-    struct ast *forupdate;
     struct ast *thendo;
+    struct ast *elsedo;
+    struct ast *forinit;
+    struct ast *forupdate;
 
     char elselabel[25]= "else";
     char thenlabel[25]= "then";
@@ -604,9 +605,31 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   do
 	   {   dstat= dlist->decostat;
 	       printf("calling expr_to_ir from expr_to_ir\n");
-	       expr_to_ir(dstat);
+	       left= expr_to_ir(dstat);
 	       printf("\t\t\t----> %d\n", ++i);
 	   }while( (dlist= dlist->next) != NULL);
+
+	   tcresult->nodetype= left->nodetype;
+	   tcresult->regnum= left->regnum;
+
+	   return tcresult;
+	   break;
+
+
+        case PARENTHESIZED_EXPR:
+	   printf("found parenthsized expr... type of subtree->l: %d\n\n\n", subtree->l->nodetype);
+	   
+	   left= expr_to_ir(subtree->l);
+
+	   tcresult->nodetype= left->nodetype;
+	   tcresult->regnum= left->regnum;
+
+	   printf("DEBUG: PARENTHESIZED_EXPR returning tcresult nodetype %d and regnum %d\n", 
+	          tcresult->nodetype,
+		  tcresult->regnum
+                 );
+
+	   return tcresult;
 	   break;
 
 
@@ -781,8 +804,8 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
         case OP_REMAINDER:
-	   context_clue= PLUS_SIGN;
-	   printf("DEBUG: found an PLUS_SIGN...\n\n\n");
+	   context_clue= OP_REMAINDER;
+	   printf("DEBUG: found an OP_REMAINDER...\n\n\n");
 	   left= expr_to_ir(subtree->l);
 	   right= expr_to_ir(subtree->r);
 
@@ -893,6 +916,87 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->sid= ++irnodenum;
            irlist->ircode= MIPSLABEL;
            strcpy(irlist->label, elselabel);
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= JUMP;
+           strcpy(irlist->label, endlabel);
+
+
+
+           /* create nodes for then block */
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, thenlabel);
+	   expr_to_ir(thendo);
+
+
+
+           /* create node for end block
+	   +-----------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, endlabel);
+
+
+           break;
+
+
+
+
+
+
+
+
+
+        case IF_ELSE_STATEMENT:
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+
+           /* retrieve if statement components
+	   +-----------------------------------*/
+           tflow= (struct flow *)subtree;
+           cond= tflow->cond;
+           thendo= tflow->thendo;
+	   elsedo= tflow->elsedo;
+
+
+           /* Generate necessary labels
+	   +----------------------------*/
+	   sprintf(&elselabel[strlen(elselabel)], "%d", ++labelnum);
+	   sprintf(&endlabel[strlen(endlabel)], "%d", ++labelnum);
+
+
+           printf("\t\tDEBUG: type of condition: %d\n", cond->l->nodetype);
+           printf("\t\tDEBUG: type of thendo: %d\n", thendo->nodetype);
+
+
+	   /* create node for conditional statement
+	   +-----------------------------------------*/
+	   expr_to_ir(cond->l);
+	   sprintf(&thenlabel[strlen(thenlabel)], "%d", labelnum);
+
+
+	   /* create nodes for else block
+	   +------------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, elselabel);
+
+	   expr_to_ir(elsedo);
 
            irlist->next= emalloc(sizeof(struct irnode));
 	   irlist->next->prev= irlist;
@@ -1117,15 +1221,18 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
         case OP_EQUALITY:
-	   context_clue= CONDITIONAL_STATEMENT;
+           printf("DEBUG: found a OP_EQUALITY...\n\n\n");
+	   context_clue= OP_EQUALITY;
            irlist= irlist_front;
            while(irlist->next != NULL)
            {   irlist= irlist->next;
            }
 
-	   printf("DEBUG: expr_to_ir(): received a greater than symbol....\n");
 	   left   = expr_to_ir(subtree->l);
 	   right  = expr_to_ir(subtree->r);
+
+	   printf("DEBUG: expr_to_ir(): left regnum: %d\n", left->regnum);
+	   printf("DEBUG: expr_to_ir(): right regnum: %d\n", right->regnum);
 
            char eqthenlabel[25]= "then";
 	   sprintf(&eqthenlabel[strlen(eqthenlabel)], "%d", ++labelnum);
@@ -1140,6 +1247,11 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            irlist->oprnd2= right->regnum;
            strcpy(irlist->label, eqthenlabel);
 	   context_clue= 0;
+
+           tcresult->nodetype= RVALUE;
+           tcresult->regnum= irlist->oprnd1;
+
+	   return tcresult;
 	   break;
 
 
