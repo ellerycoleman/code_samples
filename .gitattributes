@@ -158,6 +158,8 @@ cs295/hw3/test/book_example/flex_scanner.l -text
 cs295/hw4/Makefile -text
 cs295/hw4/README.txt -text
 cs295/hw4/bison_parser.y -text
+cs295/hw4/compiler_tests/01_if_statement_test/Makefile -text
+cs295/hw4/compiler_tests/01_if_statement_test/if_test.c -text
 cs295/hw4/e95_parser.c -text
 cs295/hw4/e95_parser.h -text
 cs295/hw4/e95_scanner.c -text

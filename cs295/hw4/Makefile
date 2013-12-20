@@ -54,5 +54,5 @@ clean:
 
 
 test:	all
-	chmod 755 test.sh
-	./test.sh
+	chmod 755 ./compiler_tests/test.sh
+	(cd compiler_tests; ./test.sh)
