@@ -1,6 +1,6 @@
 #=============================================================================
 # File:		README.txt
-# Date:		Thu Nov 21 01:40:49 EST 2013
+# Date:		Fri Dec 20 22:16:39 GMT 2013
 # Author:	Ellery Coleman <ellery.coleman@fas.harvard.edu>
 # Abstract:	README file for e95 compiler.
 #-----------------------------------------------------------------------------
@@ -24,6 +24,7 @@ This distribution contains a copy of the spim emulator for linux.
 
 
 
+
 ======================================
 BUILD INSTRUCTIONS
 ======================================
@@ -35,6 +36,8 @@ $ make
 
 The default target is "all", and it will create a binary
 called 'wdc'.  The 'wdc' binary is the compiler.
+
+
 
 
 
@@ -63,6 +66,8 @@ $ ./wdc myfile.c
 No matter which way you choose to run wdc,
 the IR will be written to wdc.ir and the mips
 assembly will be written to wdc.s.
+
+
 
 
 
