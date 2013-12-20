@@ -31,6 +31,8 @@ clean:
 	rm -f *.mips
 	rm -f *.ir
 	if [ -x ./spim_bin ]; then    unlink ./spim_bin; fi
+	@printf "\n\nDirectory Cleaned.\n"
+	@printf "\n\n\n\n\n"
 
 
 
