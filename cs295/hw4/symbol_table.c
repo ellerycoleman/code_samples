@@ -99,10 +99,6 @@ void create_symbol_tables(struct ast *parse_tree)
 
 
 	    /* add funcdef to symtab */
-
-	    /* DEBUG */
-	    struct declarator *d= funcdef->fdspec->d;
-	    printf("DEBUG: about to create symtab for function %s\n", print_declarator_id(d));
 	    funcdef_to_symtab(funcdef);
 	}
 
@@ -620,7 +616,6 @@ search_table:
 	+----------------------------------------------------*/
 	if(curr_symtab->symtab[hash] == 0)
 	{   
-	    printf("DEBUG: nothing was found in cell where '%s' was expected in %s\n", sym->id, curr_symtab->id);
 	    if(curr_symtab->parent != 0)
 	    {   curr_symtab= curr_symtab->parent;
 	        goto search_table;

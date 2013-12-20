@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     yyin= input;
 
 
-    printf("in e95_parser.c::main() about to run yyparse()\n\n\n");
+    printf("In main() about to run yyparse()\n\n\n");
 
 
     /* Parse Input
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
  */
 void connect_io(int argc,char **argv)
 {
-    if(argc == 3)
+    if(argc == 2)
     {
 #ifdef DEBUG
         printf("argc == 3\n\n");
@@ -143,18 +143,10 @@ void connect_io(int argc,char **argv)
 	}
 
 	/* connect output */
-	if(strcmp("-",argv[2]))
-	{
-#ifdef DEBUG
-   	    printf("connecting output: %s\n", argv[2]);
-#endif
-	    output= fopen(argv[2], "w");
-	}
-	else
 	{   output= stdout;
 	}
     }
-    else if(argc <= 2)
+    else if(argc <= 1)
     {   input= stdin;
         output= stdout;
     }
