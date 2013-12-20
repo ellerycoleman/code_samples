@@ -62,8 +62,10 @@ void generate_ir(struct ast *parse_tree)
 	ircodenames[118]= "READINT";
 	ircodenames[119]= "BRANCH_GTE";
 	ircodenames[120]= "BRANCH_LTE";
-	ircodenames[121]= "REMAINDER";
-	ircodenames[122]= "SUBTRACT";
+	ircodenames[121]= "BRANCH_EQ";
+	ircodenames[122]= "REMAINDER";
+	ircodenames[123]= "SUBTRACT";
+	ircodenames[124]= "FUNCTIONCALL";
     };
 
 
@@ -128,6 +130,8 @@ void generate_ir(struct ast *parse_tree)
         +---------------------------------------------*/
         if(tldlist->tld->datatype == FUNCTION_DEFINITION)
         {
+
+
 	    /* retrieve function definition */
 	    struct function_def *funcdef= (struct function_def *)tldlist->tld->f;
 
@@ -146,6 +150,8 @@ void generate_ir(struct ast *parse_tree)
 	    +-------------------------------------------*/
 	    struct declarator *d= fdspec->d;
 
+
+            printf("\n\n\nDEBUG: generate_mips() encountered a function definition: %s\n", print_declarator_id(d));
 
 
 	    /* print function return type */
@@ -190,10 +196,18 @@ void generate_ir(struct ast *parse_tree)
 	    {   irlist= irlist->next;
 	    }
 
-            if(irlist->sid == 1)
-	    {   irlist->ircode= BEGINPROC;
-	        irlist->symptr= fdspec->d;
+	    if(irnodenum != 1)
+	    {
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
 	    }
+
+            printf("\tDEBUG: current irnode sid: %d\n", irlist->sid);
+
+	    irlist->ircode= BEGINPROC;
+	    irlist->symptr= fdspec->d;
+	    irlist->sid= (irnodenum == 1) ? 1 : ++irnodenum;
 
 
 	    sprintf(&genstr[strlen(genstr)]," %s(", funcname);
@@ -211,8 +225,10 @@ void generate_ir(struct ast *parse_tree)
 
 	    /* print IR for entering function
 	    +----------------------------------*/
-	    fprintf(irout,"\nBEGINPROC(%s)\n\n\n", funcname);
             statement_begin_sid= irnodenum + 1;
+	    
+	    print_irnode_sids(irlist->sid,irlist->sid); /* DEBUG */
+	    fprintf(irout,"\n\n");
 
 
             /* Generate IR for compound statement block
@@ -223,6 +239,7 @@ void generate_ir(struct ast *parse_tree)
 
             /* Generate endproc node for function.
 	    +---------------------------------------*/
+	    printf("DEBUG: about to add ENDPROC node for function '%s'\n", print_declarator_id(irlist->symptr));
 	    irlist= irlist_front;
             while(irlist->next != NULL)
             {   irlist= irlist->next;
@@ -233,6 +250,9 @@ void generate_ir(struct ast *parse_tree)
             irlist->sid= ++irnodenum;
             irlist->ircode= ENDPROC;
 	    irlist->symptr= fdspec->d;
+	    print_irnode_sids(irlist->sid,irlist->sid); /* DEBUG */
+
+
 
 	}
 
@@ -265,7 +285,6 @@ void print_irnodes(void)
     printf("#         IRNODE LIST DISPLAY\n");
     printf("#=========================================\n\n");
 
-    printf("made it this far...\n");
 
     if(irlist == NULL)
     {   printf("IRLIST IS EMPTY\n\n");
@@ -1405,6 +1424,32 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
                }
 	   }
+
+
+
+
+	   /* If it's not a builtin function
+	   +---------------------------------*/
+	   else
+	   {   printf("function '%s' has been called...\n",funcname);
+	       irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+	       /* add nodes for printint */
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= FUNCTIONCALL;
+	       strcpy(irlist->label,"_VAR_");
+	       strcat(irlist->label,funcname);
+	       irlist->symptr= d;
+
+           }
+
+           break;
 
 
 

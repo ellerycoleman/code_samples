@@ -86,6 +86,10 @@ void generate_mips(void)
         switch(irlist->ircode)
 	{
 	    case BEGINPROC:
+             
+	       printf("DEBUG: BEGINPROC was detected in mips generator....\n");
+	       printf("\tDEBUG: FUNCNAME is: %s\n", print_declarator_id(irlist->symptr));
+
 
                /* Calculate the stack size. It will be 56 bytes at minimum,
                |  plus space for each of the symbols within current function
@@ -116,15 +120,17 @@ void generate_mips(void)
 	       /* If the function is not "main", we should modify the function name to make
 	       |  sure the name doesn't match a SPIM reserved word.
 	       +---------------------------------------------------------------------------*/
+	       printf("\tDEBUG: The value of compairing funcname to main is: %d\n", strcmp("main",print_declarator_id(irlist->symptr)));
+
 	       if(strcmp("main",print_declarator_id(irlist->symptr)) )
-	       {   fprintf(mipsout,"_VAR_%s:\n\n",print_declarator_id(irlist->symptr));
+	       {   fprintf(mipsout,"\n\n_VAR_%s:\n\n",print_declarator_id(irlist->symptr));
                }
 
 
 	       /* For function "main" we will leave the name as-is.
 	       +----------------------------------------------------*/
 	       else
-	       {   fprintf(mipsout,"%s:\n\n",print_declarator_id(irlist->symptr));
+	       {   fprintf(mipsout,"\n\n%s:\n\n",print_declarator_id(irlist->symptr));
                }
 
 
@@ -178,6 +184,18 @@ void generate_mips(void)
 
 
 	    case ENDPROC:
+
+	       if(strcmp("main",print_declarator_id(irlist->symptr)) )
+	       {   fprintf(mipsout,"\n\nend_VAR_%s:\n\n",print_declarator_id(irlist->symptr));
+               }
+
+
+	       /* For function "main" we will leave the name as-is.
+	       +----------------------------------------------------*/
+	       else
+	       {   fprintf(mipsout,"\n\nend_%s:\n\n",print_declarator_id(irlist->symptr));
+	       }
+
                write_function_exit_code(stacksize);
 	       break;
 
@@ -268,6 +286,11 @@ void generate_mips(void)
 
             case REMAINDER:
 	       fprintf(mipsout,"\trem\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]); 
+	       break;
+
+
+            case FUNCTIONCALL:
+	       fprintf(mipsout,"\tjal %s\n", irlist->label);
 	       break;
 
 
@@ -364,25 +387,25 @@ void declare_global_vars(void)
 void write_function_entry_code(int stacksize)
 {
     fprintf(mipsout,
-            "\taddiu\t$sp, $sp, -%d	# push space for our stack frame onto the stack\n"
-"\tsw\t$fp, %d($sp)	# save the old $fp\n"
-"\taddiu\t$fp, $sp, %d	# $fp -> stack frame\n"
-"\tsw	$ra, -4($fp)	# save the return address\n"
-"\tsw\t$a0, -8($fp)\t# save parameter $a0\n"
-"\tsw\t$a1, -12($fp)\t# save parameter $a1\n"
-"\tsw\t$a2, -16($fp)\t# save parameter $a2\n"
-"\tsw\t$a3, -20($fp)\t# save parameter $a3\n"
-"\tsw	$s0, -24($fp)	# save $s0\n"
-"\tsw	$s1, -28($fp)	# save $s1\n"
-"\tsw	$s2, -32($fp)	# save $s2\n"
-"\tsw	$s3, -36($fp)	# save $s3\n"
-"\tsw	$s4, -40($fp)	# save $s4\n"
-"\tsw	$s5, -44($fp)	# save $s5\n"
-"\tsw	$s6, -48($fp)	# save $s6\n"
-"\tsw	$s7, -52($fp)	# save $s7\n",
-        stacksize,
-	stacksize-4,
-	stacksize-4
+		"\taddiu\t$sp, $sp, -%d	# push space for our stack frame onto the stack\n"
+		"\tsw\t$fp, %d($sp)	# save the old $fp\n"
+		"\taddiu\t$fp, $sp, %d	# $fp -> stack frame\n"
+		"\tsw	$ra, -4($fp)	# save the return address\n"
+		"\tsw\t$a0, -8($fp)\t# save parameter $a0\n"
+		"\tsw\t$a1, -12($fp)\t# save parameter $a1\n"
+		"\tsw\t$a2, -16($fp)\t# save parameter $a2\n"
+		"\tsw\t$a3, -20($fp)\t# save parameter $a3\n"
+		"\tsw	$s0, -24($fp)	# save $s0\n"
+		"\tsw	$s1, -28($fp)	# save $s1\n"
+		"\tsw	$s2, -32($fp)	# save $s2\n"
+		"\tsw	$s3, -36($fp)	# save $s3\n"
+		"\tsw	$s4, -40($fp)	# save $s4\n"
+		"\tsw	$s5, -44($fp)	# save $s5\n"
+		"\tsw	$s6, -48($fp)	# save $s6\n"
+		"\tsw	$s7, -52($fp)	# save $s7\n",
+             stacksize,
+	     stacksize-4,
+	     stacksize-4
     );
 
 }
@@ -397,19 +420,19 @@ void write_function_entry_code(int stacksize)
 void write_function_exit_code(int stacksize)
 {
     fprintf(mipsout,
-"\tlw	$s7, -52($fp)	# restore $s7\n"
-"\tlw	$s6, -48($fp)	# restore $s6\n"
-"\tlw	$s5, -44($fp)	# restore $s5\n"
-"\tlw	$s4, -40($fp)	# restore $s4\n"
-"\tlw	$s3, -36($fp)	# restore $s3\n"
-"\tlw	$s2, -32($fp)	# restore $s2\n"
-"\tlw	$s1, -28($fp)	# restore $s1\n"
-"\tlw	$s0, -24($fp)	# restore $s0\n"
-"\tlw	$ra, -4($fp)	# restore $ra\n"
-"\tlw	$fp, ($fp)	# restore old $fp\n"
-"\taddiu	$sp, $sp, %d	# pop off our stack frame\n"
-"\tjr	$ra		# return to caller\n",
-        stacksize
+		"\tlw	$s7, -52($fp)	# restore $s7\n"
+		"\tlw	$s6, -48($fp)	# restore $s6\n"
+		"\tlw	$s5, -44($fp)	# restore $s5\n"
+		"\tlw	$s4, -40($fp)	# restore $s4\n"
+		"\tlw	$s3, -36($fp)	# restore $s3\n"
+		"\tlw	$s2, -32($fp)	# restore $s2\n"
+		"\tlw	$s1, -28($fp)	# restore $s1\n"
+		"\tlw	$s0, -24($fp)	# restore $s0\n"
+		"\tlw	$ra, -4($fp)	# restore $ra\n"
+		"\tlw	$fp, ($fp)	# restore old $fp\n"
+		"\taddiu	$sp, $sp, %d	# pop off our stack frame\n"
+		"\tjr	$ra		# return to caller\n",
+            stacksize
     );
 
 }

@@ -99,6 +99,10 @@ void create_symbol_tables(struct ast *parse_tree)
 
 
 	    /* add funcdef to symtab */
+
+	    /* DEBUG */
+	    struct declarator *d= funcdef->fdspec->d;
+	    printf("DEBUG: about to create symtab for function %s\n", print_declarator_id(d));
 	    funcdef_to_symtab(funcdef);
 	}
 
@@ -523,6 +527,7 @@ struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
 
 
 
+
     /* fastforward to the id of the declarator parameter
      +----------------------------------------------------*/
     if(sym->nodetype == ARRAY_DECLARATOR || sym->nodetype == FUNCTION_DECLARATOR)
@@ -541,8 +546,19 @@ struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
     }
 
 
+    printf("DEBUG: about to resolve symbol '%s' in symtab '%s'\n", print_declarator_id(sym), curr_symtab->id);
+    for(i=0; i<NHASH; i++)
+    {   if(curr_symtab->symtab[i])
+        {   sp= curr_symtab->symtab[i];
+	    printf("DEBUG: Found '%s' in cell %d of '%s' via iteration\n", print_declarator_id(sp), i, curr_symtab->id);
+        }
+    }
+
+
     /* hash the symbol name */
     hash= symhash(sym->id) % NHASH;
+    printf("DEBUG: hash value for '%s' was '%ld'\n", sym->id, hash);
+    printf("DEBUG: contents of current symtab cell %ld is: %ld\n", hash, curr_symtab->symtab[hash]);
 
 
     /* set symbol pointer 'sp' to the address of the cell that
@@ -585,6 +601,7 @@ search_table:
             /* if the cell contains the same symbol as the declarator param,
 	     * then we've found what we were looking for; return the address.
              */
+            printf("DEBUG: about to compare '%s' and '%s'\n", spname->id, sym->id);
             if(spname->id  &&  !strcmp(spname->id,sym->id))
 	    {   return (struct declarator *) curr_symtab->symtab[hash];
             }
@@ -596,7 +613,9 @@ search_table:
 	|  if possible and continue the search.
 	+----------------------------------------------------*/
 	if(curr_symtab->symtab[hash] == 0)
-	{   if(curr_symtab->parent != 0)
+	{   
+	    printf("DEBUG: nothing was found in cell where '%s' was expected in %s\n", sym->id, curr_symtab->id);
+	    if(curr_symtab->parent != 0)
 	    {   curr_symtab= curr_symtab->parent;
 	        goto search_table;
 	    }
@@ -1152,6 +1171,17 @@ void funcdef_to_symtab(struct function_def *funcdef)
         curr_symtab->child->parent= curr_symtab;
         curr_symtab= curr_symtab->child;
     }
+    else if(  (curr_symtab->sid == ROOT)  &&  (curr_symtab->child != NULL) )
+    {   
+        curr_symtab= curr_symtab->child;
+        while(curr_symtab->rsibling != NULL)
+        {   curr_symtab= curr_symtab->rsibling;
+	}
+
+        curr_symtab->rsibling= emalloc(sizeof(struct symtabl));
+        curr_symtab->rsibling->parent= curr_symtab;
+        curr_symtab= curr_symtab->rsibling;
+    }
     else
     {   while(curr_symtab->rsibling != NULL)
         {   curr_symtab= curr_symtab->rsibling;
@@ -1161,6 +1191,7 @@ void funcdef_to_symtab(struct function_def *funcdef)
         curr_symtab->rsibling->parent= curr_symtab;
         curr_symtab= curr_symtab->rsibling;
     }
+
 
 
 
