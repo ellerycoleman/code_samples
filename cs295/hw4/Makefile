@@ -9,7 +9,7 @@
 
 
 
-all:    clean bison_parser.o flex_scanner.o e95_parser.c e95_parser.h symbol_table.c symbol_table.h 
+all:    clean bison_parser.o flex_scanner.o e95_parser.c e95_parser.h symbol_table.c symbol_table.h spim_bin
 	gcc -g flex_scanner.o bison_parser.o e95_parser.c -o wdc -lfl 
 	# code and header files for symtable, IR, and MIPS generation subsystems included at bottom of e95_parser.*
 	ln -s wdc parser
@@ -40,6 +40,9 @@ bison_parser.tab.c:	bison_parser.y
 	bison -d bison_parser.y
 
 
+spim_bin:
+	(cd spim_src/spim; make clean; make install; mv spim_bin ../..)
+
 
 clean:
 	rm -f *.o
@@ -51,6 +54,8 @@ clean:
 	rm -f testprog*
 	rm -f stdin.ir
 	rm -f stdin.mips
+	rm -fr spim_bin
+	(cd spim_src/spim; make clean)
 
 
 test:	all

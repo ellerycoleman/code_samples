@@ -33,6 +33,15 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+
+
+
+# Install dir for e95 compiler project.
+DESTDIR=spim_bin
+
+
+
+
 #
 # To make spim, type:
 #
@@ -182,8 +191,11 @@ TAGS:	*.c *.h *.l *.y
 
 clean:
 	rm -f spim spim.exe *.o TAGS test.out lex.yy.c parser_yacc.c parser_yacc.h y.output
+	rm -fr $(DESTDIR)
 
 install: spim
+	mkdir -p $(BIN_DIR)
+	mkdir -p $(EXCEPTION_DIR)
 	install spim $(BIN_DIR)/spim
 	install -d $(EXCEPTION_DIR)
 	install -m 0444 $(CPU_DIR)/exceptions.s $(EXCEPTION_DIR)/exceptions.s

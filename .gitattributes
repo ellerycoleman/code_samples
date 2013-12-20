@@ -270,13 +270,7 @@ cs295/hw4/spim_src/bin/release-spim -text
 cs295/hw4/spim_src/helloworld.s -text
 cs295/hw4/spim_src/spim/Makefile -text
 cs295/hw4/spim_src/spim/README -text
-cs295/hw4/spim_src/spim/lex.yy.c -text
-cs295/hw4/spim_src/spim/parser_yacc.c -text
-cs295/hw4/spim_src/spim/parser_yacc.h -text
-cs295/hw4/spim_src/spim/spim -text
 cs295/hw4/spim_src/spim/spim.c -text
-cs295/hw4/spim_src/spim/usr/bin/spim -text
-cs295/hw4/spim_src/spim/usr/share/spim/exceptions.s -text
 cs295/hw4/spim_src/xspim/Imakefile -text
 cs295/hw4/spim_src/xspim/Makefile -text
 cs295/hw4/spim_src/xspim/README -text
