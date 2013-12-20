@@ -65,7 +65,8 @@ void generate_ir(struct ast *parse_tree)
 	ircodenames[121]= "BRANCH_EQ";
 	ircodenames[122]= "REMAINDER";
 	ircodenames[123]= "SUBTRACT";
-	ircodenames[124]= "FUNCTIONCALL";
+	ircodenames[124]= "SUB1";
+	ircodenames[125]= "FUNCTIONCALL";
     };
 
 
@@ -574,6 +575,10 @@ struct irinfo *expr_to_ir(struct ast *subtree)
     struct ast *dstat;
     struct decostat_list *dlist;
     int i;
+    int tmpreg;
+
+    struct irinfo *tcresult=  emalloc(sizeof(struct irinfo));
+
 
 
     if(subtree == NULL)
@@ -583,8 +588,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
     else
     {   printf("DEBUG: expr_to_ir: ENTERED with NON NULL subtree...\n");
     }
-
-    struct irinfo *tcresult=  emalloc(sizeof(struct irinfo));
 
 
     /* figure out what type of node i'm looking at */
@@ -840,7 +843,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   printf("\tDEBUG: subtree->l type: %d\n", subtree->l->nodetype);
 	   left= expr_to_ir(subtree->l);
 
-           int tmpreg;
 	   {   irlist= irlist_front;
                while(irlist->next != NULL)
                {   irlist= irlist->next;
@@ -851,6 +853,49 @@ struct irinfo *expr_to_ir(struct ast *subtree)
                irlist= irlist->next;
                irlist->sid= ++irnodenum;
                irlist->ircode= ADD1;
+	       tmpreg= ++regnum;
+               irlist->oprnd1= tmpreg;
+	       irlist->oprnd2= left->regnum;
+
+               tcresult->nodetype= RVALUE;
+               tcresult->regnum= irlist->oprnd1;
+	       context_clue= 0;
+
+
+               /* store result */
+	       left= expr_to_ir(subtree->l);
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= STOREWORDINDIRECT;
+               irlist->oprnd1= tmpreg;
+	       irlist->oprnd2= left->regnum;
+
+           }
+	   return tcresult;
+           break;
+
+
+
+
+
+        case POSTDECREMENT_EXPR:
+	   context_clue= POSTDECREMENT_EXPR;
+	   printf("DEBUG: found a POSTDECREMENT_EXPR...\n\n\n");
+	   printf("\tDEBUG: subtree->l type: %d\n", subtree->l->nodetype);
+	   left= expr_to_ir(subtree->l);
+
+	   {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+               irlist->next= emalloc(sizeof(struct irnode));
+	       irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= SUB1;
 	       tmpreg= ++regnum;
                irlist->oprnd1= tmpreg;
 	       irlist->oprnd2= left->regnum;
@@ -1179,6 +1224,113 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
+        case WHILE_STATEMENT:
+           irlist= irlist_front;
+           while(irlist->next != NULL)
+           {   irlist= irlist->next;
+           }
+
+           /* retrieve for statement components
+	   +-----------------------------------*/
+           tflow     = (struct flow *)subtree;
+           cond      = tflow->cond;
+           thendo    = tflow->thendo;
+
+
+
+           /* Generate necessary labels
+	   +----------------------------*/
+	   sprintf(elselabel, "whileelse%d", ++labelnum);
+	   sprintf(&thenlabel[strlen(thenlabel)], "%d", ++labelnum);
+	   sprintf(&endlabel[strlen(endlabel)], "%d", ++labelnum);
+	   sprintf(&testcondlabel[strlen(testcondlabel)], "%d", ++labelnum);
+
+
+
+	   /* create nodes for conditional statement
+	   +-----------------------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= COMMENT;
+           strncpy(irlist->label, "WHILE Loop Test Condition",49);
+
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, testcondlabel);
+
+           forjump= atoi(&thenlabel[strlen(thenlabel)-1]);
+	   if(cond != NULL)
+	   {   expr_to_ir(cond->l);
+	   }
+	   forjump= 0;
+
+
+
+	   /* create node for empty else block
+	   +-----------------------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, elselabel);
+
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= JUMP;
+           strcpy(irlist->label, endlabel);
+
+
+
+           /* create nodes for then block
+	   +--------------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, thenlabel);
+	   if(thendo != NULL)
+	   {   expr_to_ir(thendo);
+	   }
+
+
+
+           /* jump back to test condition
+	   +-------------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= JUMP;
+           strcpy(irlist->label, testcondlabel);
+
+
+
+           /* create node for end block
+	   +-----------------------------*/
+           irlist->next= emalloc(sizeof(struct irnode));
+	   irlist->next->prev= irlist;
+           irlist= irlist->next;
+           irlist->sid= ++irnodenum;
+           irlist->ircode= MIPSLABEL;
+           strcpy(irlist->label, endlabel);
+
+           break;
+
+
+
+
+
+
         case RW_BREAK:
            printf("DEBUG: found a RW_BREAK...\n\n\n");
            ;
@@ -1270,7 +1422,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   right  = expr_to_ir(subtree->r);
 
            char gtthenlabel[25]= "then";
-	   sprintf(&gtthenlabel[strlen(gtthenlabel)], "%d", ++labelnum);
+	   sprintf(&gtthenlabel[strlen(gtthenlabel)], "%d", (forjump > 0)? forjump : ++labelnum);
 
 
            irlist->next= emalloc(sizeof(struct irnode));
@@ -1301,7 +1453,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   right  = expr_to_ir(subtree->r);
 
            char gtethenlabel[25]= "then";
-	   sprintf(&gtethenlabel[strlen(gtethenlabel)], "%d", ++labelnum);
+	   sprintf(&gtethenlabel[strlen(gtethenlabel)], "%d", (forjump > 0)? forjump : ++labelnum);
 
 
            irlist->next= emalloc(sizeof(struct irnode));

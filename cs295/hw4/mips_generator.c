@@ -290,6 +290,11 @@ void generate_mips(void)
 	       break;
 
 
+            case SUB1:
+	       fprintf(mipsout,"\taddi\t%s, %s, -1\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]); 
+	       break;
+
+
             case REMAINDER:
 	       fprintf(mipsout,"\trem\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]); 
 	       break;
@@ -371,6 +376,7 @@ void declare_global_vars(void)
     /* Cycle through all irnodes and look for CREATE_STRINGVAR nodes.
     |  Create a variable for each node.
     +-----------------------------------------------------------------*/
+    fprintf(mipsout,"\n\n\n#String variables for printstring function\n\n");
     irlist= irlist_front;
     while(irlist != NULL)
     {   if(irlist->ircode == CREATE_STRINGVAR)
@@ -378,7 +384,6 @@ void declare_global_vars(void)
 	}
 	irlist= irlist->next;
     }
-    fprintf(mipsout,"\n\n\n#String variables for printstring function\n\n");
     fprintf(mipsout,"\n\n\n");
 }
 

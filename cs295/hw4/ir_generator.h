@@ -40,6 +40,7 @@ enum ircodes
     BRANCH_EQ,
     REMAINDER,
     SUBTRACT,
+    SUB1,
     FUNCTIONCALL
 };
 
