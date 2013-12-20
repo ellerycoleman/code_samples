@@ -1,0 +1,43 @@
+#=============================================================================
+# File:		Makefile
+# Date:		Fri Dec 20 18:42:33 GMT 2013
+# Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
+# Abstract:	Makefile for IF_STATEMENT testing.
+#-----------------------------------------------------------------------------
+# Revision: $Id: Makefile 445 2013-12-19 01:20:53Z ellery $
+#=============================================================================
+
+TESTFILE  = if_then_else.c
+STATEMENT = IF_THEN_ELSE
+
+
+all:    clean $(TESTFILE) wdc
+	@cat $(TESTFILE) | ../../wdc 
+	@printf "\n\n\n\n\n\n\n"
+	@printf "=====================================================\n";
+	@printf "       $(STATEMENT) STATEMENT TEST\n";
+	@printf "=====================================================\n\n";
+	@printf "The code in $(TESTFILE) has been compiled. See stdin.ir and stdin.mips\n"
+	@printf "Invoking spim now...\n\n"
+
+	@ln -s ../../spim_bin .
+	./spim_bin/usr/bin/spim -f stdin.mips
+	
+
+wdc:
+	(cd ../..; make)
+
+
+clean:
+	rm -f *.mips
+	rm -f *.ir
+	if [ -x ./spim_bin ]; then    unlink ./spim_bin; fi
+	@printf "\n\nDirectory Cleaned.\n"
+	@printf "\n\n\n\n\n"
+
+
+
+
+test:	all
+
+
