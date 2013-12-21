@@ -75,6 +75,6 @@ test:	.
 	@echo
 	@echo "$$ cd compiler_tests"
 	@echo "$$ cd 01_if_statement_test"
-	@echo "$$ make test"
+	@echo "$$ make"
 	@printf "\n\n\n\n"
 
