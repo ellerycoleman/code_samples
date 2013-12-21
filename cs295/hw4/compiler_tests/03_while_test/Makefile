@@ -4,7 +4,7 @@
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
 # Abstract:	Makefile for IF_STATEMENT testing.
 #-----------------------------------------------------------------------------
-# Revision: $Id: Makefile 445 2013-12-19 01:20:53Z ellery $
+# Revision: $Id$
 #=============================================================================
 
 TESTFILE  = while_test.c

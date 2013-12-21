@@ -163,6 +163,7 @@ cs295/hw4/compiler_tests/01_if_statement_test/if_test.c -text
 cs295/hw4/compiler_tests/02_if_then_else_test/Makefile -text
 cs295/hw4/compiler_tests/02_if_then_else_test/if_then_else.c -text
 cs295/hw4/compiler_tests/03_while_test/Makefile -text
+cs295/hw4/compiler_tests/03_while_test/while_test.c -text
 cs295/hw4/e95_parser.c -text
 cs295/hw4/e95_parser.h -text
 cs295/hw4/e95_scanner.c -text
