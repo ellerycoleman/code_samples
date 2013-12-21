@@ -166,8 +166,6 @@ void create_symbol_tables(struct ast *parse_tree)
 
     printf("\n\n");
     process_change_list();
-    printf("\n\n=================== Rerunning process_change_list ==============\n\n");
-    process_change_list();
 
 }
 
@@ -214,7 +212,6 @@ void ast_to_symtab(struct ast *sym, struct symtabl *curr_symtab)
 	    }
 
 
-	    printf("DEBUG: addref called with '%s' and '%s'\n", print_declarator_id(dp), curr_symtab->id);
             addref(dporig,curr_symtab);
         }while(decolist= decolist->next);
     }
@@ -525,7 +522,6 @@ struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
     struct declarator *symorig= sym;     /* used to keep location of original param        */
 
 
-    printf("DEBUG: resolve() invoked...\n");
 
     /* fastforward to the id of the declarator parameter
      +----------------------------------------------------*/
@@ -545,22 +541,8 @@ struct declarator *resolve(struct declarator *sym, struct symtabl *curr_symtab)
     }
 
 
-    printf("DEBUG: about to resolve symbol '%s' ", print_declarator_id(sym));
-    printf("in symtabl: %s\n",curr_symtab->id);
-
-
-    for(i=0; i<NHASH; i++)
-    {   if(curr_symtab->symtab[i])
-        {   sp= curr_symtab->symtab[i];
-	    printf("DEBUG: Found '%s' in cell %d of '%s' via iteration\n", print_declarator_id(sp), i, curr_symtab->id);
-        }
-    }
-
-
     /* hash the symbol name */
     hash= symhash(sym->id) % NHASH;
-    printf("DEBUG: hash value for '%s' was '%ld'\n", sym->id, hash);
-    printf("DEBUG: contents of current symtab cell %ld is: %ld\n", hash, curr_symtab->symtab[hash]);
 
 
     /* set symbol pointer 'sp' to the address of the cell that
@@ -603,7 +585,6 @@ search_table:
             /* if the cell contains the same symbol as the declarator param,
 	     * then we've found what we were looking for; return the address.
              */
-            printf("DEBUG: about to compare '%s' and '%s'\n", spname->id, sym->id);
             if(spname->id  &&  !strcmp(spname->id,sym->id))
 	    {   return (struct declarator *) curr_symtab->symtab[hash];
             }
@@ -1401,8 +1382,7 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
     char tmpstr[TMPSTRSZ];
 
     if(dstat == NULL)
-    {   printf("DEBUG: id_to_symtab invoked with NULL.  exting...\n");
-        return;
+    {   return;
     }
 
 
@@ -1486,16 +1466,12 @@ void locate_ids(struct ast *dstat, struct symtabl *curr_symtab)
 
 
     if( (dstat->l != NULL)  &&  (dstat->l->nodetype != INTEGER_CONSTANT) )
-    {   
-        printf("DEBUG: locate_ids is not able to locate ids for decostat type: %d\n", dstat->nodetype);
-        locate_ids(dstat->l,curr_symtab);
+    {   locate_ids(dstat->l,curr_symtab);
     }
 
 
     if( (dstat->r != NULL)  &&  (dstat->r->nodetype != INTEGER_CONSTANT) )
-    {   
-        printf("DEBUG: locate_ids is not able to locate ids for decostat type: %d\n", dstat->nodetype);
-        locate_ids(dstat->r,curr_symtab);
+    {   locate_ids(dstat->r,curr_symtab);
     }
 }
 
@@ -1745,6 +1721,8 @@ void process_change_list(void)
      {   unresolved= clist->c->unresolved;
          resolved= clist->c->resolved;
 
+
+#ifdef DEBUG
 	 printf("moving '%s' (%ld) to '%s' (%ld) -- unresolved symtab: %ld, resolved symtab: %ld\n",
 	        print_declarator_id(unresolved),
 		unresolved,
@@ -1753,10 +1731,10 @@ void process_change_list(void)
 		unresolved->curr_symtab,
 		resolved->curr_symtab
                );
+#endif
+
 
         *unresolved= *resolved;
-
-
 	clist= clist->next;
      }
 }

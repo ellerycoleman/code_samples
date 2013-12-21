@@ -364,7 +364,7 @@ void print_irnode_sids(int begin_sid,int end_sid)
 
     printf("\n\n\n");
     printf("#=========================================\n");
-    printf("#         IRNODE LIST DISPLAY\n");
+    printf("#         IRNODE Generation Notes\n");
     printf("#=========================================\n\n");
 
 
