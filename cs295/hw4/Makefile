@@ -52,8 +52,8 @@ clean:
 	rm -f bison_parser.tab.*
 	rm -f e95_parser parser
 	rm -f testprog*
-	rm -f stdin.ir
-	rm -f stdin.mips
+	rm -f *.ir
+	rm -f *.s
 	rm -fr wdc
 	if [ ! -x ./spim_bin ]; then     (cd spim_src/spim; make clean); fi
 	
