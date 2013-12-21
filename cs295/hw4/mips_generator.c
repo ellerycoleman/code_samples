@@ -44,7 +44,7 @@ void generate_mips(void)
 
     /* Open MIPS output file
     +-------------------------*/
-    strcpy(mipsfname,"stdin.mips");  /* update later to create an IR file
+    strcpy(mipsfname,"out.s");  /* update later to create an IR file
                                     based on input filename. */
     mipsout= fopen(mipsfname,"w+");
     if(irout == NULL)

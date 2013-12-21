@@ -21,7 +21,7 @@ all:    clean $(TESTFILE) wdc
 	@printf "Invoking spim now...\n\n"
 
 	@ln -s ../../spim_bin .
-	./spim_bin/usr/bin/spim -f stdin.mips
+	./spim_bin/usr/bin/spim -f out.s
 	
 
 wdc:
@@ -29,7 +29,7 @@ wdc:
 
 
 clean:
-	rm -f *.mips
+	rm -f *.s
 	rm -f *.ir
 	if [ -x ./spim_bin ]; then    unlink ./spim_bin; fi
 	@printf "\n\nDirectory Cleaned.\n"

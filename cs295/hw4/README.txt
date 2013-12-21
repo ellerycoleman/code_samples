@@ -64,8 +64,8 @@ $ ./wdc myfile.c
 
 
 No matter which way you choose to run wdc,
-the IR will be written to wdc.ir and the mips
-assembly will be written to wdc.s.
+the IR will be written to out.ir and the mips
+assembly will be written to out.s.
 
 
 

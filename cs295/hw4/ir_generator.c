@@ -90,7 +90,7 @@ void generate_ir(struct ast *parse_tree)
 
     /* Open IR output file
     +-------------------------*/
-    strcpy(irfname,"stdin.ir");  /* update later to create an IR file
+    strcpy(irfname,"out.ir");  /* update later to create an IR file
                                     based on input filename. */
     irout= fopen(irfname,"w+");
     if(irout == NULL)
@@ -227,7 +227,7 @@ void generate_ir(struct ast *parse_tree)
 	    /* print IR for entering function
 	    +----------------------------------*/
             statement_begin_sid= irnodenum + 1;
-	    
+
 	    print_irnode_sids(irlist->sid,irlist->sid); /* DEBUG */
 	    fprintf(irout,"\n\n");
 
@@ -476,6 +476,11 @@ void compound_to_ir(struct ast *cstmt)
 {   char genstr[TMPSTRSZ];
     struct ast *decostat;
     struct decostat_list *dlist= (struct decostat_list *) cstmt->l;
+    struct flow *tflow;
+    struct ast *cond;
+    struct ast *thendo;
+
+
 
     printf("DEBUG: compound_to_ir called with nodetype: %d\n", cstmt->nodetype);
 
@@ -492,8 +497,7 @@ void compound_to_ir(struct ast *cstmt)
         /* Generate IR node
         +--------------------*/
 	regnum=0;   /* reset register count to 0 */
-	printf("c2ir calling d2ir...\n");
-	printf("decostat addr: %ld\n", decostat);
+	printf("c2ir calling e2ir...\n");
         expr_to_ir(decostat);
 
 
@@ -502,10 +506,14 @@ void compound_to_ir(struct ast *cstmt)
         clearstr(genstr);
         sprintf(genstr,"#");
         indent(genstr);
+
+
 	if(decostat->nodetype == COMPOUND_STATEMENT)
 	{   clearstr(genstr);
 	    compound_to_ir(decostat);
 	}
+
+
 	else
         {   print_expr(dlist->decostat,genstr);
 	}
@@ -609,7 +617,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 	   {   dstat= dlist->decostat;
 	       printf("calling expr_to_ir from expr_to_ir\n");
 	       left= expr_to_ir(dstat);
-	       printf("\t\t\t----> %d\n", ++i);
+	       printf("dstat_list_element_%d\n", ++i);
 	   }while( (dlist= dlist->next) != NULL);
 
 	   tcresult->nodetype= left->nodetype;
@@ -621,13 +629,13 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
         case PARENTHESIZED_EXPR:
 	   printf("found parenthsized expr... type of subtree->l: %d\n\n\n", subtree->l->nodetype);
-	   
+
 	   left= expr_to_ir(subtree->l);
 
 	   tcresult->nodetype= left->nodetype;
 	   tcresult->regnum= left->regnum;
 
-	   printf("DEBUG: PARENTHESIZED_EXPR returning tcresult nodetype %d and regnum %d\n", 
+	   printf("DEBUG: PARENTHESIZED_EXPR returning tcresult nodetype %d and regnum %d\n",
 	          tcresult->nodetype,
 		  tcresult->regnum
                  );
@@ -934,6 +942,19 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            tflow= (struct flow *)subtree;
            cond= tflow->cond;
            thendo= tflow->thendo;
+
+	  
+	    /* print C code to IR file.
+	    +---------------------------*/
+	    printf("DEBUG: cond type: %d\n", cond->nodetype);
+	    printf("DEBUG: thendo type: %d\n", thendo->nodetype);
+	    clearstr(tmpstr);
+	    sprintf(tmpstr,"#");
+	    indent(tmpstr);
+	    sprintf(&tmpstr[strlen(tmpstr)], "if(");
+	    print_expr(cond->l,tmpstr);
+	    sprintf(&tmpstr[strlen(tmpstr)], ")\n");
+	    fprintf(irout,tmpstr); clearstr(tmpstr);
 
 
            /* Generate necessary labels
@@ -1342,7 +1363,7 @@ struct irinfo *expr_to_ir(struct ast *subtree)
                }
 
                while( (strstr(irlist->label,"forelse")) == NULL  &&   (irlist != NULL))
-               {   irlist=irlist->prev; 
+               {   irlist=irlist->prev;
                    printf("rewinding from irnode %d\n", irlist->sid);
                }
                if(irlist != NULL)
