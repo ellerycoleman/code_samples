@@ -2,20 +2,20 @@
 # File:		Makefile
 # Date:		Fri Dec 20 18:42:33 GMT 2013
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Makefile for testing recursive calls.
+# Abstract:	Makefile for prime number generation.
 #-----------------------------------------------------------------------------
 # Revision: $Id$
 #=============================================================================
 
-TESTFILE  = recursion.c
-STATEMENT = RECURSIVE FUNCTION CALL
+TESTFILE  = prime_number.c
+STATEMENT = Prime Number Generation
 
 
 all:    clean $(TESTFILE) wdc
 	@cat $(TESTFILE) | ../../wdc 
 	@printf "\n\n\n\n\n\n\n"
 	@printf "=====================================================\n";
-	@printf "       $(STATEMENT) TEST\n";
+	@printf "       $(STATEMENT) Test\n";
 	@printf "=====================================================\n\n";
 	@printf "The code in $(TESTFILE) has been compiled. See out.ir and out.s\n"
 	@printf "Invoking spim now...\n\n"

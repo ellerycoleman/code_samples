@@ -2,7 +2,7 @@
 # File:		Makefile
 # Date:		Fri Dec 20 18:42:33 GMT 2013
 # Author:	Ellery Coleman <ellerycoleman@fas.harvard.edu>
-# Abstract:	Makefile for IF_STATEMENT testing.
+# Abstract:	Makefile for WHILE_STATEMENT testing.
 #-----------------------------------------------------------------------------
 # Revision: $Id$
 #=============================================================================
@@ -17,7 +17,7 @@ all:    clean $(TESTFILE) wdc
 	@printf "=====================================================\n";
 	@printf "       $(STATEMENT) STATEMENT TEST\n";
 	@printf "=====================================================\n\n";
-	@printf "The code in $(TESTFILE) has been compiled. See stdin.ir and stdin.mips\n"
+	@printf "The code in $(TESTFILE) has been compiled. See out.ir and out.s\n"
 	@printf "Invoking spim now...\n\n"
 
 	@ln -s ../../spim_bin .
@@ -32,8 +32,7 @@ clean:
 	rm -f *.s
 	rm -f *.ir
 	if [ -x ./spim_bin ]; then    unlink ./spim_bin; fi
-	@printf "\n\nDirectory Cleaned.\n"
-	@printf "\n\n\n\n\n"
+	@printf "\n\nDirectory Cleaned.\n\n"
 
 
 
