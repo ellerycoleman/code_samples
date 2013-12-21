@@ -440,6 +440,8 @@ cs295/hw6/compiler_tests/05_fibonacci/Makefile -text
 cs295/hw6/compiler_tests/05_fibonacci/fibonacci.c -text
 cs295/hw6/compiler_tests/06_prime_numbers/Makefile -text
 cs295/hw6/compiler_tests/06_prime_numbers/prime_number.c -text
+cs295/hw6/compiler_tests/07_math_test/Makefile -text
+cs295/hw6/compiler_tests/07_math_test/math_test.c -text
 cs295/hw6/e95_parser.c -text
 cs295/hw6/e95_parser.h -text
 cs295/hw6/e95_scanner.c -text
