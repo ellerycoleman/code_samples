@@ -67,6 +67,8 @@ void generate_ir(struct ast *parse_tree)
 	ircodenames[123]= "SUBTRACT";
 	ircodenames[124]= "SUB1";
 	ircodenames[125]= "FUNCTIONCALL";
+	ircodenames[126]= "MULTIPLY";
+	ircodenames[127]= "DIVIDE";
     };
 
 
@@ -782,7 +784,6 @@ struct irinfo *expr_to_ir(struct ast *subtree)
 
 
 
-
         case MINUS_SIGN:
            context_clue= MINUS_SIGN;
            printf("DEBUG: found a MINUS_SIGN...\n\n\n");
@@ -810,6 +811,71 @@ struct irinfo *expr_to_ir(struct ast *subtree)
            context_clue= 0;
            return tcresult;
            break;
+
+
+
+
+        case ASTERISK:
+           context_clue= ASTERISK;
+           printf("DEBUG: found an ASTERISK...\n\n\n");
+           left= expr_to_ir(subtree->l);
+           right= expr_to_ir(subtree->r);
+
+           {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+               irlist->next= emalloc(sizeof(struct irnode));
+               irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= MULTIPLY;
+               irlist->oprnd1= ++regnum;
+               irlist->oprnd2= left->regnum;
+               irlist->oprnd3= right->regnum;
+
+               tcresult->nodetype= RVALUE;
+               tcresult->regnum= irlist->oprnd1;
+	       printf("DEBUG: result is in reg %d\n", tcresult->regnum);
+
+           }
+           context_clue= 0;
+           return tcresult;
+           break;
+
+
+
+
+
+        case OP_DIVISION:
+           context_clue= OP_DIVISION;
+           printf("DEBUG: found an OP_DIVISION...\n\n\n");
+           left= expr_to_ir(subtree->l);
+           right= expr_to_ir(subtree->r);
+
+           {   irlist= irlist_front;
+               while(irlist->next != NULL)
+               {   irlist= irlist->next;
+               }
+
+               irlist->next= emalloc(sizeof(struct irnode));
+               irlist->next->prev= irlist;
+               irlist= irlist->next;
+               irlist->sid= ++irnodenum;
+               irlist->ircode= DIVIDE;
+               irlist->oprnd1= ++regnum;
+               irlist->oprnd2= left->regnum;
+               irlist->oprnd3= right->regnum;
+
+               tcresult->nodetype= RVALUE;
+               tcresult->regnum= irlist->oprnd1;
+
+           }
+           context_clue= 0;
+           return tcresult;
+           break;
+
 
 
 

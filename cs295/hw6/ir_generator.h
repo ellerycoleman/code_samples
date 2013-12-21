@@ -41,7 +41,9 @@ enum ircodes
     REMAINDER,
     SUBTRACT,
     SUB1,
-    FUNCTIONCALL
+    FUNCTIONCALL,
+    MULTIPLY,
+    DIVIDE
 };
 
 

@@ -282,6 +282,16 @@ void generate_mips(void)
 	       break;
 
 
+	    case MULTIPLY:
+	       fprintf(mipsout,"\tmul\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]);
+	       break;
+
+
+	    case DIVIDE:
+	       fprintf(mipsout,"\tdiv\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]);
+	       break;
+
+
             case REMAINDER:
 	       fprintf(mipsout,"\trem\t%s, %s, %s\n", reglist[irlist->oprnd1], reglist[irlist->oprnd2], reglist[irlist->oprnd3]); 
 	       break;
