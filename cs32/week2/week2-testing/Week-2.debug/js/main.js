@@ -1,5 +1,5 @@
-$(function(){
-
-  var playlist = new Playlist();
-
-});
+$(
+  function(){
+    var playlist = new Playlist();
+  }
+ );
