@@ -1,0 +1,31 @@
+/*
+ *
+ *
+ * CSS goes for good ol' C-style comments.
+ *
+ */
+
+
+ul
+{   list-style-type: none;
+}
+
+
+li
+{   width: 30%;
+	height: 35px;
+	border: dashed 1px black;
+	border-radius: 5px;
+	padding: 5px;
+	margin: 5px;
+}
+
+li button
+{   float: right;
+}
+
+
+
+div.container
+{   border: solid 2px black;
+}
