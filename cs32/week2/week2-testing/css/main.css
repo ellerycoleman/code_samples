@@ -20,12 +20,20 @@ li
 	margin: 5px;
 }
 
+
 li button
 {   float: right;
 }
 
 
-
 div.container
 {   border: solid 2px black;
 }
+
+
+div.main
+{   margin: 10px;
+	border: solid 1px black;
+}
+
+
